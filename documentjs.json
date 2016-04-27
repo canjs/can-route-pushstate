@@ -1,0 +1,14 @@
+{
+  "sites": {
+    "docs": {
+      "dest": "docs",
+      "parent": "can-route-pushstate",
+      "pageConfig": {
+        "page": "docs"
+      },
+      "glob": {
+        "pattern": "./**/*.{js,md}"
+      }
+    }
+  }
+}
