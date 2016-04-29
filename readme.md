@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/canjs/can-route-pushstate.png?branch=master)](https://travis-ci.org/canjs/can-route-pushstate)
 
-Pushstate for can-route
+> Pushstate for can-route
 
 ## Usage
 

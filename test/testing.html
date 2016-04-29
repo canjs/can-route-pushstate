@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>can.route test page</title>
+</head>
+<body>
+<p>This is a dummy page to use<br/> for testing route goodness</p>
+<script type="text/javascript" src="../node_modules/steal/steal.js" main="@empty">
+
+	System.import('can-route-pushstate/can-route-pushstate').then(function (route) {
+		System.import('can-event').then(function (event) {
+
+			window.can = event;
+			window.route = route;
+
+			// make sure it's after ready
+			setTimeout(function () {
+				if(window.parent.routeTestReady) {
+					window.parent.routeTestReady(route, window.location, window.history, window);
+				}
+			}, 30);
+		});
+	});
+</script>
+
+</body>
+</html>
