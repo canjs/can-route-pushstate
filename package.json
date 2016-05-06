@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "can-event": "^3.0.0-pre.3",
-    "can-route": "github:canjs/can-route#master",
+    "can-route": "^3.0.0-pre.1",
     "can-util": "^3.0.0-pre.10"
   },
   "devDependencies": {
