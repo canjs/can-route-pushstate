@@ -14,6 +14,7 @@ var isNode = require('can-util/js/is-node/is-node');
 var extend = require('can-util/js/assign/assign');
 var each = require('can-util/js/each/each');
 var makeArray = require('can-util/js/make-array/make-array');
+var diffObject = require('can-util/js/diff-object/diff-object');
 
 var canEvent = require('can-event');
 var route = require('can-route');
@@ -126,12 +127,17 @@ if (!isFileProtocol && hasPushstate) {
 		// ## setURL
 
 		// Updates URL by calling `pushState`.
-		setURL: function (path, changed) {
+		setURL: function (path, newProps, oldProps) {
 			var method = "pushState";
+			var changed;
 			// Keeps hash if not in path.
 			if (includeHash && path.indexOf("#") === -1 && window.location.hash) {
 				path += window.location.hash;
 			}
+			changed = diffObject(oldProps, newProps)
+				.map(function (d) {
+					return d.property;
+				});
 			if(replaceStateAttrs.length > 0) {
 				var toRemove = [];
 				for(var i = 0, l = changed.length; i < l; i++) {

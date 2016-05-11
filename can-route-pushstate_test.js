@@ -3,12 +3,7 @@ var QUnit = require('steal-qunit');
 var extend = require('can-util/js/assign/assign');
 var canEvent = require('can-event');
 var route = require('./can-route-pushstate');
-
-function eventFire(el, etype) {
-	var doc = el.ownerDocument,
-		win = doc.defaultView || doc.parentWindow;
-	win.can.trigger.call(el, etype, [], true);
-}
+var domDispatch = require('can-util/dom/dispatch/');
 
 if (window.history && history.pushState) {
 
@@ -528,9 +523,7 @@ if (window.history && history.pushState) {
 
 				win.document.body.appendChild(link);
 
-				win.can.trigger.call(link, "click")
-
-				//link.click()
+				domDispatch.call(link, "click");
 
 				setTimeout(function () {
 
@@ -567,7 +560,7 @@ if (window.history && history.pushState) {
 
 				window.document.body.appendChild(link);
 				try {
-					window.can.trigger(link, "click");
+					domDispatch.call(link, "click");
 					ok(true, "Clicking javascript:// anchor did not cause a security exception");
 				} catch(err) {
 					ok(false, "Clicking javascript:// anchor caused a security exception");
@@ -689,7 +682,7 @@ if (window.history && history.pushState) {
 				};
 
 				// click a link and make sure the iframe url changes
-				eventFire(link, "click")
+				domDispatch.call(link, "click");
 
 				done();
 				setTimeout(next, 10);
@@ -721,12 +714,12 @@ if (window.history && history.pushState) {
 					setupRoutesAndRoot(info.route, "/app/");
 					var link = createLink(info.window, "/app/something/test/");
 
-					eventFire(link, "click")
+					domDispatch.call(link, "click");
 				});
 			};
 		});
 
-		test("replaceStateOn makes changes to an attribute use replaceSate (#1137)", function() {
+		test("replaceStateOn makes changes to an attribute use replaceState (#1137)", function() {
 			stop();
 
 			makeTestingIframe(function(info, done){
