@@ -147,7 +147,6 @@ if (!isFileProtocol && hasPushstate) {
 					if(replaceStateAttrs.once && (replaceStateAttrs.once.indexOf(changed[i]) !== -1)) {
 						toRemove.push(changed[i]);
 					}
-					console.log(toRemove);
 				}
 				if(toRemove.length > 0) {
 					removeAttrs(replaceStateAttrs, toRemove);

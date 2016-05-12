@@ -9,7 +9,7 @@
 <script type="text/javascript" src="../node_modules/steal/steal.js" main="@empty">
 Promise.all([
 	System.import('can-route-pushstate/can-route-pushstate'),
-	System.import('can-map')
+	System.import(window.parent.MAP_MODULE_NAME)
 ]).then(function(modules){
 	window.route = modules[0];
 	window.CanMap = modules[1];

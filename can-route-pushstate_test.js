@@ -6,11 +6,19 @@ var route = require('./can-route-pushstate');
 var domDispatch = require('can-util/dom/dispatch/');
 
 if (window.history && history.pushState) {
+	makeTest("can-map");
+	makeTest("can-define/map/map");
+}
 
-	QUnit.module("can/route/pushstate", {
+function makeTest(mapModuleName){
+
+
+
+	QUnit.module("can/route/pushstate with "+mapModuleName, {
 		setup: function () {
 			route._teardown();
 			route.defaultBinding = "pushstate";
+			window.MAP_MODULE_NAME = mapModuleName;
 		}
 	});
 
@@ -692,7 +700,7 @@ if (window.history && history.pushState) {
 				makeTestingIframe(function (info, done) {
 
 					var timer;
-					info.route.bind("change", function () {
+					info.route.serializedCompute.bind("change", function () {
 						clearTimeout(timer);
 						timer = setTimeout(function () {
 							// deepEqual doesn't like to compare objects from different contexts
