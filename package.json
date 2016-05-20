@@ -27,7 +27,7 @@
     "document": "documentjs",
     "develop": "done-serve --static --develop --port 8080"
   },
-  "main": "dist/cjs/can-route-pushstate",
+  "main": "can-route-pushstate",
   "browser": {
     "transform": [
       "cssify"
@@ -39,26 +39,20 @@
     ]
   },
   "keywords": [
-    "canjs"
+    "canjs",
+    "canjs-plugin",
+    "donejs"
   ],
   "system": {
-    "main": "can-route-pushstate",
     "configDependencies": [
       "live-reload"
-    ],
-    "npmIgnore": [
-      "documentjs",
-      "testee",
-      "generator-donejs",
-      "donejs-cli",
-      "steal-tools"
     ],
     "npmAlgorithm": "flat"
   },
   "dependencies": {
     "can-event": "^3.0.0-pre.3",
     "can-route": "^3.0.0-pre.1",
-    "can-util": "^3.0.0-pre.10"
+    "can-util": "^3.0.0-pre.21"
   },
   "devDependencies": {
     "can-define": "^0.7.4",

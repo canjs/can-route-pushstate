@@ -15,6 +15,7 @@ var extend = require('can-util/js/assign/assign');
 var each = require('can-util/js/each/each');
 var makeArray = require('can-util/js/make-array/make-array');
 var diffObject = require('can-util/js/diff-object/diff-object');
+var namespace = require('can-util/namespace');
 
 var canEvent = require('can-event');
 var route = require('can-route');
@@ -248,4 +249,4 @@ if (!isFileProtocol && hasPushstate) {
 	});
 }
 
-module.exports = route;
+module.exports = namespace.route = route;
