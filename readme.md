@@ -4,55 +4,36 @@
 
 > Pushstate for can-route
 
-## Usage
 
-### ES6 use
+- <code>[__can-route-pushstate__ Object](#can-route-pushstate-object)</code>
 
-With StealJS, you can import this module directly in a template that is autorendered:
+## API
 
-```js
-import plugin from 'can-route-pushstate';
-```
+##  `{Object}`
 
-### CommonJS use
-
-Use `require` to load `can-route-pushstate` and everything else
-needed to create a template that uses `can-route-pushstate`:
+Changes [can-route](https://github.com/canjs/can-route) to use [pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
+to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
+of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 
 ```js
-var plugin = require("can-route-pushstate");
+var route = require("can-route-pushstate");
+
+route(":page", { page: "home" });
+route.ready();
+
+route.attr("page", "user");
+
+location.pathname; // -> "/user"
 ```
 
-## AMD use
 
-Configure the `can` and `jquery` paths and the `can-route-pushstate` package:
 
-```html
-<script src="require.js"></script>
-<script>
-	require.config({
-	    paths: {
-	        "jquery": "node_modules/jquery/dist/jquery",
-	        "can": "node_modules/canjs/dist/amd/can"
-	    },
-	    packages: [{
-		    	name: 'can-route-pushstate',
-		    	location: 'node_modules/can-route-pushstate/dist/amd',
-		    	main: 'lib/can-route-pushstate'
-	    }]
-	});
-	require(["main-amd"], function(){});
-</script>
-```
 
-### Standalone use
+### <code>Object</code>
 
-Load the `global` version of the plugin:
-
-```html
-<script src='./node_modules/can-route-pushstate/dist/global/can-route-pushstate.js'></script>
-```
-
+- __The__ <code>{Object}</code>:
+  pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushstate`.
+  
 ## Contributing
 
 ### Making a Build
