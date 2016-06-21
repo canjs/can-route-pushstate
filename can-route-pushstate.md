@@ -1,4 +1,5 @@
 @module {Object} can-route-pushstate
+@parent can-route.plugins
 @download can/route/pushstate
 @link ../docco/route/pushstate/pushstate.html docco
 
