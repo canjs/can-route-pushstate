@@ -55,7 +55,7 @@
     "can-util": "^3.0.0-pre.21"
   },
   "devDependencies": {
-    "can-define": "^0.7.4",
+    "can-define": "^0.7.7",
     "can-map": "^3.0.0-pre.3",
     "cssify": "^1.0.2",
     "bit-docs": "0.0.6",
@@ -76,12 +76,14 @@
       "bit-docs-generate-readme": "^0.0.8"
     },
     "glob": {
-      "pattern": "**\/*.{js,md}",
-      "ignore": "node_modules\/**\/*"
+      "pattern": "**/*.{js,md}",
+      "ignore": "node_modules/**/*"
     },
-		"readme": {
-			"apis": ["can-route-pushstate"]
-		},
+    "readme": {
+      "apis": [
+        "can-route-pushstate"
+      ]
+    },
     "parent": "can-route-pushstate"
   }
 }
