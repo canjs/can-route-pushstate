@@ -1,5 +1,5 @@
 @module {Object} can-route-pushstate
-@parent can-route.plugins
+@parent can-core
 @download can/route/pushstate
 @link ../docco/route/pushstate/pushstate.html docco
 
@@ -25,7 +25,7 @@ location.pathname; // -> "/user"
 
 ## Use
 
-The pushstate plugin uses the same API as [can-route]. To start using pushstate plugin all you need is to load `can/route/pushstate`, it will set itself as default binding on [can.route].
+The pushstate plugin uses the same API as [can-route]. To start using pushstate plugin all you need is to import `can-route-pushstate`, it will set itself as default binding on [can.route].
 
 You can check current binding by inspecting `route.currentBinding`, the default value is `"hashchange"`.
 
