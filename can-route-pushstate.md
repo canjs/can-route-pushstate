@@ -1,9 +1,7 @@
 @module {Object} can-route-pushstate
 @parent can-core
-@download can/route/pushstate
-@link ../docco/route/pushstate/pushstate.html docco
 
-@description Changes [can-route](https://github.com/canjs/can-route) to use
+@description Changes [can-route] to use
 [pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
 to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
 of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
@@ -25,22 +23,23 @@ location.pathname; // -> "/user"
 
 ## Use
 
-The pushstate plugin uses the same API as [can-route]. To start using pushstate plugin all you need is to import `can-route-pushstate`, it will set itself as default binding on [can.route].
+can-route-pushstate uses the same API as [can-route]. To start using can-route-pushstate all you need is to import `can-route-pushstate`, it will set itself as default binding on [can-route].
 
-You can check current binding by inspecting `route.currentBinding`, the default value is `"hashchange"`.
+You can check current binding by inspecting `route.currentBinding`; the default value is `"hashchange"`.
 
 ### Creating and changing routes
 
-To [create](route.html#section_CreatingaRoute) route use `route(url, defaults)` like:
+To create routes use `route(url, defaults)` like:
 
 ```js
 route(":page", {page: 'homepage'});
 route("contacts/:username");
 route("books/:genre/:author");
-route.ready(); // do not forget to initialize can-route
+
+route.ready(); // Initializes can-route
 ```
 
-Do not forget to [initialize](route.ready.html) can-route after creating all routes, do it by calling `route.ready()`.
+Do not forget to [can-route.ready initialize] can-route after creating all routes, do it by calling `route.ready()`.
 
 List of defined routes is contained in `route.routes`, you can examine current route state by calling:
 
@@ -85,23 +84,9 @@ route.url({username: 'justinbmeyer'}); //-> '/contacts/justinbmeyer'
 
 ### Listening changes on matched route
 
-As can-route is basically a [can-map] that represents `window.location.pathname`, you can bind on it in the same way you would on any can.Map object.
+As can-route contains a map that represents `window.location.pathname`, you can bind on it.
 
-To listen on any changes on `route` use `route.bind('change', callback)`, the following params will be passed to callback function:
-
-```js
-route.bind('change', function(ev, attr, how, newVal, oldVal) {
-	//-> ev:     {EventObject}
-	//-> attr:   'username'
-	//-> how:    'change'
-	//-> newVal: 'veljko'
-	//-> oldVal: undefined
-});
-
-route.attr({username: 'veljko'}, true);
-```
-
-You can also bind to specific attribute on can-route:
+To bind to specific attributes on can-route:
 
 ```js
 route.bind('username', function(ev, newVal, oldVal) {
@@ -115,7 +100,7 @@ route.attr({username: nikica}, true);
 
 ### Using different pathname root
 
-Pushstate plugin has one additional property, `route.bindings.pushstate.root`, which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
+can-route-pushstate has one additional property, `route.bindings.pushstate.root`, which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
 
 ```js
 route.bindings.pushstate.root = "/contacts/"
