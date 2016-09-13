@@ -9,7 +9,7 @@ of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 ```js
 var route = require("can-route-pushstate");
 
-route(":page", { page: "home" });
+route("{page}", { page: "home" });
 route.ready();
 
 route.attr("page", "user");
@@ -32,9 +32,9 @@ You can check current binding by inspecting `route.currentBinding`; the default 
 To create routes use `route(url, defaults)` like:
 
 ```js
-route(":page", {page: 'homepage'});
-route("contacts/:username");
-route("books/:genre/:author");
+route("{page}", {page: 'homepage'});
+route("contacts/{username}");
+route("books/{genre}/{author}");
 
 route.ready(); // Initializes can-route
 ```
@@ -44,29 +44,29 @@ Do not forget to [can-route.ready initialize] can-route after creating all route
 List of defined routes is contained in `route.routes`, you can examine current route state by calling:
 
 ```js
-route.attr(); //-> {page: "homepage", route: ":page"}
+route.attr(); //-> {page: "homepage", route: "{page}"}
 ```
 
 After creating routes and initializing can-route you can update current route by calling `route.attr(attr, newVal)`:
 
 ```js
 route.attr('page', 'about');
-route.attr(); //-> {page: "about", route: ":page"}
+route.attr(); //-> {page: "about", route: "{page}"}
 
 // without cleaning current route state
 route.attr('username', 'veljko');
-route.attr(); //-> {page: "about", route: ":page", username: 'veljko'}
+route.attr(); //-> {page: "about", route: "{page}", username: 'veljko'}
 
 // with cleaning current can-route state
 route.attr({username: 'veljko'}, true);
-route.attr(); //-> {username: "veljko", route: "contacts/:username"}
+route.attr(); //-> {username: "veljko", route: "contacts/{username}"}
 ```
 
 To update multiple attributes at once pass hash of attributes to `route.attr(hashOfAttrs, true)`. Pass `true` as second argument to clean up current state.
 
 ```js
 route.attr({genre: 'sf', author: 'adams'}, true);
-route.attr(); //-> {genre: "sf", author: "adams", route: "books/:genre/:author"}
+route.attr(); //-> {genre: "sf", author: "adams", route: "books/{genre}/{author}"}
 ```
 
 `window.location` acts as expected:
@@ -104,7 +104,7 @@ can-route-pushstate has one additional property, `route.bindings.pushstate.root`
 
 ```js
 route.bindings.pushstate.root = "/contacts/"
-route(":page");
+route("{page}");
 route.url({page: "list"}) //-> "/contacts/list"
 route.url({foo: "bar"})   //-> "/contacts/?foo=bar"
 ```
