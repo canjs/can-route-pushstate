@@ -1,6 +1,6 @@
 {
   "name": "can-route-pushstate",
-  "version": "3.0.0-pre.6",
+  "version": "3.0.0-pre.7",
   "description": "Pushstate for can-route",
   "homepage": "https://canjs.com",
   "repository": {
