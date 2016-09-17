@@ -55,7 +55,7 @@
     "can-util": "^3.0.0-pre.21"
   },
   "devDependencies": {
-    "can-define": "^0.7.4",
+    "can-define": "^0.8.0",
     "can-map": "^3.0.0-pre.3",
     "cssify": "^1.0.2",
     "bit-docs": "0.0.6",
