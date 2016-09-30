@@ -538,8 +538,9 @@ function makeTest(mapModuleName){
 					deepEqual(extend({}, iCanRoute.attr()), {
 						type: "articles",
 						id: "17",
-						route: ":type/:id"
-					}, "articles are right")
+					}, "articles have the right route data");
+
+					equal(iCanRoute.matched(), ":type/:id", "articles have the right matched route")
 
 					equal(win.location.hash, "#references", "includes hash");
 
@@ -652,7 +653,7 @@ function makeTest(mapModuleName){
 
 		}
 
-		test("routed links must descend from pushstate root (#652)", 1, function () {
+		test("routed links must descend from pushstate root (#652)", 2, function () {
 			stop();
 
 			var setupRoutesAndRoot = function (iCanRoute, root) {
@@ -710,8 +711,10 @@ function makeTest(mapModuleName){
 							deepEqual(obj, {
 								section: "something",
 								sub: "test",
-								route: ":section/:sub/"
 							}, "route's data is correct");
+
+							equal(info.route.matched(), ":section/:sub/",
+								"route's matched property is correct");
 
 							done();
 							start();
