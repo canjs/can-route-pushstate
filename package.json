@@ -50,9 +50,9 @@
     "npmAlgorithm": "flat"
   },
   "dependencies": {
-    "can-event": "^3.0.0-pre.3",
-    "can-route": "^3.0.0-pre.1",
-    "can-util": "^3.0.0-pre.21"
+    "can-event": "^3.0.1",
+    "can-route": "^3.0.0",
+    "can-util": "^3.0.1"
   },
   "devDependencies": {
     "can-define": "^0.8.1",
