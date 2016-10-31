@@ -52,7 +52,7 @@
   "dependencies": {
     "can-event": "^3.0.1",
     "can-route": "^3.0.0",
-    "can-util": "^3.0.1"
+    "can-util": "^3.0.4"
   },
   "devDependencies": {
     "can-define": "^1.0.1",
