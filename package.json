@@ -28,16 +28,6 @@
     "develop": "done-serve --static --develop --port 8080"
   },
   "main": "can-route-pushstate",
-  "browser": {
-    "transform": [
-      "cssify"
-    ]
-  },
-  "browserify": {
-    "transform": [
-      "cssify"
-    ]
-  },
   "keywords": [
     "canjs",
     "canjs-plugin",
@@ -57,7 +47,6 @@
   "devDependencies": {
     "can-define": "^1.0.1",
     "can-map": "^3.0.0-pre.3",
-    "cssify": "^1.0.2",
     "bit-docs": "0.0.6",
     "done-serve": "^0.2.0",
     "donejs-cli": "^0.9.5",
