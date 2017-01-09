@@ -168,7 +168,24 @@ if (!isFileProtocol && hasPushstate) {
 			// Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
 
-			if(node.href === "javascript://") {
+			// href has some JS in it, let it run
+			if(node.href.trim().indexOf('javascript') === 0) {
+				try {
+					eval(node.href);
+				}
+				catch (e) {
+					// Most likely safe to just let the click go through
+					return;
+				}
+			}
+
+			// Do not push state if target is for blank window
+			if(node.target === '_blank'){
+				return;
+			}
+
+			// Do not push state if meta key was pressed, mimicing standard browser behavior
+			if (e.metaKey) {
 				return;
 			}
 
