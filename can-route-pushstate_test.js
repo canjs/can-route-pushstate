@@ -11,9 +11,6 @@ if (window.history && history.pushState) {
 }
 
 function makeTest(mapModuleName){
-
-
-
 	QUnit.module("can/route/pushstate with "+mapModuleName, {
 		setup: function () {
 			route._teardown();
@@ -389,7 +386,7 @@ function makeTest(mapModuleName){
 	// Start steal-only
 	if (typeof steal !== 'undefined') {
 
-		var makeTestingIframe = function (callback) {
+		var makeTestingIframe = function (callback, testHTML) {
 			var iframe = document.createElement('iframe');
 
 			window.routeTestReady = function (iCanRoute, loc, history, win) {
@@ -406,7 +403,8 @@ function makeTest(mapModuleName){
 				});
 			};
 
-			iframe.src = "testing.html" + "?" + Math.random();
+			testHTML = testHTML || "testing.html";
+			iframe.src = testHTML + "?" + Math.random();
 			document.getElementById("qunit-fixture").appendChild(iframe);
 		};
 
@@ -918,6 +916,26 @@ function makeTest(mapModuleName){
 			bar: "def",
 			route: ":foo-:bar"
 		});
+	});
+
+	test("Binding not added if not using the http/s procotols", function () {
+		stop();
+
+		makeTestingIframe(function(info, done){
+			equal(info.route.defaultBinding, "hashchange", "using hashchange routing");
+			start();
+			done();
+		}, "testing-nw.html");
+	});
+
+	test("Binding is added if there is no protocol (can-simple-dom uses an empty string as the protocol)", function() {
+		stop();
+
+		makeTestingIframe(function(info, done){
+			equal(info.route.defaultBinding, "pushstate", "pushstate routing is used");
+			start();
+			done();
+		}, "testing-ssr.html");
 	});
 
 }

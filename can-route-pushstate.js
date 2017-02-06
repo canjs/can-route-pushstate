@@ -21,10 +21,12 @@ var canEvent = require('can-event');
 var route = require('can-route');
 
 var hasPushstate = window.history && window.history.pushState;
-var isFileProtocol = window.location && window.location.protocol === 'file:';
+var location = route.location || window.location;
+var validProtocols = { 'http:': true, 'https:': true, '': true };
+var usePushStateRouting = hasPushstate && location && validProtocols[location.protocol];
 
 // Initialize plugin only if browser supports pushstate.
-if (!isFileProtocol && hasPushstate) {
+if (usePushStateRouting) {
 
 	// Registers itself within `route.bindings`.
 	route.bindings.pushstate = {
