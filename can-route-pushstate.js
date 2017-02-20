@@ -16,14 +16,15 @@ var each = require('can-util/js/each/each');
 var makeArray = require('can-util/js/make-array/make-array');
 var diffObject = require('can-util/js/diff-object/diff-object');
 var namespace = require('can-util/namespace');
+var LOCATION = require('can-util/dom/location/location');
 
 var canEvent = require('can-event');
 var route = require('can-route');
 
 var hasPushstate = window.history && window.history.pushState;
-var location = route.location || window.location;
+var loc = LOCATION();
 var validProtocols = { 'http:': true, 'https:': true, '': true };
-var usePushStateRouting = hasPushstate && location && validProtocols[location.protocol];
+var usePushStateRouting = hasPushstate && loc && validProtocols[loc.protocol];
 
 // Initialize plugin only if browser supports pushstate.
 if (usePushStateRouting) {
@@ -90,9 +91,11 @@ if (usePushStateRouting) {
 				window.history[method] = function (state, title, url) {
 					// Avoid doubled history states (with pushState).
 					var absolute = url.indexOf("http") === 0;
-					var searchHash = window.location.search + window.location.hash;
+					var loc = LOCATION();
+					var searchHash = loc.search + loc.hash;
 					// If url differs from current call original histoy method and update `route` state.
-					if ((!absolute && url !== window.location.pathname + searchHash) || (absolute && url !== window.location.href + searchHash)) {
+					if ((!absolute && url !== loc.pathname + searchHash) ||
+						(absolute && url !== loc.href + searchHash)) {
 						originalMethods[method].apply(window.history, arguments);
 						route.setState();
 					}
@@ -121,6 +124,7 @@ if (usePushStateRouting) {
 		// Returns matching part of url without root.
 		matchingPartOfURL: function () {
 			var root = cleanRoot(),
+			  location = LOCATION(),
 				loc = (location.pathname + location.search),
 				index = loc.indexOf(root);
 
