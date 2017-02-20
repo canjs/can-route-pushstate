@@ -7,8 +7,14 @@
 <p>This is a dummy page to use<br/> for testing route goodness</p>
 
 <script type="text/javascript" src="../node_modules/steal/steal.js" main="@empty">
-System.import('can-route').then(function(route){
-	route.location = { protocol: "chrome-extension:" };
+Promise.all([
+	System.import('can-route'),
+	System.import('can-util/dom/location/location')
+]).then(function(modules){
+	var route = modules[0];
+	var LOCATION = modules[1];
+
+	LOCATION({ protocol: "chrome-extension:" });
 
 	Promise.all([
 		System.import('can-route-pushstate/can-route-pushstate'),
@@ -21,7 +27,7 @@ System.import('can-route').then(function(route){
 			window.parent.routeTestReady && window.parent.routeTestReady(route, window.location, window.history, window)
 		}, 30);
 	});
-})
+});
 
 </script>
 
