@@ -22,6 +22,11 @@ var route = require('can-route');
 
 var hasPushstate = window.history && window.history.pushState;
 var isFileProtocol = window.location && window.location.protocol === 'file:';
+var clientPlatform = {
+	isMac: window.navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i) ? true : false,
+	isWin: window.navigator.platform.match(/(Win)/i) ? true : false
+};
+
 
 // Initialize plugin only if browser supports pushstate.
 if (!isFileProtocol && hasPushstate) {
@@ -158,6 +163,19 @@ if (!isFileProtocol && hasPushstate) {
 		}
 	};
 
+	// ## altKeyPressed
+	
+	// Helper that examines event object for correct 
+	// alternative key press based on platform
+	var altKeyPressed = function (e) {
+		if (clientPlatform.isMac) {
+			return e.metaKey;
+		}
+		if (clientPlatform.isWin) {
+			return e.ctrlKey;
+		}
+	};
+
 	// ## anchorClickHandler
 
 	// Handler function for `click` events.
@@ -169,14 +187,8 @@ if (!isFileProtocol && hasPushstate) {
 			var linksHost = node.host || window.location.host;
 
 			// href has some JS in it, let it run
-			if(node.href.trim().indexOf('javascript') === 0) {
-				try {
-					eval(node.href);
-				}
-				catch (e) {
-					// Most likely safe to just let the click go through
-					return;
-				}
+			if(node.href === "javascript://") {
+				return;
 			}
 
 			// Do not push state if target is for blank window
@@ -185,7 +197,7 @@ if (!isFileProtocol && hasPushstate) {
 			}
 
 			// Do not push state if meta key was pressed, mimicing standard browser behavior
-			if (e.metaKey) {
+			if (altKeyPressed(e)) {
 				return;
 			}
 
