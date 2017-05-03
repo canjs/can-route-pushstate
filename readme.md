@@ -1,5 +1,7 @@
 # can-route-pushstate
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/canjs/can-route-pushstate.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/canjs/can-route-pushstate.png?branch=master)](https://travis-ci.org/canjs/can-route-pushstate)
 
 > Pushstate for can-route
