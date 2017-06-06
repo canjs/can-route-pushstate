@@ -21,31 +21,31 @@ function makeTest(mapModuleName){
 
 	test("deparam", function () {
 		route.routes = {};
-		route(":page", {
+		route("{page}", {
 			page: "index"
 		});
 
 		var obj = route.deparam("can.Control");
 		deepEqual(obj, {
 			page: "can.Control",
-			route: ":page"
+			route: "{page}"
 		});
 
 		obj = route.deparam("");
 		deepEqual(obj, {
 			page: "index",
-			route: ":page"
+			route: "{page}"
 		});
 
 		obj = route.deparam("can.Control?where=there");
 		deepEqual(obj, {
 			page: "can.Control",
 			where: "there",
-			route: ":page"
+			route: "{page}"
 		});
 
 		route.routes = {};
-		route(":page/:index", {
+		route("{page}/{index}", {
 			page: "index",
 			index: "foo"
 		});
@@ -55,7 +55,7 @@ function makeTest(mapModuleName){
 			page: "can.Control",
 			index: "foo",
 			where: "there",
-			route: ":page/:index"
+			route: "{page}/{index}"
 		});
 	});
 
@@ -63,7 +63,7 @@ function makeTest(mapModuleName){
 		var obj;
 
 		route.routes = {};
-		route("pages/:var1/:var2/:var3", {
+		route("pages/{var1}/{var2}/{var3}", {
 			var1: 'default1',
 			var2: 'default2',
 			var3: 'default3'
@@ -81,7 +81,7 @@ function makeTest(mapModuleName){
 			var1: 'val1',
 			var2: 'val2',
 			var3: 'val3',
-			route: "pages/:var1/:var2/:var3"
+			route: "pages/{var1}/{var2}/{var3}"
 		});
 	})
 
@@ -102,7 +102,7 @@ function makeTest(mapModuleName){
 
 	test("param", function () {
 		route.routes = {};
-		route("pages/:page", {
+		route("pages/{page}", {
 			page: "index"
 		})
 
@@ -117,7 +117,7 @@ function makeTest(mapModuleName){
 		});
 		equal(res, "pages/foo?index=bar")
 
-		route("pages/:page/:foo", {
+		route("pages/{page}/{foo}", {
 			page: "index",
 			foo: "bar"
 		})
@@ -165,7 +165,7 @@ function makeTest(mapModuleName){
 
 	test("light param", function () {
 		route.routes = {};
-		route(":page", {
+		route("{page}", {
 			page: "index"
 		})
 
@@ -174,7 +174,7 @@ function makeTest(mapModuleName){
 		});
 		equal(res, "")
 
-		route("pages/:p1/:p2/:p3", {
+		route("pages/{p1}/{p2}/{p3}", {
 			p1: "index",
 			p2: "foo",
 			p3: "bar"
@@ -198,7 +198,7 @@ function makeTest(mapModuleName){
 	test('param doesnt add defaults to params', function () {
 		route.routes = {};
 
-		route("pages/:p1", {
+		route("pages/{p1}", {
 			p2: "foo"
 		})
 		var res = route.param({
@@ -210,7 +210,7 @@ function makeTest(mapModuleName){
 
 	test("param-deparam", function () {
 
-		route(":page/:type", {
+		route("{page}/{type}", {
 			page: "index",
 			type: "foo"
 		})
@@ -271,7 +271,7 @@ function makeTest(mapModuleName){
 
 	test("deparam-param", function () {
 		route.routes = {};
-		route(":foo/:bar", {
+		route("{foo}/{bar}", {
 			foo: 1,
 			bar: 2
 		});
@@ -286,27 +286,27 @@ function makeTest(mapModuleName){
 		deepEqual(deparamed, {
 			foo: 1,
 			bar: 2,
-			route: ":foo/:bar"
+			route: "{foo}/{bar}"
 		})
 	})
 
 	test("precident", function () {
 		route.routes = {};
-		route(":who", {
+		route("{who}", {
 			who: "index"
 		});
-		route("search/:search");
+		route("search/{search}");
 
 		var obj = route.deparam("can.Control");
 		deepEqual(obj, {
 			who: "can.Control",
-			route: ":who"
+			route: "{who}"
 		});
 
 		obj = route.deparam("search/can.Control");
 		deepEqual(obj, {
 			search: "can.Control",
-			route: "search/:search"
+			route: "search/{search}"
 		}, "bad deparam");
 
 		equal(route.param({
@@ -322,10 +322,10 @@ function makeTest(mapModuleName){
 
 	test("better matching precident", function () {
 		route.routes = {};
-		route(":type", {
+		route("{type}", {
 			who: "index"
 		});
-		route(":type/:id");
+		route("{type}/{id}");
 
 		equal(route.param({
 			type: "foo",
@@ -336,7 +336,7 @@ function makeTest(mapModuleName){
 
 	test("linkTo", function () {
 		route.routes = {};
-		route("/:foo");
+		route("/{foo}");
 		var res = route.link("Hello", {
 			foo: "bar",
 			baz: 'foo'
@@ -373,7 +373,7 @@ function makeTest(mapModuleName){
 
 	test("strange characters", function () {
 		route.routes = {};
-		route(":type/:id");
+		route("{type}/{id}");
 		var res = route.deparam("foo/" + encodeURIComponent("\/"))
 		equal(res.id, "\/")
 		res = route.param({
@@ -412,7 +412,7 @@ function makeTest(mapModuleName){
 			stop();
 			makeTestingIframe(function (info, done) {
 				info.route.ready()
-				info.route("/:type/:id");
+				info.route("/{type}/{id}");
 				info.route.attr({
 					type: "bar",
 					id: "5"
@@ -469,8 +469,8 @@ function makeTest(mapModuleName){
 				}, 30);
 				var runTest = function () {
 					iCanRoute.ready();
-					iCanRoute("/:type");
-					iCanRoute("/:type/:id");
+					iCanRoute("/{type}");
+					iCanRoute("/{type}/{id}");
 					iCanRoute.attr({
 						type: "bar"
 					});
@@ -519,7 +519,7 @@ function makeTest(mapModuleName){
 					page: "index"
 				});
 
-				iCanRoute(":type/:id");
+				iCanRoute("{type}/{id}");
 				iCanRoute.ready();
 
 				window.win = win;
@@ -538,7 +538,7 @@ function makeTest(mapModuleName){
 						id: "17",
 					}, "articles have the right route data");
 
-					equal(iCanRoute.matched(), ":type/:id", "articles have the right matched route")
+					equal(iCanRoute.matched(), "{type}/{id}", "articles have the right matched route")
 
 					equal(win.location.hash, "#references", "includes hash");
 
@@ -556,7 +556,7 @@ function makeTest(mapModuleName){
 		test("javascript:// links do not get pushstated", function(){
 			stop();
 			makeTestingIframe(function (info, done) {
-				info.route(":type", { type: "yay" });
+				info.route("{type}", { type: "yay" });
 				info.route.ready();
 
 
@@ -623,7 +623,7 @@ function makeTest(mapModuleName){
 					}
 
 					win.route.bindings.pushstate.root = root;
-					win.route(":page/");
+					win.route("{page}/");
 					win.route.ready();
 					nextStateTest();
 				};
@@ -637,7 +637,7 @@ function makeTest(mapModuleName){
 				stop();
 				makeTestingIframe(function(info, done){
 					info.route.bindings.pushstate.root = "testing.html";
-					info.route(":module\\.html");
+					info.route("{module}\\.html");
 					info.route.ready();
 
 					setTimeout(function(){
@@ -655,8 +655,8 @@ function makeTest(mapModuleName){
 			stop();
 
 			var setupRoutesAndRoot = function (iCanRoute, root) {
-				iCanRoute(":section/");
-				iCanRoute(":section/:sub/");
+				iCanRoute("{section}/");
+				iCanRoute("{section}/{sub}/");
 				iCanRoute.bindings.pushstate.root = root;
 				iCanRoute.ready();
 			};
@@ -711,7 +711,7 @@ function makeTest(mapModuleName){
 								sub: "test",
 							}, "route's data is correct");
 
-							equal(info.route.matched(), ":section/:sub/",
+							equal(info.route.matched(), "{section}/{sub}/",
 								"route's matched property is correct");
 
 							done();
@@ -844,7 +844,7 @@ function makeTest(mapModuleName){
 	test("empty default is matched even if last", function () {
 
 		route.routes = {};
-		route(":who");
+		route("{who}");
 		route("", {
 			foo: "bar"
 		});
@@ -858,13 +858,13 @@ function makeTest(mapModuleName){
 
 	test("order matched", function () {
 		route.routes = {};
-		route(":foo");
-		route(":bar")
+		route("{foo}");
+		route("{bar}")
 
 		var obj = route.deparam("abc");
 		deepEqual(obj, {
 			foo: "abc",
-			route: ":foo"
+			route: "{foo}"
 		});
 	});
 
@@ -873,7 +873,7 @@ function makeTest(mapModuleName){
 		route("", {
 			bar: "foo"
 		});
-		route("something/:bar");
+		route("something/{bar}");
 		var res = route.param({
 			bar: "foo"
 		});
@@ -882,12 +882,12 @@ function makeTest(mapModuleName){
 		// picks the first that matches everything ...
 		route.routes = {};
 
-		route(":recipe", {
+		route("{recipe}", {
 			recipe: "recipe1",
 			task: "task3"
 		});
 
-		route(":recipe/:task", {
+		route("{recipe}/{task}", {
 			recipe: "recipe1",
 			task: "task3"
 		});
@@ -908,13 +908,13 @@ function makeTest(mapModuleName){
 
 	test("dashes in routes", function () {
 		route.routes = {};
-		route(":foo-:bar");
+		route("{foo}-{bar}");
 
 		var obj = route.deparam("abc-def");
 		deepEqual(obj, {
 			foo: "abc",
 			bar: "def",
-			route: ":foo-:bar"
+			route: "{foo}-{bar}"
 		});
 	});
 
