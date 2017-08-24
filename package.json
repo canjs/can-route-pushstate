@@ -23,8 +23,7 @@
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
-    "build": "node build.js",
-    "document": "bit-docs"
+    "build": "node build.js"
   },
   "main": "can-route-pushstate",
   "keywords": [
@@ -46,23 +45,5 @@
     "steal-qunit": "^1.0.0",
     "steal-tools": "^1.0.0",
     "testee": "^0.7.0"
-  },
-  "bit-docs": {
-    "dependencies": {
-      "bit-docs-glob-finder": "^0.0.5",
-      "bit-docs-dev": "^0.0.3",
-      "bit-docs-js": "^0.0.3",
-      "bit-docs-generate-readme": "^0.0.8"
-    },
-    "glob": {
-      "pattern": "**/*.{js,md}",
-      "ignore": "node_modules/**/*"
-    },
-    "readme": {
-      "apis": [
-        "can-route-pushstate"
-      ]
-    },
-    "parent": "can-route-pushstate"
   }
 }
