@@ -403,7 +403,7 @@ function makeTest(mapModuleName){
 				});
 			};
 
-			testHTML = testHTML || "testing.html";
+			testHTML = testHTML || __dirname + "/test/testing.html";
 			iframe.src = testHTML + "?" + Math.random();
 			document.getElementById("qunit-fixture").appendChild(iframe);
 		};
