@@ -1,6 +1,7 @@
 @module {Object} can-route-pushstate
 @parent can-core
 @package ./package.json
+@group can-route-pushstate.static static
 
 @description Changes [can-route] to use
 [pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)

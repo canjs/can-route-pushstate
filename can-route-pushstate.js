@@ -28,12 +28,14 @@ var usePushStateRouting = hasPushstate && loc && validProtocols[loc.protocol];
 
 // Initialize plugin only if browser supports pushstate.
 if (usePushStateRouting) {
-
+	/**
+	 * @static
+	 */
 	// Registers itself within `route.bindings`.
 	route.bindings.pushstate = {
 		/**
-		 * @property {String} route.pushstate.root
-		 * @parent route.pushstate
+		 * @property {String} can-route-pushstate.root root
+		 * @parent can-route-pushstate.static
 		 *
 		 * @description Configure the base url that will not be modified.
 		 *
