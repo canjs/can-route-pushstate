@@ -1,5 +1,6 @@
 @module {Object} can-route-pushstate
-@parent can-core
+@parent can-routing
+@collection can-core
 @package ./package.json
 @group can-route-pushstate.static static
 
