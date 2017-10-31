@@ -28,9 +28,6 @@ var usePushStateRouting = hasPushstate && loc && validProtocols[loc.protocol];
 
 // Initialize plugin only if browser supports pushstate.
 if (usePushStateRouting) {
-	/**
-	 * @static
-	 */
 	// Registers itself within `route.bindings`.
 	route.bindings.pushstate = {
 		/**
