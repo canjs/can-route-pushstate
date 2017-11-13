@@ -229,10 +229,10 @@ canReflect.assign(PushstateObservable.prototype,{
 
 		changed = {};
 		diffObject(oldProps, newProps)
-			.forEach(function (key) {
-				return changed[key] = true;
+			.forEach(function (patch) {
+				return changed[patch.property] = true;
 			});
-
+		
 		// check if we should call replaceState or pushState
 		if( this.options.replaceStateKeys.length ) {
 			this.options.replaceStateKeys.forEach(function(replaceKey){

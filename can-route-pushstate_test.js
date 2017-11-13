@@ -516,7 +516,7 @@ function makeTest(mapModuleName){
 
 			stop();
 			window.routeTestReady = function (iCanRoute, loc, hist, win) {
-				win.queues.log("flush");
+				//win.queues.log("flush");
 				iCanRoute(win.location.pathname, {
 					page: "index"
 				});
@@ -530,11 +530,9 @@ function makeTest(mapModuleName){
 				link.innerHTML = "Click Me"
 
 				win.document.body.appendChild(link);
-				console.log("click");
 				domDispatch.call(link, "click");
 
 				setTimeout(function () {
-
 					deepEqual(extend({}, iCanRoute.attr()), {
 						type: "articles",
 						id: "17",
@@ -684,7 +682,7 @@ function makeTest(mapModuleName){
 					return false;
 				};
 				// kill the click b/c phantom doesn't like it.
-				domEvents.addDelegateListener.call(info.window.document, "click", clickKiller);
+				domEvents.addEventListener.call(info.window.document, "click", clickKiller);
 
 				info.history.pushState = function () {
 					ok(false, "pushState should not have been called");
