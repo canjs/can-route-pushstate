@@ -13,7 +13,6 @@
 var isNode = require('can-util/js/is-node/is-node');
 var extend = require('can-util/js/assign/assign');
 var each = require('can-util/js/each/each');
-var makeArray = require('can-util/js/make-array/make-array');
 var diffObject = require('can-util/js/diff-object/diff-object');
 var LOCATION = require('can-globals/location/location');
 
@@ -232,7 +231,7 @@ canReflect.assign(PushstateObservable.prototype,{
 			.forEach(function (patch) {
 				return changed[patch.property] = true;
 			});
-		
+
 		// check if we should call replaceState or pushState
 		if( this.options.replaceStateKeys.length ) {
 			this.options.replaceStateKeys.forEach(function(replaceKey){
@@ -248,7 +247,7 @@ canReflect.assign(PushstateObservable.prototype,{
 				if(changed[replaceOnceKey]) {
 					method = "replaceState";
 					// remove so we don't do this again
-					this.options.replaceStateOnceKeys.splice(i,1)
+					this.options.replaceStateOnceKeys.splice(i,1);
 				}
 			}
 		}
