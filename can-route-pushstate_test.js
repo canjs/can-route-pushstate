@@ -1,7 +1,8 @@
 /* jshint asi:true,scripturl:true */
 var QUnit = require('steal-qunit');
 var extend = require('can-util/js/assign/assign');
-var canEvent = require('can-event');
+var domEvents = require('can-util/dom/events/events');
+require("can-util/dom/events/delegate/delegate");
 var route = require('./can-route-pushstate');
 var domDispatch = require('can-util/dom/dispatch/');
 
@@ -510,11 +511,12 @@ function makeTest(mapModuleName){
 			document.getElementById("qunit-fixture").appendChild(iframe);
 		});
 
+
 		test("clicked hashes work (#259)", function () {
 
 			stop();
 			window.routeTestReady = function (iCanRoute, loc, hist, win) {
-
+				win.queues.log("flush");
 				iCanRoute(win.location.pathname, {
 					page: "index"
 				});
@@ -528,7 +530,7 @@ function makeTest(mapModuleName){
 				link.innerHTML = "Click Me"
 
 				win.document.body.appendChild(link);
-
+				console.log("click");
 				domDispatch.call(link, "click");
 
 				setTimeout(function () {
@@ -682,7 +684,7 @@ function makeTest(mapModuleName){
 					return false;
 				};
 				// kill the click b/c phantom doesn't like it.
-				canEvent.on.call(info.window.document, "click", clickKiller);
+				domEvents.addDelegateListener.call(info.window.document, "click", clickKiller);
 
 				info.history.pushState = function () {
 					ok(false, "pushState should not have been called");
