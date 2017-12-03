@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "can-event": "^3.5.0",
-    "can-globals": "^0.2.3",
+    "can-globals": "<2.0.0",
     "can-route": "^3.1.0",
     "can-util": "^3.9.0"
   },
