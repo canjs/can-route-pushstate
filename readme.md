@@ -1,55 +1,25 @@
 # can-route-pushstate
 
-[![Build Status](https://travis-ci.org/canjs/can-route-pushstate.png?branch=master)](https://travis-ci.org/canjs/can-route-pushstate)
-
-> Pushstate for can-route
-
-
-- <code>[__can-route-pushstate__ Object](#can-route-pushstate-object)</code>
-
-## API
-
-##  `{Object}`
+[![Join the chat at https://gitter.im/canjs/canjs](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/canjs/canjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/canjs/can-route-pushstate/blob/master/LICENSE.md)
+[![npm version](https://badge.fury.io/js/can-route-pushstate.svg)](https://www.npmjs.com/package/can-route-pushstate)
+[![Travis build status](https://travis-ci.org/canjs/can-route-pushstate.svg?branch=master)](https://travis-ci.org/canjs/can-route-pushstate)
+[![Greenkeeper badge](https://badges.greenkeeper.io/canjs/can-route-pushstate.svg)](https://greenkeeper.io/)
 
 Changes [can-route](https://github.com/canjs/can-route) to use [pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
-to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
-of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 
-```js
-var route = require("can-route-pushstate");
+## Documentation
 
-route(":page", { page: "home" });
-route.ready();
+Read the [API docs on CanJS.com](https://canjs.com/doc/can-route-pushstate.html).
 
-route.attr("page", "user");
+## Changelog
 
-location.pathname; // -> "/user"
-```
+See the [latest releases on GitHub](https://github.com/canjs/can-route-pushstate/releases).
 
-
-
-
-### <code>Object</code>
-
-- __The__ <code>{Object}</code>:
-  pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushstate`.
-  
 ## Contributing
 
-### Making a Build
+The [contribution guide](https://github.com/canjs/can-route-pushstate/blob/master/CONTRIBUTING.md) has information on getting help, reporting bugs, developing locally, and more.
 
-To make a build of the distributables into `dist/` in the cloned repository run
+## License
 
-```
-npm install
-node build
-```
-
-### Running the tests
-
-Tests can run in the browser by opening a webserver and visiting the `test.html` page.
-Automated tests that run the tests from the command line in Firefox can be run with
-
-```
-npm test
-```
+[MIT](https://github.com/canjs/can-route-pushstate/blob/master/LICENSE.md)

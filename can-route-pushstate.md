@@ -1,6 +1,8 @@
 @module {Object} can-route-pushstate
-@parent can-core
+@parent can-routing
+@collection can-core
 @package ./package.json
+@group can-route-pushstate.static static
 
 @description Changes [can-route] to use
 [pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
@@ -111,6 +113,33 @@ route.url({foo: "bar"})   //-> "/contacts/?foo=bar"
 ```
 
 Now, all routes will start with `"/contacts/"`, the default `route.bindings.pushstate.root` value is `"/"`.
+
+### Updating the current route
+
+can-route-pushstate also allows changes to the current route state without creating a new history entry. This behavior can be controlled using the `replaceStateOn`, `replaceStateOff`, and `replaceStateOnce` methods.
+
+Enable the behavior by calling `replaceStateOn` with specified route property keys like:
+
+```js
+route.replaceStateOn('page', 'action');
+route.attr('page', 'dashboard'); // Route changes, no new history record
+```
+
+To return the `attr` call back to normal the `pushstate` behavior, call `replaceStateOff` with the specified route property keys like:
+
+```js
+route.replaceStateOff('action');
+route.attr('action', 'remove'); // Route changes, new history record is created
+```
+
+The behavior can be configured to occur only once for a specific property using `replaceStateOnce` like:
+
+```js
+route.replaceStateOnce('page');
+route.attr('page', 'dashboard'); // No new history record
+route.attr('page', 'search'); // New history record is created
+```
+
 
 ## Planning route structure
 
