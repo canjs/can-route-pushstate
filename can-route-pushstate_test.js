@@ -412,7 +412,7 @@ function makeTest(mapModuleName){
 		test("updating the url", function () {
 			stop();
 			makeTestingIframe(function (info, done) {
-				info.route.ready()
+				info.route.start()
 				info.route("/{type}/{id}");
 				info.route.attr({
 					type: "bar",
@@ -469,7 +469,7 @@ function makeTest(mapModuleName){
 					}
 				}, 30);
 				var runTest = function () {
-					iCanRoute.ready();
+					iCanRoute.start();
 					iCanRoute("/{type}");
 					iCanRoute("/{type}/{id}");
 					iCanRoute.attr({
@@ -522,7 +522,7 @@ function makeTest(mapModuleName){
 				});
 
 				iCanRoute("{type}/{id}");
-				iCanRoute.ready();
+				iCanRoute.start();
 
 				window.win = win;
 				var link = win.document.createElement("a");
@@ -557,7 +557,7 @@ function makeTest(mapModuleName){
 			stop();
 			makeTestingIframe(function (info, done) {
 				info.route("{type}", { type: "yay" });
-				info.route.ready();
+				info.route.start();
 
 
 				var window = info.window;
@@ -624,7 +624,7 @@ function makeTest(mapModuleName){
 
 					win.route.bindings.pushstate.root = root;
 					win.route("{page}/");
-					win.route.ready();
+					win.route.start();
 					nextStateTest();
 				};
 
@@ -638,7 +638,7 @@ function makeTest(mapModuleName){
 				makeTestingIframe(function(info, done){
 					info.route.bindings.pushstate.root = "testing.html";
 					info.route("{module}\\.html");
-					info.route.ready();
+					info.route.start();
 
 					setTimeout(function(){
 						ok(!info.route.attr('module'), 'there is no route match');
@@ -658,7 +658,7 @@ function makeTest(mapModuleName){
 				iCanRoute("{section}/");
 				iCanRoute("{section}/{sub}/");
 				iCanRoute.bindings.pushstate.root = root;
-				iCanRoute.ready();
+				iCanRoute.start();
 			};
 
 
@@ -742,7 +742,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOn("ignoreme");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -766,7 +766,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOn("ignoreme", "metoo");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -797,7 +797,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOnce("ignoreme", "metoo");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -829,7 +829,7 @@ function makeTest(mapModuleName){
 				info.route.replaceStateOn("ignoreme");
 				info.route.replaceStateOff("ignoreme");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){

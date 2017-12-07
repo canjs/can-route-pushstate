@@ -13,7 +13,7 @@ of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 var route = require("can-route-pushstate");
 
 route("{page}", { page: "home" });
-route.ready();
+route.start();
 
 route.attr("page", "user");
 
@@ -39,10 +39,10 @@ route("{page}", {page: 'homepage'});
 route("contacts/{username}");
 route("books/{genre}/{author}");
 
-route.ready(); // Initializes can-route
+route.start(); // Initializes can-route
 ```
 
-Do not forget to [can-route.ready initialize] can-route after creating all routes, do it by calling `route.ready()`.
+Do not forget to [can-route.start initialize] can-route after creating all routes, do it by calling `route.start()`.
 
 List of defined routes is contained in `route.routes`, you can examine current route state by calling:
 
