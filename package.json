@@ -2,7 +2,7 @@
   "name": "can-route-pushstate",
   "version": "4.0.0-pre.3",
   "description": "Pushstate for can-route",
-  "homepage": "https://canjs.com",
+  "homepage": "https://canjs.com/doc/can-route-pushstate.html",
   "repository": {
     "type": "git",
     "url": "git://github.com/canjs/can-route-pushstate.git"
