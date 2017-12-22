@@ -1,7 +1,8 @@
 /* jshint asi:true,scripturl:true */
 var QUnit = require('steal-qunit');
 var extend = require('can-util/js/assign/assign');
-var canEvent = require('can-event');
+var domEvents = require('can-util/dom/events/events');
+require("can-util/dom/events/delegate/delegate");
 var route = require('./can-route-pushstate');
 var domDispatch = require('can-util/dom/dispatch/');
 
@@ -411,7 +412,7 @@ function makeTest(mapModuleName){
 		test("updating the url", function () {
 			stop();
 			makeTestingIframe(function (info, done) {
-				info.route.ready()
+				info.route.start()
 				info.route("/{type}/{id}");
 				info.route.attr({
 					type: "bar",
@@ -468,7 +469,7 @@ function makeTest(mapModuleName){
 					}
 				}, 30);
 				var runTest = function () {
-					iCanRoute.ready();
+					iCanRoute.start();
 					iCanRoute("/{type}");
 					iCanRoute("/{type}/{id}");
 					iCanRoute.attr({
@@ -506,21 +507,22 @@ function makeTest(mapModuleName){
 
 			};
 			var iframe = document.createElement('iframe');
-			iframe.src = "testing.html?1";
+			iframe.src = __dirname + "/test/testing.html?1";
 			document.getElementById("qunit-fixture").appendChild(iframe);
 		});
+
 
 		test("clicked hashes work (#259)", function () {
 
 			stop();
 			window.routeTestReady = function (iCanRoute, loc, hist, win) {
-
+				//win.queues.log("flush");
 				iCanRoute(win.location.pathname, {
 					page: "index"
 				});
 
 				iCanRoute("{type}/{id}");
-				iCanRoute.ready();
+				iCanRoute.start();
 
 				window.win = win;
 				var link = win.document.createElement("a");
@@ -528,11 +530,9 @@ function makeTest(mapModuleName){
 				link.innerHTML = "Click Me"
 
 				win.document.body.appendChild(link);
-
 				domDispatch.call(link, "click");
 
 				setTimeout(function () {
-
 					deepEqual(extend({}, iCanRoute.attr()), {
 						type: "articles",
 						id: "17",
@@ -549,7 +549,7 @@ function makeTest(mapModuleName){
 				}, 100);
 			};
 			var iframe = document.createElement('iframe');
-			iframe.src = "testing.html";
+			iframe.src = __dirname + "/test/testing.html";
 			document.getElementById('qunit-fixture').appendChild(iframe);
 		});
 
@@ -557,7 +557,7 @@ function makeTest(mapModuleName){
 			stop();
 			makeTestingIframe(function (info, done) {
 				info.route("{type}", { type: "yay" });
-				info.route.ready();
+				info.route.start();
 
 
 				var window = info.window;
@@ -582,7 +582,7 @@ function makeTest(mapModuleName){
 			stop();
 			makeTestingIframe(function (info, done) {
 				info.route(":type", { type: "yay" });
-				info.route.ready();
+				info.route.start();
 
 
 				var window = info.window;
@@ -607,7 +607,7 @@ function makeTest(mapModuleName){
 			stop();
 			makeTestingIframe(function (info, done) {
 				info.route(":type", { type: "yay" });
-				info.route.ready();
+				info.route.start();
 
 
 				var window = info.window;
@@ -633,7 +633,7 @@ function makeTest(mapModuleName){
 			stop();
 			makeTestingIframe(function (info, done) {
 				info.route(":type", { type: "yay" });
-				info.route.ready();
+				info.route.start();
 
 
 				var window = info.window;
@@ -700,12 +700,12 @@ function makeTest(mapModuleName){
 
 					win.route.bindings.pushstate.root = root;
 					win.route("{page}/");
-					win.route.ready();
+					win.route.start();
 					nextStateTest();
 				};
 
 				var iframe = document.createElement("iframe");
-				iframe.src = "testing.html";
+				iframe.src = __dirname + "/test/testing.html";
 				document.getElementById('qunit-fixture').appendChild(iframe);
 			});
 
@@ -714,7 +714,7 @@ function makeTest(mapModuleName){
 				makeTestingIframe(function(info, done){
 					info.route.bindings.pushstate.root = "testing.html";
 					info.route("{module}\\.html");
-					info.route.ready();
+					info.route.start();
 
 					setTimeout(function(){
 						ok(!info.route.attr('module'), 'there is no route match');
@@ -734,7 +734,7 @@ function makeTest(mapModuleName){
 				iCanRoute("{section}/");
 				iCanRoute("{section}/{sub}/");
 				iCanRoute.bindings.pushstate.root = root;
-				iCanRoute.ready();
+				iCanRoute.start();
 			};
 
 
@@ -758,7 +758,7 @@ function makeTest(mapModuleName){
 					return false;
 				};
 				// kill the click b/c phantom doesn't like it.
-				canEvent.on.call(info.window.document, "click", clickKiller);
+				domEvents.addEventListener.call(info.window.document, "click", clickKiller);
 
 				info.history.pushState = function () {
 					ok(false, "pushState should not have been called");
@@ -818,7 +818,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOn("ignoreme");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -842,7 +842,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOn("ignoreme", "metoo");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -873,7 +873,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOnce("ignoreme", "metoo");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -905,7 +905,7 @@ function makeTest(mapModuleName){
 				info.route.replaceStateOn("ignoreme");
 				info.route.replaceStateOff("ignoreme");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -1001,7 +1001,7 @@ function makeTest(mapModuleName){
 			equal(info.route.defaultBinding, "hashchange", "using hashchange routing");
 			start();
 			done();
-		}, "testing-nw.html");
+		}, __dirname + "/test/testing-nw.html");
 	});
 
 	test("Binding is added if there is no protocol (can-simple-dom uses an empty string as the protocol)", function() {
@@ -1011,7 +1011,7 @@ function makeTest(mapModuleName){
 			equal(info.route.defaultBinding, "pushstate", "pushstate routing is used");
 			start();
 			done();
-		}, "testing-ssr.html");
+		}, __dirname + "/test/testing-ssr.html");
 	});
 
 }
