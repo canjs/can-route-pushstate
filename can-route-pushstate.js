@@ -20,10 +20,6 @@ var domEvents = require('can-util/dom/events/events');
 require("can-util/dom/events/delegate/delegate");
 var route = require('can-route');
 
-var clientPlatform = {
-	isMac: window.navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i) ? true : false,
-	isWin: window.navigator.platform.match(/(Win)/i) ? true : false
-};
 var hasPushstate = window.history && window.history.pushState;
 var loc = LOCATION();
 var validProtocols = { 'http:': true, 'https:': true, '': true };
@@ -37,17 +33,6 @@ var SimpleObservable = require("can-simple-observable");
 
 // Original methods on `history` that will be overwritten
 var methodsToOverwrite = ['pushState', 'replaceState'];
-
-// Helper that examines event object for correct
-// alternative key press based on platform
-var altKeyPressed = function (e) {
-	if (clientPlatform.isMac) {
-		return e.metaKey;
-	}
-	if (clientPlatform.isWin) {
-		return e.ctrlKey;
-	}
-};
 
 // Always returns clean root, without domain.
 var cleanRoot = function () {
@@ -165,8 +150,8 @@ canReflect.assign(PushstateObservable.prototype,{
 				return;
 			}
 
-			// Do not push state if meta key was pressed, mimicing standard browser behavior
-			if (altKeyPressed(e)) {
+			// Do not push state if meta key was pressed, mimicking standard browser behavior
+			if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
 				return;
 			}
 
