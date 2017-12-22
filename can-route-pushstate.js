@@ -21,6 +21,10 @@ var LOCATION = require('can-globals/location/location');
 var canEvent = require('can-event');
 var route = require('can-route');
 
+var clientPlatform = {
+	isMac: window.navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i) ? true : false,
+	isWin: window.navigator.platform.match(/(Win)/i) ? true : false
+};
 var hasPushstate = window.history && window.history.pushState;
 var loc = LOCATION();
 var validProtocols = { 'http:': true, 'https:': true, '': true };
@@ -163,6 +167,19 @@ if (usePushStateRouting) {
 		}
 	};
 
+	// ## altKeyPressed
+
+	// Helper that examines event object for correct
+	// alternative key press based on platform
+	var altKeyPressed = function (e) {
+		if (clientPlatform.isMac) {
+			return e.metaKey;
+		}
+		if (clientPlatform.isWin) {
+			return e.ctrlKey;
+		}
+	};
+
 	// ## anchorClickHandler
 
 	// Handler function for `click` events.
@@ -173,7 +190,18 @@ if (usePushStateRouting) {
 			// Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
 
+			// href has some JS in it, let it run
 			if(node.href === "javascript://") {
+				return;
+			}
+
+			// Do not push state if target is for blank window
+			if(node.target === '_blank'){
+				return;
+			}
+
+			// Do not push state if meta key was pressed, mimicing standard browser behavior
+			if (altKeyPressed(e)) {
 				return;
 			}
 
