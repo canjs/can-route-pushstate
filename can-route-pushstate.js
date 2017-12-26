@@ -151,7 +151,8 @@ canReflect.assign(PushstateObservable.prototype,{
 				if (node.pathname.indexOf(root) === 0) {
 
 					// Removes root from url.
-					var url = (node.pathname + node.search).substr(root.length);
+					var nodePathWithSearch = node.pathname + node.search;
+					var url = nodePathWithSearch.substr(root.length);
 					// If a route matches update the data.
 					var curParams = route.deparam(url);
 
@@ -164,12 +165,19 @@ canReflect.assign(PushstateObservable.prototype,{
 						if(node.href.indexOf("#") >= 0 ) {
 							this.keepHash = true;
 						}
+
+						// We do not want to call preventDefault() if the link is to the
+						// same page and just a different hash; see can-route-pushstate#75
+						var windowPathWithSearch = window.location.pathname + window.location.search;
+						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
+
+						// Now update window.location
 						window.history.pushState(null, null, node.href);
 
 						// Test if you can preventDefault
 						// our tests can't call .click() b/c this
 						// freezes phantom.
-						if (e.preventDefault) {
+						if (shouldCallPreventDefault && e.preventDefault) {
 							e.preventDefault();
 						}
 					}
