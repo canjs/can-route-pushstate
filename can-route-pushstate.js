@@ -140,7 +140,18 @@ canReflect.assign(PushstateObservable.prototype,{
 			// Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
 
+			// href has some JS in it, let it run
 			if(node.href === "javascript://") {
+				return;
+			}
+
+			// Do not push state if target is for blank window
+			if(node.target === '_blank'){
+				return;
+			}
+
+			// Do not push state if meta key was pressed, mimicking standard browser behavior
+			if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
 				return;
 			}
 

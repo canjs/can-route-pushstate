@@ -619,6 +619,82 @@ function makeTest(mapModuleName){
 			});
 		});
 
+		test("javascript: void(0) links get pushstated", function(){
+			stop();
+			makeTestingIframe(function (info, done) {
+				info.route(":type", { type: "yay" });
+				info.route.start();
+
+
+				var window = info.window;
+				var link = window.document.createElement("a");
+				link.href = "javascript: void(0)";
+				link.innerHTML = "Click Me";
+
+				window.document.body.appendChild(link);
+				try {
+					domDispatch.call(link, "click");
+					ok(true, "Clicking javascript: void(0) anchor did not cause a security exception");
+				} catch(err) {
+					ok(false, "Clicking javascript: void(0) anchor caused a security exception");
+				}
+
+				start();
+				done();
+			});
+		});
+
+		test("links with target=_blank do not get pushstated", function(){
+			stop();
+			makeTestingIframe(function (info, done) {
+				info.route(":type", { type: "yay" });
+				info.route.start();
+
+
+				var window = info.window;
+				var link = window.document.createElement("a");
+				link.href = "/yay";
+				link.target = "_blank";
+				link.innerHTML = "Click Me";
+
+				window.document.body.appendChild(link);
+				try {
+					domDispatch.call(link, "click");
+					ok(true, "Clicking anchor with blank target did not cause a security exception");
+				} catch(err) {
+					ok(false, "Clicking anchor with blank target caused a security exception");
+				}
+
+				start();
+				done();
+			});
+		});
+
+		test("clicking on links while holding meta key do not get pushstated", function(){
+			stop();
+			makeTestingIframe(function (info, done) {
+				info.route(":type", { type: "yay" });
+				info.route.start();
+
+
+				var window = info.window;
+				var link = window.document.createElement("a");
+				link.href = "/heyo";
+				link.innerHTML = "Click Me";
+
+				window.document.body.appendChild(link);
+				try {
+					domDispatch.call(link, {type: 'click', metaKey: true});
+					ok(true, "Clicking anchor with blank target did not cause a security exception");
+				} catch(err) {
+					ok(false, "Clicking anchor with blank target caused a security exception");
+				}
+
+				start();
+				done();
+			});
+		});
+
 		if(window.parent === window) {
 			// we can't call back if running in multiple frames
 			test("no doubled history states (#656)", function () {
