@@ -10,6 +10,7 @@
 		"expect": true,
 		"module": true,
 		"ok": true,
+		"notOk": true,
 		"equal": true,
 		"notEqual": true,
 		"deepEqual": true,

@@ -290,7 +290,7 @@ function makeTest(mapModuleName){
 		})
 	})
 
-	test("precident", function () {
+	test("precedent", function () {
 		route.routes = {};
 		route("{who}", {
 			who: "index"
@@ -320,7 +320,7 @@ function makeTest(mapModuleName){
 			"can.Control");
 	})
 
-	test("better matching precident", function () {
+	test("better matching precedent", function () {
 		route.routes = {};
 		route("{type}", {
 			who: "index"
@@ -547,6 +547,47 @@ function makeTest(mapModuleName){
 					iframe.parentNode.removeChild(iframe);
 
 				}, 100);
+			};
+			var iframe = document.createElement('iframe');
+			iframe.src = __dirname + "/test/testing.html";
+			document.getElementById('qunit-fixture').appendChild(iframe);
+		});
+
+		test("preventDefault not called when only the hash changes (can-route-pushstate#75)", function () {
+
+			stop();
+			window.routeTestReady = function (iCanRoute, loc, hist, win) {
+
+				iCanRoute(win.location.pathname, {
+					page: "index"
+				});
+
+				iCanRoute("{type}/{id}");
+				iCanRoute.ready();
+
+				var link = win.document.createElement("a");
+				link.href = "#hash-target";
+				link.innerHTML = "Click Me";
+
+				win.document.body.appendChild(link);
+
+				// Detect if can-route-pushstate’s click handler calls preventDefault by overriding it
+				var defaultPrevented = false;
+				link.addEventListener('click', function(event) {
+					event.preventDefault = function() {
+						defaultPrevented = true;
+					};
+				});
+
+				domDispatch.call(link, "click");
+
+				notOk(defaultPrevented, "preventDefault was not called");
+
+				equal(win.location.hash, "#hash-target", "includes hash");
+
+				start();
+
+				iframe.parentNode.removeChild(iframe);
 			};
 			var iframe = document.createElement('iframe');
 			iframe.src = __dirname + "/test/testing.html";

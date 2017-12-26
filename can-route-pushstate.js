@@ -183,18 +183,25 @@ if (usePushStateRouting) {
 				if (node.pathname.indexOf(root) === 0) {
 
 					// Removes root from url.
-					var url = (node.pathname + node.search).substr(root.length);
+					var nodePathWithSearch = node.pathname + node.search;
+					var url = nodePathWithSearch.substr(root.length);
 					// If a route matches update the data.
 					var curParams = route.deparam(url);
 					if (curParams.hasOwnProperty('route')) {
 						// Makes it possible to have a link with a hash.
 						includeHash = true;
+
+						// We do not want to call preventDefault() if the link is to the
+						// same page and just a different hash; see can-route-pushstate#75
+						var windowPathWithSearch = window.location.pathname + window.location.search;
+						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
+
 						window.history.pushState(null, null, node.href);
 
 						// Test if you can preventDefault
 						// our tests can't call .click() b/c this
 						// freezes phantom.
-						if (e.preventDefault) {
+						if (shouldCallPreventDefault && e.preventDefault) {
 							e.preventDefault();
 						}
 					}
