@@ -351,9 +351,8 @@ function makeTest(mapModuleName){
 		route("foo");
 
 		var res = route.param({
-			foo: "abc",
-			route: "foo"
-		});
+			foo: "abc"
+		}, "foo");
 
 		equal(res, "foo?foo=abc")
 	})
