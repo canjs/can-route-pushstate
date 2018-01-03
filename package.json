@@ -37,13 +37,13 @@
     "can-key-tree": "<2.0.0",
     "can-queues": "<2.0.0",
     "can-reflect": "^1.8.0",
-    "can-route": "^4.0.0-pre.5",
-    "can-simple-observable": "^2.0.0-pre.21",
+    "can-route": "^4.0.0-pre.15",
+    "can-simple-observable": "^2.0.0-pre.28",
     "can-util": "^3.9.0"
   },
   "devDependencies": {
-    "can-define": "^2.0.0-pre.0",
-    "can-map": "^4.0.0-pre.0",
+    "can-define": "^2.0.0-pre.25",
+    "can-map": "^4.0.0-pre.11",
     "detect-cyclic-packages": "^1.1.0",
     "jshint": "^2.9.1",
     "steal": "^1.0.0",
