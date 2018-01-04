@@ -1,4 +1,4 @@
-// # can/route/pushstate/pushstate.js
+// # can-route-pushstate.js
 //
 // Plugin for `route` which uses browser `history.pushState` support
 // to update window's pathname instead of the `hash`.
@@ -9,27 +9,26 @@
 
 /*jshint maxdepth:6, scripturl:true*/
 "use strict";
+var route = require('can-route');
+var bindingProxy = require("can-route/src/binding-proxy");
+var canReflect = require("can-reflect");
+var KeyTree = require("can-key-tree");
 
-var isNode = require('can-util/js/is-node/is-node');
-var extend = require('can-util/js/assign/assign');
-var each = require('can-util/js/each/each');
-var diffObject = require('can-util/js/diff-object/diff-object');
+var queues = require("can-queues");
+var SimpleObservable = require("can-simple-observable");
+
+var isNode = require('can-globals/is-node/is-node');
 var LOCATION = require('can-globals/location/location');
 
-var domEvents = require('can-util/dom/events/events');
-require("can-util/dom/events/delegate/delegate");
-var route = require('can-route');
+var domEvents = require('can-dom-events');
+
+var diffObject = require('can-util/js/diff-object/diff-object');
+
 
 var hasPushstate = window.history && window.history.pushState;
 var loc = LOCATION();
 var validProtocols = { 'http:': true, 'https:': true, '': true };
 var usePushStateRouting = hasPushstate && loc && validProtocols[loc.protocol];
-var canReflect = require("can-reflect");
-var KeyTree = require("can-key-tree");
-var bindingProxy = require("can-route/src/binding-proxy");
-var queues = require("can-queues");
-var SimpleObservable = require("can-simple-observable");
-
 
 // Original methods on `history` that will be overwritten
 var methodsToOverwrite = ['pushState', 'replaceState'];
@@ -135,7 +134,7 @@ canReflect.assign(PushstateObservable.prototype,{
         }
     },
 	anchorClickHandler: function (node, e) {
-
+		
 		if (!(e.isDefaultPrevented ? e.isDefaultPrevented() : e.defaultPrevented === true)) {
 			// Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
@@ -164,11 +163,9 @@ canReflect.assign(PushstateObservable.prototype,{
 					// Removes root from url.
 					var nodePathWithSearch = node.pathname + node.search;
 					var url = nodePathWithSearch.substr(root.length);
-					// If a route matches update the data.
-					var curParams = route.deparam(url);
 
 					// If we've matched a route
-					if (curParams.hasOwnProperty('route')) {
+					if (route.rule(url) !== undefined) {
 						// Makes it possible to have a link with a hash.
 						// Calling .pushState will dispatch events, causing
 						// `can-route` to update its data, and then try to set back
@@ -202,11 +199,11 @@ canReflect.assign(PushstateObservable.prototype,{
 		}
 		this.value = getCurrentUrl();
 		// Intercept routable links.
-		domEvents.addDelegateListener.call(document.documentElement, 'click', 'a', this.anchorClickHandler);
+		domEvents.addDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
 		var originalMethods = this.originalMethods = {};
 		var dispatchHandlers = this.dispatchHandlers;
 		// Rewrites original `pushState`/`replaceState` methods on `history` and keeps pointer to original methods
-		each(methodsToOverwrite, function (method) {
+		canReflect.eachKey(methodsToOverwrite, function (method) {
 			this.originalMethods[method] = window.history[method];
 			window.history[method] = function (state, title, url) {
 				// Avoid doubled history states (with pushState).
@@ -223,16 +220,16 @@ canReflect.assign(PushstateObservable.prototype,{
 		}, this);
 
 		// Bind to `popstate` event, fires on back/forward.
-		domEvents.addEventListener.call(window, 'popstate', this.dispatchHandlers);
+		domEvents.addEventListener(window, 'popstate', this.dispatchHandlers);
 	},
 	teardown: function(){
-		domEvents.removeEventListener.call(document.documentElement, 'click', 'a', this.anchorClickHandler);
+		domEvents.removeEventListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
 
-		each(methodsToOverwrite, function (method) {
+		canReflect.eachKey(methodsToOverwrite, function (method) {
 			window.history[method] = this.originalMethods[method];
 		}, this);
 
-		domEvents.removeEventListener.call(window, 'popstate', this.dispatchHandlers);
+		domEvents.removeEventListener(window, 'popstate', this.dispatchHandlers);
 	},
 	get: getCurrentUrl,
 	set: function(path){
@@ -306,7 +303,7 @@ if (usePushStateRouting) {
 	// Enables plugin, by default `hashchange` binding is used.
 	route.defaultBinding = "pushstate";
 
-	extend(route, {
+	canReflect.assignMap(route, {
 		replaceStateOn: function() {
 			canReflect.addValues( options.replaceStateKeys, canReflect.toArray(arguments) );
 		},

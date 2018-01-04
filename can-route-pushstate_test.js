@@ -28,21 +28,18 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("can.Control");
 		deepEqual(obj, {
-			page: "can.Control",
-			route: "{page}"
+			page: "can.Control"
 		});
 
 		obj = route.deparam("");
 		deepEqual(obj, {
-			page: "index",
-			route: "{page}"
+			page: "index"
 		});
 
 		obj = route.deparam("can.Control?where=there");
 		deepEqual(obj, {
 			page: "can.Control",
-			where: "there",
-			route: "{page}"
+			where: "there"
 		});
 
 		route.routes = {};
@@ -55,8 +52,7 @@ function makeTest(mapModuleName){
 		deepEqual(obj, {
 			page: "can.Control",
 			index: "foo",
-			where: "there",
-			route: "{page}/{index}"
+			where: "there"
 		});
 	});
 
@@ -81,8 +77,7 @@ function makeTest(mapModuleName){
 		deepEqual(obj, {
 			var1: 'val1',
 			var2: 'val2',
-			var3: 'val3',
-			route: "pages/{var1}/{var2}/{var3}"
+			var3: 'val3'
 		});
 	})
 
@@ -224,8 +219,8 @@ function makeTest(mapModuleName){
 		};
 		var res = route.param(data);
 		var obj = route.deparam(res);
-		delete obj.route
-		deepEqual(obj, data)
+
+		deepEqual(obj, data, "{page}/{type} with query string");
 		data = {
 			page: "can.Control",
 			type: "foo",
@@ -234,8 +229,8 @@ function makeTest(mapModuleName){
 		};
 		res = route.param(data);
 		obj = route.deparam(res);
-		delete obj.route;
-		deepEqual(data, obj);
+
+		deepEqual(data, obj, "{page}/{type} with query string");
 
 		data = {
 			page: " a ",
@@ -256,7 +251,7 @@ function makeTest(mapModuleName){
 		res = "/" + route.param(data);
 		obj = route.deparam(res);
 		delete obj.route;
-		deepEqual(data, obj);
+		deepEqual(data, obj, "/{page}/{type} starting slash with removed defaults");
 
 		route.routes = {};
 
@@ -286,8 +281,7 @@ function makeTest(mapModuleName){
 		var deparamed = route.deparam("//")
 		deepEqual(deparamed, {
 			foo: 1,
-			bar: 2,
-			route: "{foo}/{bar}"
+			bar: 2
 		})
 	})
 
@@ -300,14 +294,12 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("can.Control");
 		deepEqual(obj, {
-			who: "can.Control",
-			route: "{who}"
+			who: "can.Control"
 		});
 
 		obj = route.deparam("search/can.Control");
 		deepEqual(obj, {
-			search: "can.Control",
-			route: "search/{search}"
+			search: "can.Control"
 		}, "bad deparam");
 
 		equal(route.param({
@@ -967,8 +959,7 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("");
 		deepEqual(obj, {
-			foo: "bar",
-			route: ""
+			foo: "bar"
 		});
 	});
 
@@ -979,8 +970,7 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("abc");
 		deepEqual(obj, {
-			foo: "abc",
-			route: "{foo}"
+			foo: "abc"
 		});
 	});
 
@@ -1024,13 +1014,12 @@ function makeTest(mapModuleName){
 
 	test("dashes in routes", function () {
 		route.routes = {};
-		route("{foo}-{bar}");
+		route.register("{foo}-{bar}");
 
 		var obj = route.deparam("abc-def");
 		deepEqual(obj, {
 			foo: "abc",
-			bar: "def",
-			route: "{foo}-{bar}"
+			bar: "def"
 		});
 	});
 
