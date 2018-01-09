@@ -1023,7 +1023,7 @@ function makeTest(mapModuleName){
 		});
 	});
 
-	test("Binding not added if not using the http/s procotols", function () {
+	test("Binding not added if not using the http/s protocols", function () {
 		stop();
 
 		makeTestingIframe(function(info, done){
