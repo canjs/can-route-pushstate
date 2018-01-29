@@ -1,7 +1,8 @@
 /* jshint asi:true,scripturl:true */
 var QUnit = require('steal-qunit');
 var extend = require('can-util/js/assign/assign');
-var canEvent = require('can-event');
+var domEvents = require('can-util/dom/events/events');
+require("can-util/dom/events/delegate/delegate");
 var route = require('./can-route-pushstate');
 var domDispatch = require('can-util/dom/dispatch/');
 
@@ -27,21 +28,18 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("can.Control");
 		deepEqual(obj, {
-			page: "can.Control",
-			route: "{page}"
+			page: "can.Control"
 		});
 
 		obj = route.deparam("");
 		deepEqual(obj, {
-			page: "index",
-			route: "{page}"
+			page: "index"
 		});
 
 		obj = route.deparam("can.Control?where=there");
 		deepEqual(obj, {
 			page: "can.Control",
-			where: "there",
-			route: "{page}"
+			where: "there"
 		});
 
 		route.routes = {};
@@ -54,8 +52,7 @@ function makeTest(mapModuleName){
 		deepEqual(obj, {
 			page: "can.Control",
 			index: "foo",
-			where: "there",
-			route: "{page}/{index}"
+			where: "there"
 		});
 	});
 
@@ -80,8 +77,7 @@ function makeTest(mapModuleName){
 		deepEqual(obj, {
 			var1: 'val1',
 			var2: 'val2',
-			var3: 'val3',
-			route: "pages/{var1}/{var2}/{var3}"
+			var3: 'val3'
 		});
 	})
 
@@ -223,8 +219,8 @@ function makeTest(mapModuleName){
 		};
 		var res = route.param(data);
 		var obj = route.deparam(res);
-		delete obj.route
-		deepEqual(obj, data)
+
+		deepEqual(obj, data, "{page}/{type} with query string");
 		data = {
 			page: "can.Control",
 			type: "foo",
@@ -233,8 +229,8 @@ function makeTest(mapModuleName){
 		};
 		res = route.param(data);
 		obj = route.deparam(res);
-		delete obj.route;
-		deepEqual(data, obj);
+
+		deepEqual(data, obj, "{page}/{type} with query string");
 
 		data = {
 			page: " a ",
@@ -255,7 +251,7 @@ function makeTest(mapModuleName){
 		res = "/" + route.param(data);
 		obj = route.deparam(res);
 		delete obj.route;
-		deepEqual(data, obj);
+		deepEqual(data, obj, "/{page}/{type} starting slash with removed defaults");
 
 		route.routes = {};
 
@@ -285,8 +281,7 @@ function makeTest(mapModuleName){
 		var deparamed = route.deparam("//")
 		deepEqual(deparamed, {
 			foo: 1,
-			bar: 2,
-			route: "{foo}/{bar}"
+			bar: 2
 		})
 	})
 
@@ -299,14 +294,12 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("can.Control");
 		deepEqual(obj, {
-			who: "can.Control",
-			route: "{who}"
+			who: "can.Control"
 		});
 
 		obj = route.deparam("search/can.Control");
 		deepEqual(obj, {
-			search: "can.Control",
-			route: "search/{search}"
+			search: "can.Control"
 		}, "bad deparam");
 
 		equal(route.param({
@@ -350,9 +343,8 @@ function makeTest(mapModuleName){
 		route("foo");
 
 		var res = route.param({
-			foo: "abc",
-			route: "foo"
-		});
+			foo: "abc"
+		}, "foo");
 
 		equal(res, "foo?foo=abc")
 	})
@@ -411,7 +403,7 @@ function makeTest(mapModuleName){
 		test("updating the url", function () {
 			stop();
 			makeTestingIframe(function (info, done) {
-				info.route.ready()
+				info.route.start()
 				info.route("/{type}/{id}");
 				info.route.attr({
 					type: "bar",
@@ -468,7 +460,7 @@ function makeTest(mapModuleName){
 					}
 				}, 30);
 				var runTest = function () {
-					iCanRoute.ready();
+					iCanRoute.start();
 					iCanRoute("/{type}");
 					iCanRoute("/{type}/{id}");
 					iCanRoute.attr({
@@ -510,17 +502,18 @@ function makeTest(mapModuleName){
 			document.getElementById("qunit-fixture").appendChild(iframe);
 		});
 
+
 		test("clicked hashes work (#259)", function () {
 
 			stop();
 			window.routeTestReady = function (iCanRoute, loc, hist, win) {
-
+				//win.queues.log("flush");
 				iCanRoute(win.location.pathname, {
 					page: "index"
 				});
 
 				iCanRoute("{type}/{id}");
-				iCanRoute.ready();
+				iCanRoute.start();
 
 				window.win = win;
 				var link = win.document.createElement("a");
@@ -528,11 +521,9 @@ function makeTest(mapModuleName){
 				link.innerHTML = "Click Me"
 
 				win.document.body.appendChild(link);
-
 				domDispatch.call(link, "click");
 
 				setTimeout(function () {
-
 					deepEqual(extend({}, iCanRoute.attr()), {
 						type: "articles",
 						id: "17",
@@ -563,7 +554,7 @@ function makeTest(mapModuleName){
 				});
 
 				iCanRoute("{type}/{id}");
-				iCanRoute.ready();
+				iCanRoute.start();
 
 				var link = win.document.createElement("a");
 				link.href = "#hash-target";
@@ -598,7 +589,7 @@ function makeTest(mapModuleName){
 			stop();
 			makeTestingIframe(function (info, done) {
 				info.route("{type}", { type: "yay" });
-				info.route.ready();
+				info.route.start();
 
 
 				var window = info.window;
@@ -612,6 +603,82 @@ function makeTest(mapModuleName){
 					ok(true, "Clicking javascript:// anchor did not cause a security exception");
 				} catch(err) {
 					ok(false, "Clicking javascript:// anchor caused a security exception");
+				}
+
+				start();
+				done();
+			});
+		});
+
+		test("javascript: void(0) links get pushstated", function(){
+			stop();
+			makeTestingIframe(function (info, done) {
+				info.route(":type", { type: "yay" });
+				info.route.start();
+
+
+				var window = info.window;
+				var link = window.document.createElement("a");
+				link.href = "javascript: void(0)";
+				link.innerHTML = "Click Me";
+
+				window.document.body.appendChild(link);
+				try {
+					domDispatch.call(link, "click");
+					ok(true, "Clicking javascript: void(0) anchor did not cause a security exception");
+				} catch(err) {
+					ok(false, "Clicking javascript: void(0) anchor caused a security exception");
+				}
+
+				start();
+				done();
+			});
+		});
+
+		test("links with target=_blank do not get pushstated", function(){
+			stop();
+			makeTestingIframe(function (info, done) {
+				info.route(":type", { type: "yay" });
+				info.route.start();
+
+
+				var window = info.window;
+				var link = window.document.createElement("a");
+				link.href = "/yay";
+				link.target = "_blank";
+				link.innerHTML = "Click Me";
+
+				window.document.body.appendChild(link);
+				try {
+					domDispatch.call(link, "click");
+					ok(true, "Clicking anchor with blank target did not cause a security exception");
+				} catch(err) {
+					ok(false, "Clicking anchor with blank target caused a security exception");
+				}
+
+				start();
+				done();
+			});
+		});
+
+		test("clicking on links while holding meta key do not get pushstated", function(){
+			stop();
+			makeTestingIframe(function (info, done) {
+				info.route(":type", { type: "yay" });
+				info.route.start();
+
+
+				var window = info.window;
+				var link = window.document.createElement("a");
+				link.href = "/heyo";
+				link.innerHTML = "Click Me";
+
+				window.document.body.appendChild(link);
+				try {
+					domDispatch.call(link, {type: 'click', metaKey: true});
+					ok(true, "Clicking anchor with blank target did not cause a security exception");
+				} catch(err) {
+					ok(false, "Clicking anchor with blank target caused a security exception");
 				}
 
 				start();
@@ -665,7 +732,7 @@ function makeTest(mapModuleName){
 
 					win.route.bindings.pushstate.root = root;
 					win.route("{page}/");
-					win.route.ready();
+					win.route.start();
 					nextStateTest();
 				};
 
@@ -679,7 +746,7 @@ function makeTest(mapModuleName){
 				makeTestingIframe(function(info, done){
 					info.route.bindings.pushstate.root = "testing.html";
 					info.route("{module}\\.html");
-					info.route.ready();
+					info.route.start();
 
 					setTimeout(function(){
 						ok(!info.route.attr('module'), 'there is no route match');
@@ -699,7 +766,7 @@ function makeTest(mapModuleName){
 				iCanRoute("{section}/");
 				iCanRoute("{section}/{sub}/");
 				iCanRoute.bindings.pushstate.root = root;
-				iCanRoute.ready();
+				iCanRoute.start();
 			};
 
 
@@ -723,7 +790,7 @@ function makeTest(mapModuleName){
 					return false;
 				};
 				// kill the click b/c phantom doesn't like it.
-				canEvent.on.call(info.window.document, "click", clickKiller);
+				domEvents.addEventListener.call(info.window.document, "click", clickKiller);
 
 				info.history.pushState = function () {
 					ok(false, "pushState should not have been called");
@@ -783,7 +850,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOn("ignoreme");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -807,7 +874,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOn("ignoreme", "metoo");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -838,7 +905,7 @@ function makeTest(mapModuleName){
 
 				info.route.replaceStateOnce("ignoreme", "metoo");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -870,7 +937,7 @@ function makeTest(mapModuleName){
 				info.route.replaceStateOn("ignoreme");
 				info.route.replaceStateOff("ignoreme");
 
-				info.route.ready();
+				info.route.start();
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
@@ -892,8 +959,7 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("");
 		deepEqual(obj, {
-			foo: "bar",
-			route: ""
+			foo: "bar"
 		});
 	});
 
@@ -904,8 +970,7 @@ function makeTest(mapModuleName){
 
 		var obj = route.deparam("abc");
 		deepEqual(obj, {
-			foo: "abc",
-			route: "{foo}"
+			foo: "abc"
 		});
 	});
 
@@ -949,17 +1014,16 @@ function makeTest(mapModuleName){
 
 	test("dashes in routes", function () {
 		route.routes = {};
-		route("{foo}-{bar}");
+		route.register("{foo}-{bar}");
 
 		var obj = route.deparam("abc-def");
 		deepEqual(obj, {
 			foo: "abc",
-			bar: "def",
-			route: "{foo}-{bar}"
+			bar: "def"
 		});
 	});
 
-	test("Binding not added if not using the http/s procotols", function () {
+	test("Binding not added if not using the http/s protocols", function () {
 		stop();
 
 		makeTestingIframe(function(info, done){

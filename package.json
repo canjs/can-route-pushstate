@@ -1,8 +1,8 @@
 {
   "name": "can-route-pushstate",
-  "version": "3.2.3",
+  "version": "4.0.0-pre.8",
   "description": "Pushstate for can-route",
-  "homepage": "https://canjs.com",
+  "homepage": "https://canjs.com/doc/can-route-pushstate.html",
   "repository": {
     "type": "git",
     "url": "git://github.com/canjs/can-route-pushstate.git"
@@ -13,9 +13,8 @@
     "url": "http://bitovi.com"
   },
   "scripts": {
-    "preversion": "npm test && npm run build",
-    "version": "git commit -am \"Update dist for release\" && git checkout -b release && git add -f dist/",
-    "postversion": "git push --tags && git checkout master && git branch -D release && git push",
+    "preversion": "npm test",
+    "postpublish": "git push --tags && git push",
     "testee": "testee test/test.html --browsers firefox",
     "test": "npm run detect-cycle && npm run jshint && npm run testee",
     "jshint": "jshint ./*.js --config",
@@ -33,15 +32,18 @@
     "donejs"
   ],
   "dependencies": {
-    "can-event": "^3.5.0",
+    "can-dom-events": "^1.1.0",
     "can-globals": "<2.0.0",
-    "can-route": "^3.1.0",
+    "can-key-tree": "<2.0.0",
+    "can-queues": "<2.0.0",
+    "can-reflect": "^1.8.0",
+    "can-route": "^4.0.0",
+    "can-simple-observable": "^2.0.0",
     "can-util": "^3.9.0"
   },
   "devDependencies": {
-    "bit-docs": "0.0.8-0",
-    "can-define": "^1.2.0",
-    "can-map": "^3.1.0",
+    "can-define": "^2.0.0",
+    "can-map": "^4.0.0",
     "detect-cyclic-packages": "^1.1.0",
     "jshint": "^2.9.1",
     "steal": "^1.0.0",
