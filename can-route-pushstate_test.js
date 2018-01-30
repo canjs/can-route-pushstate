@@ -1,10 +1,8 @@
 /* jshint asi:true,scripturl:true */
 var QUnit = require('steal-qunit');
 var extend = require('can-util/js/assign/assign');
-var domEvents = require('can-util/dom/events/events');
-require("can-util/dom/events/delegate/delegate");
 var route = require('./can-route-pushstate');
-var domDispatch = require('can-util/dom/dispatch/');
+var domEvents = require('can-dom-events');
 
 if (window.history && history.pushState) {
 	makeTest("can-map");
@@ -12,7 +10,7 @@ if (window.history && history.pushState) {
 }
 
 function makeTest(mapModuleName){
-	QUnit.module("can/route/pushstate with "+mapModuleName, {
+	QUnit.module("can/route/pushstate with " + mapModuleName, {
 		setup: function () {
 			route._teardown();
 			route.defaultBinding = "pushstate";
@@ -521,7 +519,7 @@ function makeTest(mapModuleName){
 				link.innerHTML = "Click Me"
 
 				win.document.body.appendChild(link);
-				domDispatch.call(link, "click");
+				domEvents.dispatch(link, "click");
 
 				setTimeout(function () {
 					deepEqual(extend({}, iCanRoute.attr()), {
@@ -570,7 +568,7 @@ function makeTest(mapModuleName){
 					};
 				});
 
-				domDispatch.call(link, "click");
+				domEvents.dispatch(link, "click");
 
 				notOk(defaultPrevented, "preventDefault was not called");
 
@@ -599,7 +597,7 @@ function makeTest(mapModuleName){
 
 				window.document.body.appendChild(link);
 				try {
-					domDispatch.call(link, "click");
+					domEvents.dispatch(link, "click");
 					ok(true, "Clicking javascript:// anchor did not cause a security exception");
 				} catch(err) {
 					ok(false, "Clicking javascript:// anchor caused a security exception");
@@ -624,7 +622,7 @@ function makeTest(mapModuleName){
 
 				window.document.body.appendChild(link);
 				try {
-					domDispatch.call(link, "click");
+					domEvents.dispatch(link, "click");
 					ok(true, "Clicking javascript: void(0) anchor did not cause a security exception");
 				} catch(err) {
 					ok(false, "Clicking javascript: void(0) anchor caused a security exception");
@@ -650,7 +648,7 @@ function makeTest(mapModuleName){
 
 				window.document.body.appendChild(link);
 				try {
-					domDispatch.call(link, "click");
+					domEvents.dispatch(link, "click");
 					ok(true, "Clicking anchor with blank target did not cause a security exception");
 				} catch(err) {
 					ok(false, "Clicking anchor with blank target caused a security exception");
@@ -675,7 +673,7 @@ function makeTest(mapModuleName){
 
 				window.document.body.appendChild(link);
 				try {
-					domDispatch.call(link, {type: 'click', metaKey: true});
+					domEvents.dispatch(link, {type: 'click', metaKey: true});
 					ok(true, "Clicking anchor with blank target did not cause a security exception");
 				} catch(err) {
 					ok(false, "Clicking anchor with blank target caused a security exception");
@@ -790,14 +788,14 @@ function makeTest(mapModuleName){
 					return false;
 				};
 				// kill the click b/c phantom doesn't like it.
-				domEvents.addEventListener.call(info.window.document, "click", clickKiller);
+				domEvents.addEventListener(info.window.document, "click", clickKiller);
 
 				info.history.pushState = function () {
 					ok(false, "pushState should not have been called");
 				};
 
 				// click a link and make sure the iframe url changes
-				domDispatch.call(link, "click");
+				domEvents.dispatch(link, "click");
 
 				done();
 				setTimeout(next, 10);
@@ -831,7 +829,7 @@ function makeTest(mapModuleName){
 					setupRoutesAndRoot(info.route, "/app/");
 					var link = createLink(info.window, "/app/something/test/");
 
-					domDispatch.call(link, "click");
+					domEvents.dispatch(link, "click");
 				});
 			};
 		});
