@@ -9,7 +9,7 @@
 to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
 of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 
-```javascript
+```js
 import route from "can-route-pushstate";
 
 route("{page}", { page: "home" });
@@ -34,7 +34,7 @@ You can check current binding by inspecting `route.currentBinding`; the default 
 
 To create routes use `route(url, defaults)` like:
 
-```javascript
+```js
 route("{page}", {page: 'homepage'});
 route("contacts/{username}");
 route("books/{genre}/{author}");
@@ -46,13 +46,13 @@ Do not forget to [can-route.start initialize] can-route after creating all route
 
 List of defined routes is contained in `route.routes`, you can examine current route state by calling:
 
-```javascript
+```js
 route.attr(); //-> {page: "homepage", route: "{page}"}
 ```
 
 After creating routes and initializing can-route you can update current route by calling `route.attr(attr, newVal)`:
 
-```javascript
+```js
 route.attr('page', 'about');
 route.attr(); //-> {page: "about", route: "{page}"}
 
@@ -67,21 +67,21 @@ route.attr(); //-> {username: "veljko", route: "contacts/{username}"}
 
 To update multiple attributes at once pass hash of attributes to `route.attr(hashOfAttrs, true)`. Pass `true` as second argument to clean up current state.
 
-```javascript
+```js
 route.attr({genre: 'sf', author: 'adams'}, true);
 route.attr(); //-> {genre: "sf", author: "adams", route: "books/{genre}/{author}"}
 ```
 
 `window.location` acts as expected:
 
-```javascript
+```js
 window.location.pathname; //-> "/books/sf/adams"
 window.location.hash; //-> "", hash remains unchanged
 ```
 
 To generate urls use `route.url({attrs})`:
 
-```javascript
+```js
 route.url({username: 'justinbmeyer'}); //-> '/contacts/justinbmeyer'
 ```
 
@@ -91,11 +91,11 @@ As can-route contains a map that represents `window.location.pathname`, you can 
 
 To bind to specific attributes on can-route:
 
-```javascript
+```js
 route.bind('username', function(ev, newVal, oldVal) {
-  //-> ev:     {EventObject}
-  //-> newVal: 'nikica'
-  //-> oldVal: 'veljko'
+	//-> ev:     {EventObject}
+	//-> newVal: 'nikica'
+	//-> oldVal: 'veljko'
 });
 
 route.attr({username: nikica}, true);
@@ -105,7 +105,7 @@ route.attr({username: nikica}, true);
 
 can-route-pushstate has one additional property, `route.bindings.pushstate.root`, which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
 
-```javascript
+```js
 route.bindings.pushstate.root = "/contacts/"
 route("{page}");
 route.url({page: "list"}) //-> "/contacts/list"
@@ -120,21 +120,21 @@ can-route-pushstate also allows changes to the current route state without creat
 
 Enable the behavior by calling `replaceStateOn` with specified route property keys like:
 
-```javascript
+```js
 route.replaceStateOn('page', 'action');
 route.attr('page', 'dashboard'); // Route changes, no new history record
 ```
 
 To return the `attr` call back to normal the `pushstate` behavior, call `replaceStateOff` with the specified route property keys like:
 
-```javascript
+```js
 route.replaceStateOff('action');
 route.attr('action', 'remove'); // Route changes, new history record is created
 ```
 
 The behavior can be configured to occur only once for a specific property using `replaceStateOnce` like:
 
-```javascript
+```js
 route.replaceStateOnce('page');
 route.attr('page', 'dashboard'); // No new history record
 route.attr('page', 'search'); // New history record is created
