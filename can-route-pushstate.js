@@ -134,7 +134,7 @@ canReflect.assign(PushstateObservable.prototype,{
         }
     },
 	anchorClickHandler: function (node, e) {
-		
+
 		if (!(e.isDefaultPrevented ? e.isDefaultPrevented() : e.defaultPrevented === true)) {
 			// Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
@@ -223,7 +223,7 @@ canReflect.assign(PushstateObservable.prototype,{
 		domEvents.addEventListener(window, 'popstate', this.dispatchHandlers);
 	},
 	teardown: function(){
-		domEvents.removeEventListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
+		domEvents.removeDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
 
 		canReflect.eachKey(methodsToOverwrite, function (method) {
 			window.history[method] = this.originalMethods[method];

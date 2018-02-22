@@ -1041,4 +1041,21 @@ function makeTest(mapModuleName){
 		}, __dirname + "/test/testing-ssr.html");
 	});
 
+	test("Calling route.stop() works", function(){
+		stop();
+
+		makeTestingIframe(function(info, done){
+			info.route.start();
+			try {
+				info.route.stop();
+				ok(true, "Able to call stop");
+			} catch(err) {
+				ok(false, err.message);
+			}
+
+			start();
+			done();
+		});
+	});
+
 }
