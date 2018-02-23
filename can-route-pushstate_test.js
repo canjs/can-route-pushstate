@@ -420,6 +420,26 @@ function makeTest(mapModuleName){
 
 		});
 
+		test("currentRule should signal when it is read", function(assert) {
+			var done = assert.async();
+
+			makeTestingIframe(function(info, cleanup) {
+				info.history.pushState(null, null, "/");
+
+				info.route.register("");
+				info.route.register("{page}", { foo: "baz" });
+				info.route.start()
+
+				info.window.ObservationRecorder.start();
+				info.history.pushState(null, null, "home");
+				var deps = info.window.ObservationRecorder.stop();
+
+				ok(deps.valueDependencies.has(info.route.bindings.pushstate));
+				cleanup();
+				done();
+			});
+		});
+
 		test("sticky enough routes", function () {
 			stop();
 			makeTestingIframe(function (info, done) {

@@ -35,6 +35,7 @@
     "can-dom-events": "^1.1.0",
     "can-globals": "<2.0.0",
     "can-key-tree": "<2.0.0",
+    "can-observation-recorder": "^1.0.2",
     "can-queues": "<2.0.0",
     "can-reflect": "^1.8.0",
     "can-route": "^4.0.0",

@@ -16,6 +16,7 @@ var KeyTree = require("can-key-tree");
 
 var queues = require("can-queues");
 var SimpleObservable = require("can-simple-observable");
+var ObservationRecorder = require("can-observation-recorder");
 
 var isNode = require('can-globals/is-node/is-node');
 var LOCATION = require('can-globals/location/location');
@@ -231,7 +232,10 @@ canReflect.assign(PushstateObservable.prototype,{
 
 		domEvents.removeEventListener(window, 'popstate', this.dispatchHandlers);
 	},
-	get: getCurrentUrl,
+	get: function get() {
+		ObservationRecorder.add(this);
+		return getCurrentUrl();
+	},
 	set: function(path){
 		var newProps = route.deparam(path);
 		var oldProps = route.deparam(getCurrentUrl());
