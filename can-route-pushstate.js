@@ -74,6 +74,7 @@ function PushstateObservable(options) {
         onFirst: this.setup.bind(this),
         onEmpty: this.teardown.bind(this)
     });
+	this.keepHash = true;
 }
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
