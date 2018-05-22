@@ -6,7 +6,6 @@
 // It registers itself as binding on `route`, intercepts `click` events
 // on `<a>` elements across document and accordingly updates `route` state
 // and window's pathname.
-
 /*jshint maxdepth:6, scripturl:true*/
 "use strict";
 var route = require('can-route');
@@ -28,14 +27,18 @@ var diffObject = require('can-util/js/diff-object/diff-object');
 
 var hasPushstate = window.history && window.history.pushState;
 var loc = LOCATION();
-var validProtocols = { 'http:': true, 'https:': true, '': true };
+var validProtocols = {
+	'http:': true,
+	'https:': true,
+	'': true
+};
 var usePushStateRouting = hasPushstate && loc && validProtocols[loc.protocol];
 
 // Original methods on `history` that will be overwritten
 var methodsToOverwrite = ['pushState', 'replaceState'];
 
 // Always returns clean root, without domain.
-var cleanRoot = function () {
+var cleanRoot = function() {
 	var domain = location.protocol + "//" + location.host,
 		root = bindingProxy.call("root"),
 		index = root.indexOf(domain);
@@ -49,9 +52,9 @@ var cleanRoot = function () {
 // Checks if a route is matched, if one is, calls `.pushState`
 
 // gets the current url after the root
-function getCurrentUrl(){
+function getCurrentUrl() {
 	var root = cleanRoot(),
-	  location = LOCATION(),
+		location = LOCATION(),
 		loc = (location.pathname + location.search),
 		index = loc.indexOf(root);
 
@@ -65,20 +68,20 @@ function PushstateObservable(options) {
 	 * - replaceStateOnceKeys
 	 */
 	this.options = options;
-	this.dispatchHandlers =  this.dispatchHandlers.bind(this);
+	this.dispatchHandlers = this.dispatchHandlers.bind(this);
 	var self = this;
-	this.anchorClickHandler = function(event){
+	this.anchorClickHandler = function(event) {
 		PushstateObservable.prototype.anchorClickHandler.call(self, this, event);
 	};
-    this.handlers = new KeyTree([Object,Array],{
-        onFirst: this.setup.bind(this),
-        onEmpty: this.teardown.bind(this)
-    });
+	this.handlers = new KeyTree([Object, Array], {
+		onFirst: this.setup.bind(this),
+		onEmpty: this.teardown.bind(this)
+	});
 	this.keepHash = true;
 }
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
-canReflect.assign(PushstateObservable.prototype,{
+canReflect.assign(PushstateObservable.prototype, {
 	/**
 	 * @property {String} can-route-pushstate.root root
 	 * @parent can-route-pushstate.static
@@ -122,32 +125,31 @@ canReflect.assign(PushstateObservable.prototype,{
 	paramsMatcher: /^\?(?:[^=]+=[^&]*&)*[^=]+=[^&]*/,
 	querySeparator: '?',
 	dispatchHandlers: function() {
-        var old = this.value;
-        this.value = getCurrentUrl();
-        if(old !== this.value) {
-            queues.enqueueByQueue(this.handlers.getNode([]), this, [this.value, old]
-                //!steal-remove-start
-                /* jshint laxcomma: true */
-                , null
-                , [ canReflect.getName(this), "changed to", this.value, "from", old ]
-                /* jshint laxcomma: false */
-                //!steal-remove-end
-            );
-        }
-    },
-	anchorClickHandler: function (node, e) {
+		var old = this.value;
+		this.value = getCurrentUrl();
+		if (old !== this.value) {
+			queues.enqueueByQueue(this.handlers.getNode([]), this, [this.value, old]
+				//!steal-remove-start
+				/* jshint laxcomma: true */
+				, null, [canReflect.getName(this), "changed to", this.value, "from", old]
+				/* jshint laxcomma: false */
+				//!steal-remove-end
+			);
+		}
+	},
+	anchorClickHandler: function(node, e) {
 
 		if (!(e.isDefaultPrevented ? e.isDefaultPrevented() : e.defaultPrevented === true)) {
 			// Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
 
 			// href has some JS in it, let it run
-			if(node.href === "javascript://") {
+			if (node.href === "javascript://") {
 				return;
 			}
 
 			// Do not push state if target is for blank window
-			if(node.target === '_blank'){
+			if (node.target === '_blank') {
 				return;
 			}
 
@@ -172,7 +174,7 @@ canReflect.assign(PushstateObservable.prototype,{
 						// Calling .pushState will dispatch events, causing
 						// `can-route` to update its data, and then try to set back
 						// the url without the hash.  We need to retain that.
-						if(node.href.indexOf("#") >= 0 ) {
+						if (node.href.indexOf("#") >= 0) {
 							this.keepHash = true;
 						}
 
@@ -195,8 +197,8 @@ canReflect.assign(PushstateObservable.prototype,{
 			}
 		}
 	},
-	setup: function(){
-		if(isNode()) {
+	setup: function() {
+		if (isNode()) {
 			return;
 		}
 		this.value = getCurrentUrl();
@@ -205,9 +207,9 @@ canReflect.assign(PushstateObservable.prototype,{
 		var originalMethods = this.originalMethods = {};
 		var dispatchHandlers = this.dispatchHandlers;
 		// Rewrites original `pushState`/`replaceState` methods on `history` and keeps pointer to original methods
-		canReflect.eachKey(methodsToOverwrite, function (method) {
+		canReflect.eachKey(methodsToOverwrite, function(method) {
 			this.originalMethods[method] = window.history[method];
-			window.history[method] = function (state, title, url) {
+			window.history[method] = function(state, title, url) {
 				// Avoid doubled history states (with pushState).
 				var absolute = url.indexOf("http") === 0;
 				var loc = LOCATION();
@@ -224,10 +226,10 @@ canReflect.assign(PushstateObservable.prototype,{
 		// Bind to `popstate` event, fires on back/forward.
 		domEvents.addEventListener(window, 'popstate', this.dispatchHandlers);
 	},
-	teardown: function(){
+	teardown: function() {
 		domEvents.removeDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
 
-		canReflect.eachKey(methodsToOverwrite, function (method) {
+		canReflect.eachKey(methodsToOverwrite, function(method) {
 			window.history[method] = this.originalMethods[method];
 		}, this);
 
@@ -237,7 +239,7 @@ canReflect.assign(PushstateObservable.prototype,{
 		ObservationRecorder.add(this);
 		return getCurrentUrl();
 	},
-	set: function(path){
+	set: function(path) {
 		var newProps = route.deparam(path);
 		var oldProps = route.deparam(getCurrentUrl());
 		var method = "pushState";
@@ -249,26 +251,26 @@ canReflect.assign(PushstateObservable.prototype,{
 
 		changed = {};
 		diffObject(oldProps, newProps)
-			.forEach(function (patch) {
+			.forEach(function(patch) {
 				return changed[patch.property] = true;
 			});
 
 		// check if we should call replaceState or pushState
-		if( this.options.replaceStateKeys.length ) {
-			this.options.replaceStateKeys.forEach(function(replaceKey){
-				if(changed[replaceKey]) {
+		if (this.options.replaceStateKeys.length) {
+			this.options.replaceStateKeys.forEach(function(replaceKey) {
+				if (changed[replaceKey]) {
 					method = "replaceState";
 				}
 			});
 		}
-		if( this.options.replaceStateOnceKeys.length ) {
-			for(var i = this.options.replaceStateOnceKeys.length - 1; i >= 0; i--) {
+		if (this.options.replaceStateOnceKeys.length) {
+			for (var i = this.options.replaceStateOnceKeys.length - 1; i >= 0; i--) {
 				var replaceOnceKey = this.options.replaceStateOnceKeys[i];
 
-				if(changed[replaceOnceKey]) {
+				if (changed[replaceOnceKey]) {
 					method = "replaceState";
 					// remove so we don't do this again
-					this.options.replaceStateOnceKeys.splice(i,1);
+					this.options.replaceStateOnceKeys.splice(i, 1);
 				}
 			}
 		}
@@ -276,13 +278,13 @@ canReflect.assign(PushstateObservable.prototype,{
 	}
 });
 
-canReflect.assignSymbols(PushstateObservable.prototype,{
+canReflect.assignSymbols(PushstateObservable.prototype, {
 	"can.getValue": PushstateObservable.prototype.get,
 	"can.setValue": PushstateObservable.prototype.set,
 	"can.onValue": PushstateObservable.prototype.on,
 	"can.offValue": PushstateObservable.prototype.off,
 	"can.isMapLike": false,
-	"can.valueHasDependencies": function(){
+	"can.valueHasDependencies": function() {
 		return true;
 	},
 	//!steal-remove-start
@@ -310,14 +312,14 @@ if (usePushStateRouting) {
 
 	canReflect.assignMap(route, {
 		replaceStateOn: function() {
-			canReflect.addValues( options.replaceStateKeys, canReflect.toArray(arguments) );
+			canReflect.addValues(options.replaceStateKeys, canReflect.toArray(arguments));
 		},
 		replaceStateOnce: function() {
-			canReflect.addValues( options.replaceStateOnceKeys, canReflect.toArray(arguments) );
+			canReflect.addValues(options.replaceStateOnceKeys, canReflect.toArray(arguments));
 		},
 		replaceStateOff: function() {
-			canReflect.removeValues( options.replaceStateKeys, canReflect.toArray(arguments) );
-			canReflect.removeValues( options.replaceStateOnceKeys, canReflect.toArray(arguments) );
+			canReflect.removeValues(options.replaceStateKeys, canReflect.toArray(arguments));
+			canReflect.removeValues(options.replaceStateOnceKeys, canReflect.toArray(arguments));
 		}
 	});
 }
