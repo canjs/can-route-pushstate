@@ -553,6 +553,31 @@ function makeTest(mapModuleName){
 			document.getElementById('qunit-fixture').appendChild(iframe);
 		});
 
+		test("loading page with a hash in the url works (can-route-pushstate#95)", function () {
+
+			stop();
+			window.routeTestReady = function (iCanRoute, loc, hist, win) {
+
+				iCanRoute(win.location.pathname, {
+					page: "index"
+				});
+
+				iCanRoute("{type}/{id}");
+				iCanRoute.ready();
+
+				equal(win.location.hash, "#myHash", "hash in the url is preserved on page init");
+
+				setTimeout(function(){
+					equal(win.location.hash, "#myHash", "hash in the url is still present after page fully loads(100ms delay)");
+					start();
+				},100);
+
+			};
+			var iframe = document.createElement('iframe');
+			iframe.src = __dirname + "/test/testing.html#myHash";
+			document.getElementById('qunit-fixture').appendChild(iframe);
+		});
+
 		test("preventDefault not called when only the hash changes (can-route-pushstate#75)", function () {
 
 			stop();
