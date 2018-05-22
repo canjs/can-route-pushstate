@@ -568,7 +568,6 @@ function makeTest(mapModuleName){
 			stop();
 			window.routeTestReady = function (iCanRoute, loc, hist, win) {
 
-				//win.queues.log("flush");
 				iCanRoute(win.location.pathname, {
 					page: "index"
 				});
