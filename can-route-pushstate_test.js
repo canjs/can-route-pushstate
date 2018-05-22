@@ -562,6 +562,32 @@ function makeTest(mapModuleName){
 			document.getElementById('qunit-fixture').appendChild(iframe);
 		});
 
+
+		test("loading a page with a hash works (#95)", function () {
+
+			stop();
+			window.routeTestReady = function (iCanRoute, loc, hist, win) {
+
+				//win.queues.log("flush");
+				iCanRoute(win.location.pathname, {
+					page: "index"
+				});
+
+				iCanRoute("{type}/{id}");
+				iCanRoute.start();
+				QUnit.equal(win.location.hash, "#thisIsMyHash", "hash right after start");
+
+				setTimeout(function(){
+					QUnit.equal(win.location.hash, "#thisIsMyHash", "hash right after delay");
+					QUnit.start();
+				},30);
+
+			};
+			var iframe = document.createElement('iframe');
+			iframe.src = __dirname + "/test/testing.html#thisIsMyHash";
+			document.getElementById('qunit-fixture').appendChild(iframe);
+		});
+
 		test("preventDefault not called when only the hash changes (can-route-pushstate#75)", function () {
 
 			stop();
