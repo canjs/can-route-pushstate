@@ -235,7 +235,7 @@ if (usePushStateRouting) {
 		// A place to store pointers to original `history` methods.
 		originalMethods = {},
 		// Used to tell setURL to include the hash because we clicked on a link.
-		includeHash = false,
+		includeHash = true,
 		// Attributes that will cause replaceState to be called
 		replaceStateAttrs = [];
 
