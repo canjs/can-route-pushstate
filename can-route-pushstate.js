@@ -23,7 +23,6 @@ var LOCATION = require('can-globals/location/location');
 var domEvents = require('can-dom-events');
 
 var diffObject = require('can-util/js/diff-object/diff-object');
-var canSymbol = require("can-symbol");
 
 
 var hasPushstate = window.history && window.history.pushState;
@@ -298,7 +297,7 @@ var pushstateObservableProto = {
 
 //!steal-remove-start
 if (process.env.NODE_ENV !== 'production') {
-	pushstateObservableProto[canSymbol.for("can.getName")] = function() {
+	pushstateObservableProto["can.getName"] = function() {
 			return "PushstateObservable<" + this.value + ">";
 	};
 }
