@@ -126,15 +126,21 @@ canReflect.assign(PushstateObservable.prototype, {
 	querySeparator: '?',
 	dispatchHandlers: function() {
 		var old = this.value;
+		var queuesArgs = [];
 		this.value = getCurrentUrl();
 		if (old !== this.value) {
-			queues.enqueueByQueue(this.handlers.getNode([]), this, [this.value, old]
-				//!steal-remove-start
-				/* jshint laxcomma: true */
-				, null, [canReflect.getName(this), "changed to", this.value, "from", old]
-				/* jshint laxcomma: false */
-				//!steal-remove-end
-			);
+			queuesArgs = [this.handlers.getNode([]), this, [this.value, old]];
+			//!steal-remove-start
+			if (process.env.NODE_ENV !== 'production') {
+				queuesArgs = [
+					this.handlers.getNode([]), this, [this.value, old]
+					/* jshint laxcomma: true */
+					, null, [canReflect.getName(this), "changed to", this.value, "from", old]
+					/* jshint laxcomma: false */
+				];
+			}
+			//!steal-remove-end
+			queues.enqueueByQueue.apply(queues, queuesArgs);
 		}
 	},
 	anchorClickHandler: function(node, e) {
@@ -278,7 +284,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	}
 });
 
-canReflect.assignSymbols(PushstateObservable.prototype, {
+var pushstateObservableProto = {
 	"can.getValue": PushstateObservable.prototype.get,
 	"can.setValue": PushstateObservable.prototype.set,
 	"can.onValue": PushstateObservable.prototype.on,
@@ -287,12 +293,18 @@ canReflect.assignSymbols(PushstateObservable.prototype, {
 	"can.valueHasDependencies": function() {
 		return true;
 	},
-	//!steal-remove-start
-	"can.getName": function() {
-		return "PushstateObservable<" + this.value + ">";
-	},
-	//!steal-remove-end
-});
+};
+
+//!steal-remove-start
+if (process.env.NODE_ENV !== 'production') {
+	pushstateObservableProto["can.getName"] = function() {
+			return "PushstateObservable<" + this.value + ">";
+	};
+}
+//!steal-remove-end
+
+
+canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
 
 // Initialize plugin only if browser supports pushstate.
 if (usePushStateRouting) {
