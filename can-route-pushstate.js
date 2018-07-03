@@ -62,12 +62,15 @@ function getCurrentUrl() {
 }
 
 
-function PushstateObservable(options) {
+function PushstateObservable() {
 	/*
 	 * - replaceStateKeys
 	 * - replaceStateOnceKeys
 	 */
-	this.options = options;
+	this.options = {
+		replaceStateOnceKeys: [],
+		replaceStateKeys: []
+	};
 	this.dispatchHandlers = this.dispatchHandlers.bind(this);
 	var self = this;
 	this.anchorClickHandler = function(event) {
@@ -204,6 +207,7 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 	setup: function() {
+		debugger;
 		if (isNode()) {
 			return;
 		}
@@ -281,6 +285,18 @@ canReflect.assign(PushstateObservable.prototype, {
 			}
 		}
 		window.history[method](null, null, bindingProxy.call("root") + path);
+	},
+
+
+	replaceStateOn: function() {
+		canReflect.addValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
+	},
+	replaceStateOnce: function() {
+		canReflect.addValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
+	},
+	replaceStateOff: function() {
+		canReflect.removeValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
+		canReflect.removeValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
 	}
 });
 
@@ -314,13 +330,13 @@ if (usePushStateRouting) {
 		replaceStateOnceKeys: [],
 		replaceStateKeys: []
 	};
-	var pushstateBinding = new PushstateObservable(options);
+	//var pushstateBinding = new PushstateObservable(options);
 
 	// Registers itself within `route.bindings`.
-	route.bindings.pushstate = pushstateBinding;
+	//route.bindings.pushstate = pushstateBinding;
 
 	// Enables plugin, by default `hashchange` binding is used.
-	route.defaultBinding = "pushstate";
+	//route.defaultBinding = "pushstate";
 
 	canReflect.assignMap(route, {
 		replaceStateOn: function() {
@@ -336,4 +352,4 @@ if (usePushStateRouting) {
 	});
 }
 
-module.exports = route;
+module.exports = PushstateObservable;

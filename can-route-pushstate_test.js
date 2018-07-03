@@ -1,7 +1,8 @@
 /* jshint asi:true,scripturl:true */
 var QUnit = require('steal-qunit');
 var extend = require('can-util/js/assign/assign');
-var route = require('./can-route-pushstate');
+var RoutePushstate = require('./can-route-pushstate');
+var route = require('can-route');
 var domEvents = require('can-dom-events');
 
 if (window.history && history.pushState) {
@@ -12,8 +13,7 @@ if (window.history && history.pushState) {
 function makeTest(mapModuleName){
 	QUnit.module("can/route/pushstate with " + mapModuleName, {
 		setup: function () {
-			route._teardown();
-			route.defaultBinding = "pushstate";
+			route.urlData = new RoutePushstate();
 			window.MAP_MODULE_NAME = mapModuleName;
 		}
 	});
@@ -424,6 +424,7 @@ function makeTest(mapModuleName){
 			var done = assert.async();
 
 			makeTestingIframe(function(info, cleanup) {
+				debugger;
 				info.history.pushState(null, null, "/");
 
 				info.route.register("");
