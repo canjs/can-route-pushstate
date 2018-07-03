@@ -11,15 +11,19 @@
 <script>
 steal.done().then(function() {
 	Promise.all([
+		System.import("can-route"),
 		System.import("can-route-pushstate"),
 		System.import(window.parent.MAP_MODULE_NAME),
 		System.import("can-queues"),
 		System.import("can-observation-recorder")
 	]).then(function(modules) {
 		window.route = modules[0];
-		window.CanMap = modules[1];
-		window.queues = modules[2];
-		window.ObservationRecorder = modules[3];
+		window.RoutePushstate = modules[1];
+		window.CanMap = modules[2];
+		window.queues = modules[3];
+		window.ObservationRecorder = modules[4];
+
+		window.route.urlData = new window.RoutePushstate();
 		setTimeout(function() {
 			window.parent.routeTestReady &&
 				window.parent.routeTestReady(
