@@ -207,7 +207,6 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 	setup: function() {
-		debugger;
 		if (isNode()) {
 			return;
 		}
@@ -321,35 +320,5 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
-
-// Initialize plugin only if browser supports pushstate.
-if (usePushStateRouting) {
-
-
-	var options = {
-		replaceStateOnceKeys: [],
-		replaceStateKeys: []
-	};
-	//var pushstateBinding = new PushstateObservable(options);
-
-	// Registers itself within `route.bindings`.
-	//route.bindings.pushstate = pushstateBinding;
-
-	// Enables plugin, by default `hashchange` binding is used.
-	//route.defaultBinding = "pushstate";
-
-	canReflect.assignMap(route, {
-		replaceStateOn: function() {
-			canReflect.addValues(options.replaceStateKeys, canReflect.toArray(arguments));
-		},
-		replaceStateOnce: function() {
-			canReflect.addValues(options.replaceStateOnceKeys, canReflect.toArray(arguments));
-		},
-		replaceStateOff: function() {
-			canReflect.removeValues(options.replaceStateKeys, canReflect.toArray(arguments));
-			canReflect.removeValues(options.replaceStateOnceKeys, canReflect.toArray(arguments));
-		}
-	});
-}
 
 module.exports = PushstateObservable;

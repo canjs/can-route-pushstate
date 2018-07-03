@@ -424,7 +424,6 @@ function makeTest(mapModuleName){
 			var done = assert.async();
 
 			makeTestingIframe(function(info, cleanup) {
-				debugger;
 				info.history.pushState(null, null, "/");
 
 				info.route.register("");
@@ -435,7 +434,7 @@ function makeTest(mapModuleName){
 				info.history.pushState(null, null, "home");
 				var deps = info.window.ObservationRecorder.stop();
 
-				ok(deps.valueDependencies.has(info.route.bindings.pushstate));
+				ok(deps.valueDependencies.has(info.route.urlData));
 				cleanup();
 				done();
 			});
@@ -774,7 +773,7 @@ function makeTest(mapModuleName){
 						}, 200);
 					}
 
-					win.route.bindings.pushstate.root = root;
+					win.route.urlData.root = root;
 					win.route("{page}/");
 					win.route.start();
 					nextStateTest();
@@ -788,7 +787,7 @@ function makeTest(mapModuleName){
 			test("URL's don't greedily match", function () {
 				stop();
 				makeTestingIframe(function(info, done){
-					info.route.bindings.pushstate.root = "testing.html";
+					info.route.urlData.root = "testing.html";
 					info.route("{module}\\.html");
 					info.route.start();
 
@@ -809,7 +808,7 @@ function makeTest(mapModuleName){
 			var setupRoutesAndRoot = function (iCanRoute, root) {
 				iCanRoute("{section}/");
 				iCanRoute("{section}/{sub}/");
-				iCanRoute.bindings.pushstate.root = root;
+				iCanRoute.urlData.root = root;
 				iCanRoute.start();
 			};
 
@@ -892,7 +891,7 @@ function makeTest(mapModuleName){
 					ok(true, "replaceState called");
 				};
 
-				info.route.replaceStateOn("ignoreme");
+				info.route.urlData.replaceStateOn("ignoreme");
 
 				info.route.start();
 				info.route.attr('ignoreme', 'yes');
@@ -916,7 +915,7 @@ function makeTest(mapModuleName){
 					ok(true, "replaceState called");
 				};
 
-				info.route.replaceStateOn("ignoreme", "metoo");
+				info.route.urlData.replaceStateOn("ignoreme", "metoo");
 
 				info.route.start();
 				info.route.attr('ignoreme', 'yes');
@@ -947,7 +946,7 @@ function makeTest(mapModuleName){
 					replaceCalls++;
 				};
 
-				info.route.replaceStateOnce("ignoreme", "metoo");
+				info.route.urlData.replaceStateOnce("ignoreme", "metoo");
 
 				info.route.start();
 				info.route.attr('ignoreme', 'yes');
@@ -978,8 +977,8 @@ function makeTest(mapModuleName){
 					ok(false, "replaceState should not be called called");
 				};
 
-				info.route.replaceStateOn("ignoreme");
-				info.route.replaceStateOff("ignoreme");
+				info.route.urlData.replaceStateOn("ignoreme");
+				info.route.urlData.replaceStateOff("ignoreme");
 
 				info.route.start();
 				info.route.attr('ignoreme', 'yes');
@@ -1081,7 +1080,7 @@ function makeTest(mapModuleName){
 		stop();
 
 		makeTestingIframe(function(info, done){
-			equal(info.route.defaultBinding, "pushstate", "pushstate routing is used");
+			ok(true, "We got this far which means things did not blow up");
 			start();
 			done();
 		}, __dirname + "/test/testing-ssr.html");
