@@ -86,8 +86,8 @@ PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
 canReflect.assign(PushstateObservable.prototype, {
 	/**
-	 * @property {String} can-route-pushstate.root root
-	 * @parent can-route-pushstate.static
+	 * @property {String} can-route-pushstate.prototype.root root
+	 * @parent can-route-pushstate.prototype
 	 *
 	 * @description Configure the base url that will not be modified.
 	 *
@@ -121,7 +121,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	 */
 
 	// Start of `location.pathname` is the root.
-	// (Can be configured via `route.bindings.pushstate.root`)
+	// (Can be configured via `route.urlData.root`)
 	root: "/",
 	// don't greedily match slashes in routing rules
 	matchSlashes: false,
