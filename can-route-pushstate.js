@@ -24,21 +24,12 @@ var domEvents = require('can-dom-events');
 
 var diffObject = require('can-util/js/diff-object/diff-object');
 
-
-var hasPushstate = window.history && window.history.pushState;
-var loc = LOCATION();
-var validProtocols = {
-	'http:': true,
-	'https:': true,
-	'': true
-};
-var usePushStateRouting = hasPushstate && loc && validProtocols[loc.protocol];
-
 // Original methods on `history` that will be overwritten
 var methodsToOverwrite = ['pushState', 'replaceState'];
 
 // Always returns clean root, without domain.
 var cleanRoot = function() {
+	var location = LOCATION();
 	var domain = location.protocol + "//" + location.host,
 		root = bindingProxy.call("root"),
 		index = root.indexOf(domain);
