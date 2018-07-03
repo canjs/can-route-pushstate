@@ -1,17 +1,20 @@
-@module {function} can-route-pushstate
+@module {RoutePushstate} can-route-pushstate
 @parent can-routing
 @collection can-core
 @package ./package.json
 @group can-route-pushstate.prototype prototype
 
-@description An observable that can be used as [can-route]'s [can-route.urlData], configuring it to use
+@description An observable that can be used as [can-route]'s [can-route.urlData].
+
+@type {RoutePushstate}
+
+__can-route-pushstate__ exports a `RoutePushstate` constructor function that configure [can-route] to use
 [pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
 to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
-of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
+of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash)
 
 ```js
-import route from "can-route";
-import RoutePushstate from "can-route-pushstate";
+import { route, RoutePushstate } from "can";
 
 route.urlData = new RoutePushstate();
 route.register( "{page}", { page: "home" } );
