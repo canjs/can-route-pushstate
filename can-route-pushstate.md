@@ -13,6 +13,8 @@ __can-route-pushstate__ exports a `RoutePushstate` constructor function that con
 to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
 of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash)
 
+@type {Object} The pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushstate`.
+
 ```js
 import { route, RoutePushstate } from "can";
 
@@ -24,8 +26,6 @@ route.data.set("page", "user");
 
 location.pathname; // -> "/user"
 ```
-
-@option {Object} The pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushState`.
 
 @body
 
