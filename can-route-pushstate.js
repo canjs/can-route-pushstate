@@ -24,21 +24,12 @@ var domEvents = require('can-dom-events');
 
 var diffObject = require('can-util/js/diff-object/diff-object');
 
-
-var hasPushstate = window.history && window.history.pushState;
-var loc = LOCATION();
-var validProtocols = {
-	'http:': true,
-	'https:': true,
-	'': true
-};
-var usePushStateRouting = hasPushstate && loc && validProtocols[loc.protocol];
-
 // Original methods on `history` that will be overwritten
 var methodsToOverwrite = ['pushState', 'replaceState'];
 
 // Always returns clean root, without domain.
 var cleanRoot = function() {
+	var location = LOCATION();
 	var domain = location.protocol + "//" + location.host,
 		root = bindingProxy.call("root"),
 		index = root.indexOf(domain);
@@ -62,12 +53,15 @@ function getCurrentUrl() {
 }
 
 
-function PushstateObservable(options) {
+function PushstateObservable() {
 	/*
 	 * - replaceStateKeys
 	 * - replaceStateOnceKeys
 	 */
-	this.options = options;
+	this.options = {
+		replaceStateOnceKeys: [],
+		replaceStateKeys: []
+	};
 	this.dispatchHandlers = this.dispatchHandlers.bind(this);
 	var self = this;
 	this.anchorClickHandler = function(event) {
@@ -83,8 +77,8 @@ PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
 canReflect.assign(PushstateObservable.prototype, {
 	/**
-	 * @property {String} can-route-pushstate.root root
-	 * @parent can-route-pushstate.static
+	 * @property {String} can-route-pushstate.prototype.root root
+	 * @parent can-route-pushstate.prototype
 	 *
 	 * @description Configure the base url that will not be modified.
 	 *
@@ -118,7 +112,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	 */
 
 	// Start of `location.pathname` is the root.
-	// (Can be configured via `route.bindings.pushstate.root`)
+	// (Can be configured via `route.urlData.root`)
 	root: "/",
 	// don't greedily match slashes in routing rules
 	matchSlashes: false,
@@ -281,6 +275,18 @@ canReflect.assign(PushstateObservable.prototype, {
 			}
 		}
 		window.history[method](null, null, bindingProxy.call("root") + path);
+	},
+
+
+	replaceStateOn: function() {
+		canReflect.addValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
+	},
+	replaceStateOnce: function() {
+		canReflect.addValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
+	},
+	replaceStateOff: function() {
+		canReflect.removeValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
+		canReflect.removeValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
 	}
 });
 
@@ -306,34 +312,4 @@ if (process.env.NODE_ENV !== 'production') {
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
 
-// Initialize plugin only if browser supports pushstate.
-if (usePushStateRouting) {
-
-
-	var options = {
-		replaceStateOnceKeys: [],
-		replaceStateKeys: []
-	};
-	var pushstateBinding = new PushstateObservable(options);
-
-	// Registers itself within `route.bindings`.
-	route.bindings.pushstate = pushstateBinding;
-
-	// Enables plugin, by default `hashchange` binding is used.
-	route.defaultBinding = "pushstate";
-
-	canReflect.assignMap(route, {
-		replaceStateOn: function() {
-			canReflect.addValues(options.replaceStateKeys, canReflect.toArray(arguments));
-		},
-		replaceStateOnce: function() {
-			canReflect.addValues(options.replaceStateOnceKeys, canReflect.toArray(arguments));
-		},
-		replaceStateOff: function() {
-			canReflect.removeValues(options.replaceStateKeys, canReflect.toArray(arguments));
-			canReflect.removeValues(options.replaceStateOnceKeys, canReflect.toArray(arguments));
-		}
-	});
-}
-
-module.exports = route;
+module.exports = PushstateObservable;
