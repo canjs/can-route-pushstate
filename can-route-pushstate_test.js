@@ -1,6 +1,6 @@
 /* jshint asi:true,scripturl:true */
 var QUnit = require('steal-qunit');
-var extend = require('can-util/js/assign/assign');
+var extend = require('can-assign');
 var RoutePushstate = require('./can-route-pushstate');
 var route = require('can-route');
 var domEvents = require('can-dom-events');

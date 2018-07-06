@@ -22,7 +22,7 @@ var LOCATION = require('can-globals/location/location');
 
 var domEvents = require('can-dom-events');
 
-var diffObject = require('can-util/js/diff-object/diff-object');
+var diffObject = require('can-diff/map/map');
 
 // Original methods on `history` that will be overwritten
 var methodsToOverwrite = ['pushState', 'replaceState'];
@@ -252,7 +252,7 @@ canReflect.assign(PushstateObservable.prototype, {
 		changed = {};
 		diffObject(oldProps, newProps)
 			.forEach(function(patch) {
-				return changed[patch.property] = true;
+				return changed[patch.key] = true;
 			});
 
 		// check if we should call replaceState or pushState
