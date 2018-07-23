@@ -91,23 +91,33 @@ canReflect.assign(PushstateObservable.prototype, {
 	 *
 	 * By default, a route like:
 	 *
-	 *     route(":type/:id")
+	 * ```js
+	 * route.urlData = new RoutePushstate();
+	 * route.register( "{type}/{id}" );
+	 * ```
 	 *
-	 * Matches urls like:
+	 * Matches URLs like:
 	 *
-	 *     http://domain.com/contact/5
+	 * ```
+	 * http://domain.com/contact/5
+	 * ```
 	 *
 	 * But sometimes, you only want to match pages within a certain directory.  For
 	 * example, an application that is a filemanager.  You might want to
 	 * specify root and routes like:
 	 *
-	 *     route.pushstate.root = "/filemanager/"
-	 *     route("file-:fileId");
-	 *     route("folder-:fileId")
+	 * ```js
+	 * route.urlData = new RoutePushstate();
+	 * route.urlData.root = "/filemanager/";
+	 * route.register( "file-{fileId}" );
+	 * route.register( "folder-{fileId}" );
+	 * ```
 	 *
-	 * Which matches urls like:
+	 * Which matches URLs like:
 	 *
-	 *     http://domain.com/filemanager/file-34234
+	 * ```
+	 * http://domain.com/filemanager/file-34234
+	 * ```
 	 *
 	 */
 
