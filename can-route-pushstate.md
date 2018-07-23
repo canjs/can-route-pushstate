@@ -34,8 +34,7 @@ location.pathname; // -> "/user"
 __can-route-pushstate__ exports an observable that can be used with [can-route]. To start using can-route-pushstate set the [can-route.urlData] property:
 
 ```js
-import route from "can-route";
-import RoutePushstate from "can-route-pushstate";
+import { route, RoutePushstate } from "can";
 
 route.urlData = new RoutePushstate();
 ```
@@ -64,16 +63,17 @@ To bind to specific attributes on [can-route] you can listen to your viewModel's
 
 ### Using different pathname root
 
-can-route-pushstate has one additional property, `routePushstate.root`, which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
+can-route-pushstate has one additional property, [can-route-pushstate.prototype.root], which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
 
 ```js
+route.urlData = new RoutePushstate();
 route.urlData.root = "/contacts/";
 route.register( "{page}" );
 route.url( { page: "list" } ); //-> "/contacts/list"
 route.url( { foo: "bar" } );   //-> "/contacts/?foo=bar"
 ```
 
-Now, all routes will start with `"/contacts/"`, the default `route.urlData.root` value is `"/"`.
+Now, all routes will start with `"/contacts/"`. The default `route.urlData.root` value is `"/"`.
 
 ### Updating the current route
 
@@ -82,7 +82,7 @@ can-route-pushstate also allows changes to the current route state without creat
 Enable the behavior by calling `replaceStateOn` with specified route property keys like:
 
 ```js
-var push = new RoutePushstate();
+const push = new RoutePushstate();
 route.urlData = push;
 push.replaceStateOn( "page", "action" );
 route.set( "page", "dashboard" ); // Route changes, no new history record
