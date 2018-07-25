@@ -15,18 +15,6 @@ of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash)
 
 @type {Object} The pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushstate`.
 
-```js
-import { route, RoutePushstate } from "can";
-
-route.urlData = new RoutePushstate();
-route.register( "{page}", { page: "home" } );
-route.start();
-
-route.data.set("page", "user");
-
-location.pathname; // -> "/user"
-```
-
 @body
 
 ## Use
