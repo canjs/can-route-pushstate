@@ -193,6 +193,7 @@ canReflect.assign(PushstateObservable.prototype, {
 						var windowPathWithSearch = window.location.pathname + window.location.search;
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
 						
+
 						// Test if you can preventDefault
 						// our tests can't call .click() b/c this
 						// freezes phantom.
@@ -202,6 +203,7 @@ canReflect.assign(PushstateObservable.prototype, {
 						
 						// Now update window.location
 						window.history.pushState(null, null, node.href);
+
 					}
 				}
 			}
