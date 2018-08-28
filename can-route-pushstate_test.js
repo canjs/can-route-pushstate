@@ -564,9 +564,19 @@ function makeTest(mapModuleName){
 
 
 		test("loading a page with a hash works (#95)", function () {
+			// For some reason this test stalled.  Adding checks to hopefully
+			// identify the cause if this test fails again.
+			var routeTestReadyCalled = false;
+			setTimeout(function(){
+				if(!routeTestReadyCalled) {
+					QUnit.ok(routeTestReadyCalled, "route test ready called");
+					QUnit.start();
+				}
+			},60000);
 
 			stop();
 			window.routeTestReady = function (iCanRoute, loc, hist, win) {
+				routeTestReadyCalled = true;
 
 				iCanRoute(win.location.pathname, {
 					page: "index"
@@ -576,10 +586,21 @@ function makeTest(mapModuleName){
 				iCanRoute.start();
 				QUnit.equal(win.location.hash, "#thisIsMyHash", "hash right after start");
 
+				// For some reason this test stalled.  Adding checks to hopefully
+				// identify the cause if this test fails again.
+				var timeoutCalled = false;
 				setTimeout(function(){
+					if(!timeoutCalled) {
+						QUnit.ok(timeoutCalled, "timeout called");
+						QUnit.start();
+					}
+				},60000);
+
+				setTimeout(function(){
+					timeoutCalled = true;
 					QUnit.equal(win.location.hash, "#thisIsMyHash", "hash right after delay");
 					QUnit.start();
-				},30);
+				},100);
 
 			};
 			var iframe = document.createElement('iframe');
