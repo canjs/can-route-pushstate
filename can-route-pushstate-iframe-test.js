@@ -547,33 +547,29 @@ function makeTest(mapModuleName){
 
 			var next = function () {
 				makeTestingIframe(function (info, done) {
-
-					var timer;
 					info.route.serializedCompute.bind("change", function () {
-						clearTimeout(timer);
-						timer = setTimeout(function () {
-							// deepEqual doesn't like to compare objects from different contexts
-							// so we copy it
-							var obj = extend({}, info.route.attr());
+						// deepEqual doesn't like to compare objects from different contexts
+						// so we copy it
+						var obj = extend({}, info.route.attr());
 
-							deepEqual(obj, {
-								section: "something",
-								sub: "test",
-							}, "route's data is correct");
+						deepEqual(obj, {
+							section: "something",
+							sub: "test",
+						}, "route's data is correct");
 
-							equal(info.route.matched(), "{section}/{sub}/",
-								"route's matched property is correct");
+						equal(info.route.matched(), "{section}/{sub}/",
+							"route's matched property is correct");
 
-							done();
-							start();
-						}, 10);
-
+						done();
+						start();
 					});
 
 					setupRoutesAndRoot(info.route, "/app/");
 					var link = createLink(info.window, "/app/something/test/");
-
 					domEvents.dispatch(link, "click");
+
+
+
 				});
 			};
 		});
