@@ -38,13 +38,13 @@
     "can-observation-recorder": "^1.0.2",
     "can-queues": "<2.0.0",
     "can-reflect": "^1.8.0",
-    "can-route": "^4.2.0-pre.1",
+    "can-route": "^4.3.12",
     "can-simple-observable": "^2.0.0",
     "can-diff": "<2.0.0"
   },
   "devDependencies": {
     "can-assign": "<2.0.0",
-    "can-define": "^2.0.0",
+    "can-define": "^2.6.0",
     "can-map": "^4.0.0",
     "detect-cyclic-packages": "^1.1.0",
     "jshint": "^2.9.1",
