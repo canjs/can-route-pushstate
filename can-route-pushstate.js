@@ -192,9 +192,7 @@ canReflect.assign(PushstateObservable.prototype, {
 						// same page and just a different hash; see can-route-pushstate#75
 						var windowPathWithSearch = window.location.pathname + window.location.search;
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
-
-						// Now update window.location
-						window.history.pushState(null, null, node.href);
+						
 
 						// Test if you can preventDefault
 						// our tests can't call .click() b/c this
@@ -202,6 +200,10 @@ canReflect.assign(PushstateObservable.prototype, {
 						if (shouldCallPreventDefault && e.preventDefault) {
 							e.preventDefault();
 						}
+						
+						// Now update window.location
+						window.history.pushState(null, null, node.href);
+
 					}
 				}
 			}

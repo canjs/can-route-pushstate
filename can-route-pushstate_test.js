@@ -449,4 +449,49 @@ function makeTest(mapModuleName){
 
 
 
+	test("Check if prevent default is called when pushState throws an error (#116)", function() {
+		stop();
+
+		makeTestingIframe(function(info, done){
+
+			var win = info.window;
+
+			// matching default route to test url.
+			info.route(win.location.pathname, {
+				page: "index"
+			});
+
+			info.route("{type}/{id}");
+
+			info.route.start();
+
+			// creating link that we'll test the prevent default
+			var link = win.document.createElement("a");
+			link.href = "/articles/17";
+			link.innerHTML = "Click Me";
+			win.document.body.appendChild(link);
+
+			info.route._onStartComplete = function() {
+				var event = win.document.createEvent('HTMLEvents');
+
+				event.preventDefault = function() {
+					QUnit.ok(true, 'prevent default is called');
+				}
+
+				// Simulate clicking the link to check if preventDefault is called.
+				event.initEvent('click', true, true);
+
+				info.history.pushState = function () {
+					throw new Error("an error happened in pushState");
+				};
+
+				try {
+					link.dispatchEvent(event);
+				} finally {
+					start();
+					done();
+				}
+			}
+		});
+	});
 }
