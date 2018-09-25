@@ -749,7 +749,7 @@ function makeTest(mapModuleName){
 
 					event.preventDefault = function() {
 						QUnit.ok(true, 'prevent default is called');
-					}
+					};
 
 					// Simulate clicking the link to check if preventDefault is called.
 					event.initEvent('click', true, true);
@@ -764,7 +764,7 @@ function makeTest(mapModuleName){
 						start();
 						done();
 					}
-				}
+				};
 			});
 		});
 	}
