@@ -5,10 +5,14 @@
 </head>
 <body>
 <p>This is a dummy page to use<br/> for testing route goodness</p>
+<span id="url"></span>
 
 <script type="text/javascript" src="../../../node_modules/steal/steal.js" main="@empty"></script>
 <script type="text/javascript" src="../node_modules/steal/steal.js" main="@empty"></script>
 <script>
+setInterval(function(){
+	document.getElementById("url").innerHTML = window.location.href;
+},50);
 steal.done().then(function() {
 	Promise.all([
 		System.import("can-route"),
