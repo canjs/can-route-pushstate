@@ -125,17 +125,17 @@ canReflect.assign(PushstateObservable.prototype, {
 	paramsMatcher: /^\?(?:[^=]+=[^&]*&)*[^=]+=[^&]*/,
 	querySeparator: '?',
 	dispatchHandlers: function() {
-		var old = this.value;
+		var old = this._value;
 		var queuesArgs = [];
-		this.value = getCurrentUrl();
-		if (old !== this.value) {
-			queuesArgs = [this.handlers.getNode([]), this, [this.value, old]];
+		this._value = getCurrentUrl();
+		if (old !== this._value) {
+			queuesArgs = [this.handlers.getNode([]), this, [this._value, old]];
 			//!steal-remove-start
 			if (process.env.NODE_ENV !== 'production') {
 				queuesArgs = [
-					this.handlers.getNode([]), this, [this.value, old]
+					this.handlers.getNode([]), this, [this._value, old]
 					/* jshint laxcomma: true */
-					, null, [canReflect.getName(this), "changed to", this.value, "from", old]
+					, null, [canReflect.getName(this), "changed to", this._value, "from", old]
 					/* jshint laxcomma: false */
 				];
 			}
@@ -207,7 +207,7 @@ canReflect.assign(PushstateObservable.prototype, {
 		if (isNode()) {
 			return;
 		}
-		this.value = getCurrentUrl();
+		this._value = getCurrentUrl();
 		// Intercept routable links.
 		domEvents.addDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
 		var originalMethods = this.originalMethods = {};
@@ -298,7 +298,7 @@ var pushstateObservableProto = {
 //!steal-remove-start
 if (process.env.NODE_ENV !== 'production') {
 	pushstateObservableProto["can.getName"] = function() {
-			return "PushstateObservable<" + this.value + ">";
+			return "PushstateObservable<" + this._value + ">";
 	};
 }
 //!steal-remove-end
