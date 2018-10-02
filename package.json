@@ -39,7 +39,7 @@
     "can-queues": "<2.0.0",
     "can-reflect": "^1.8.0",
     "can-route": "^4.3.12",
-    "can-simple-observable": "^2.0.0",
+    "can-simple-observable": "^2.4.0",
     "can-diff": "<2.0.0"
   },
   "devDependencies": {
