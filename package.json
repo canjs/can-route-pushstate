@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "can-assign": "<2.0.0",
-    "can-define": "^2.6.0",
+    "can-define": "^2.7.0",
     "can-map": "^4.0.0",
     "detect-cyclic-packages": "^1.1.0",
     "jshint": "^2.9.1",
