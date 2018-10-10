@@ -3,6 +3,7 @@ var QUnit = require('steal-qunit');
 var RoutePushstate = require('./can-route-pushstate');
 var route = require('can-route');
 require("./can-route-pushstate-iframe-test");
+var globals = require('can-globals');
 
 if (window.history && history.pushState) {
 	makeTest("can-map");
@@ -445,6 +446,26 @@ function makeTest(mapModuleName){
 			foo: "abc",
 			bar: "def"
 		});
+	});
+
+	test("teardown in Node", function() {
+		var global = globals.getKeyValue('global');
+		var document = globals.getKeyValue('document');
+		var isNode = globals.getKeyValue('isNode');
+
+		try {
+			globals.setKeyValue('isNode', true);
+			route.urlData.teardown();
+
+			QUnit.ok(true, "Did not attempt to teardown in Node");
+		} catch(e) {
+			QUnit.ok(false, "Tried to teardown in Node");
+		}
+		finally {
+			globals.setKeyValue('global', global);
+			globals.setKeyValue('document', document);
+			globals.setKeyValue('isNode', isNode);
+		}
 	});
 
 }
