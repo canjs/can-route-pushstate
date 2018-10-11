@@ -19,6 +19,8 @@ var ObservationRecorder = require("can-observation-recorder");
 
 var isNode = require('can-globals/is-node/is-node');
 var LOCATION = require('can-globals/location/location');
+var getDocument = require('can-globals/document/document');
+var getGlobal = require('can-globals/global/global');
 
 var domEvents = require('can-dom-events');
 
@@ -239,6 +241,13 @@ canReflect.assign(PushstateObservable.prototype, {
 		domEvents.addEventListener(window, 'popstate', this.dispatchHandlers);
 	},
 	teardown: function() {
+		if(isNode()) {
+			return;
+		}
+
+		var document = getDocument();
+		var window = getGlobal();
+
 		domEvents.removeDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
 
 		canReflect.eachKey(methodsToOverwrite, function(method) {
