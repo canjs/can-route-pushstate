@@ -32,7 +32,7 @@
     "donejs"
   ],
   "dependencies": {
-    "can-dom-events": "^1.1.0",
+    "can-dom-events": "1.3.0",
     "can-globals": "<2.0.0",
     "can-key-tree": "<2.0.0",
     "can-observation-recorder": "^1.0.2",
