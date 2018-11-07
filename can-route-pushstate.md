@@ -8,30 +8,47 @@
 
 @type {RoutePushstate}
 
-__can-route-pushstate__ exports a `RoutePushstate` constructor function that configure [can-route] to use
-[pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
-to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
-of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash)
+  __can-route-pushstate__ exports a `RoutePushstate` constructor function that configures [can-route] to use
+  [pushState](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
+  to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
+  of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 
-@type {Object} The pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushstate`.
+  __can-route-pushstate__ exports an observable that can be used with [can-route]. To start using can-route-pushstate set the [can-route.urlData route.urlData] property:
+
+  ```html
+  <mock-url pushstate:raw="true"></mock-url>
+  <script type="module">
+  import {route, RoutePushstate} from "can";
+  import "https://unpkg.com/mock-url@next";
+
+  route.urlData = new RoutePushstate();
+
+  route.register( "{page}", { page: "homepage" } );
+  route.register( "contacts/{username}" );
+
+  route.start(); // Initializes can-route
+
+  route.data.username = "JustinMeyer";
+  </script>
+  ```
+  @codepen
+
+  @type {Object} The pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushstate`.
 
 @body
 
 ## Use
 
-__can-route-pushstate__ exports an observable that can be used with [can-route]. To start using can-route-pushstate set the [can-route.urlData] property:
-
-```js
-import { route, RoutePushstate } from "can";
-
-route.urlData = new RoutePushstate();
-```
-
 ### Creating and changing routes
 
-To create routes use [can-route.register] like:
+To create routes use [can-route.register `route.register()`] like:
 
-```js
+```html
+<mock-url pushstate:raw="true"></mock-url>
+<script type="module">
+import {route, RoutePushstate} from "can";
+import "https://unpkg.com/mock-url@next";
+
 route.urlData = new RoutePushstate();
 
 route.register( "{page}", { page: "homepage" } );
@@ -39,9 +56,14 @@ route.register( "contacts/{username}" );
 route.register( "books/{genre}/{author}" );
 
 route.start(); // Initializes can-route
-```
 
-Do not forget to [can-route.start initialize] can-route after creating all routes, do it by calling `route.start()`.
+route.data.username = "JustinMeyer";
+</script>
+```
+@codepen
+@highlight 8-10
+
+Do not forget to [can-route.start initialize] can-route after creating all routes, do it by calling [can-route.start `route.start()`].
 
 ### Listening changes on matched route
 
@@ -51,45 +73,99 @@ To bind to specific attributes on [can-route] you can listen to your viewModel's
 
 ### Using different pathname root
 
-can-route-pushstate has one additional property, [can-route-pushstate.prototype.root], which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
+`can-route-pushstate` has one additional property, [can-route-pushstate.prototype.root], which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
 
 ```js
+import { route, RoutePushstate } from "can";
+
 route.urlData = new RoutePushstate();
 route.urlData.root = "/contacts/";
 route.register( "{page}" );
-route.url( { page: "list" } ); //-> "/contacts/list"
-route.url( { foo: "bar" } );   //-> "/contacts/?foo=bar"
-```
 
-Now, all routes will start with `"/contacts/"`. The default `route.urlData.root` value is `"/"`.
+const listContacts = route.url( { page: "list" } );
+console.log( listContacts ); //-> "/contacts/list"
+
+const params = route.url( { foo: "bar" } );
+console.log( params ); //-> "/contacts/?foo=bar"
+
+```
+@codepen
+
+Now, all routes will start with `"/contacts/"`. The default [can-route-pushstate.prototype.root] value is `"/"`.
 
 ### Updating the current route
 
-can-route-pushstate also allows changes to the current route state without creating a new history entry. This behavior can be controlled using the `replaceStateOn`, `replaceStateOff`, and `replaceStateOnce` methods.
+[can-route-pushstate] also allows changes to the current route state without creating a new history entry. This behavior can be controlled using the [can-route-pushstate.prototype.replaceStateOn `replaceStateOn`], [can-route-pushstate.prototype.replaceStateOff `replaceStateOff`], and [can-route-pushstate.prototype.replaceStateOnce `replaceStateOnce`] methods.
 
-Enable the behavior by calling `replaceStateOn` with specified route property keys like:
+Enable the behavior by calling `replaceStateOn` with specified route property keys. To return back to normal, call `replaceStateOff` with the specified route property keys.
 
-```js
-const push = new RoutePushstate();
-route.urlData = push;
-push.replaceStateOn( "page", "action" );
-route.set( "page", "dashboard" ); // Route changes, no new history record
+In this next example clicking the back button in our mock-url shows the path as _search_ -> _projects_ -> _home_, because [can-route-pushstate.prototype.replaceStateOn] was called when _projects_ was set, instead of creating a new history record the previous one was updated. [can-route-pushstate.prototype.replaceStateOff] was called before setting `route.data.page` to _search_, and a new record was created:
+
+```html
+<mock-url pushstate:raw="true"></mock-url>
+<script type="module">
+import { route, RoutePushstate } from "can";
+import "//unpkg.com/mock-url@next";
+
+route.urlData = new RoutePushstate();
+route.register("{page}");
+route.start();
+
+// New history record is created
+route.data.set( "page", "home" );
+
+// Dashboard will not show up when you click back
+setTimeout(() => {
+  // New history record is created
+  route.data.set( "page", "dashboard" );
+}, 100);
+
+setTimeout(() => {
+  // Mutates the previous history record
+  route.urlData.replaceStateOn( "page" );
+  route.data.set( "page", "projects" );
+}, 200)
+
+setTimeout(() => {
+  // New history record is created
+  route.urlData.replaceStateOff( "page" );
+  route.data.set( "page", "search" );
+}, 300);
+</script>
 ```
+@codepen
+@highlight 21,27
 
-To return back to normal, call `replaceStateOff` with the specified route property keys like:
+The behavior can be configured to occur only once for a specific property using [can-route-pushstate.prototype.replaceStateOnce] like:
 
-```js
-push.replaceStateOff( "action" );
-route.set( "action", "remove" ); // Route changes, new history record is created
+```html
+<mock-url pushstate:raw="true"></mock-url>
+<script type="module">
+import { route, RoutePushstate } from "can";
+import "//unpkg.com/mock-url@next";
+
+route.urlData = new RoutePushstate();
+route.register("{page}");
+route.start();
+
+// New history record is created
+route.data.set( "page", "home" ); 
+
+// Dashboard will not show up when you click back
+setTimeout(() => {
+  // New history record is created
+  route.data.set( "page", "dashboard" );
+}, 100);
+
+setTimeout(() => {
+  // Mutates the previous history record
+  route.urlData.replaceStateOnce( "page" );
+  route.data.set( "page", "search" );
+}, 200);
+</script>
 ```
-
-The behavior can be configured to occur only once for a specific property using `replaceStateOnce` like:
-
-```js
-push.replaceStateOnce( "page" );
-route.set( "page", "dashboard" ); // No new history record
-route.set( "page", "search" ); // New history record is created
-```
+@codepen
+@hightlight 21
 
 
 ## Planning route structure
