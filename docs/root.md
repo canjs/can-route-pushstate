@@ -7,10 +7,10 @@
 routes.  `root` defaults to: `"/"`. The example below shows setting a custom root.
 
   ```html
-  <mock-url pushstate:raw="true"></mock-url>
+  <mock-url pushstate:from="true"></mock-url>
   <script type="module">
   import {route, RoutePushstate} from "can";
-  import "https://unpkg.com/mock-url@next";
+  import "https://unpkg.com/mock-url@^5.1";
 
   route.urlData = new RoutePushstate();
   route.urlData.root = "/movies/";
@@ -30,10 +30,10 @@ routes.  `root` defaults to: `"/"`. The example below shows setting a custom roo
 By default, a route like:
 
 ```html
-<mock-url pushstate:raw="true"></mock-url>
+<mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import {route, RoutePushstate} from "can";
-import "https://unpkg.com/mock-url@next";
+import "https://unpkg.com/mock-url@^5.1";
 
 route.urlData = new RoutePushstate();
 route.register( "{type}/{id}" );
@@ -52,14 +52,14 @@ http://domain.com/contact/5
 ```
 
 But sometimes, you only want to match pages within a certain directory.  For
-example, an application that is a filemanager.  You might want to
+example, an application that is a file manager.  You might want to
 specify root and routes like:
 
 ```html
-<mock-url pushstate:raw="true"></mock-url>
+<mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import {route, RoutePushstate} from "can";
-import "https://unpkg.com/mock-url@next";
+import "https://unpkg.com/mock-url@^5.1";
 
 route.urlData = new RoutePushstate();
 route.urlData.root = "/filemanager/";

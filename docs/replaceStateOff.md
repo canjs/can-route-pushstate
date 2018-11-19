@@ -10,10 +10,10 @@
   In the example clicking the `mock-url` back button will shows the path as _search_ -> _projects_ -> _home_ as setting _projects_ changed the previous history entry instead of creating a new one.
 
   ```html
-  <mock-url pushstate:raw="true"></mock-url>
+  <mock-url pushstate:from="true"></mock-url>
   <script type="module">
   import { route, RoutePushstate } from "can";
-  import "//unpkg.com/mock-url@next";
+  import "//unpkg.com/mock-url@^5.1";
 
   route.urlData = new RoutePushstate();
   route.register("{page}");

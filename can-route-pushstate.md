@@ -8,22 +8,21 @@
 
 @type {RoutePushstate}
 
-  __can-route-pushstate__ exports a `RoutePushstate` constructor function that configures [can-route] to use
-  [pushState](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
+  __can-route-pushstate__ exports a `RoutePushstate` constructor function. That constructor function can be used to create an observable that can be used with [can-route]. It configures [can-route] to use [pushState](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
   to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
   of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 
-  __can-route-pushstate__ exports an observable that can be used with [can-route]. To start using can-route-pushstate set the [can-route.urlData route.urlData] property:
+  To start using can-route-pushstate set the [can-route.urlData route.urlData] property:
 
   ```html
-  <mock-url pushstate:raw="true"></mock-url>
+  <mock-url pushstate:from="true"></mock-url>
   <script type="module">
   import {route, RoutePushstate} from "can";
-  import "https://unpkg.com/mock-url@next";
+  import "https://unpkg.com/mock-url@^5.1";
 
   route.urlData = new RoutePushstate();
 
-  route.register( "{page}", { page: "homepage" } );
+  route.register( "{page}" );
   route.register( "contacts/{username}" );
 
   route.start(); // Initializes can-route
@@ -44,14 +43,14 @@
 To create routes use [can-route.register `route.register()`] like:
 
 ```html
-<mock-url pushstate:raw="true"></mock-url>
+<mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import {route, RoutePushstate} from "can";
-import "https://unpkg.com/mock-url@next";
+import "https://unpkg.com/mock-url@^5.1";
 
 route.urlData = new RoutePushstate();
 
-route.register( "{page}", { page: "homepage" } );
+route.register( "{page}" );
 route.register( "contacts/{username}" );
 route.register( "books/{genre}/{author}" );
 
@@ -102,10 +101,10 @@ Enable the behavior by calling `replaceStateOn` with specified route property ke
 In this next example clicking the back button in our mock-url shows the path as _search_ -> _projects_ -> _home_, because [can-route-pushstate.prototype.replaceStateOn] was called when _projects_ was set, instead of creating a new history record the previous one was updated. [can-route-pushstate.prototype.replaceStateOff] was called before setting `route.data.page` to _search_, and a new record was created:
 
 ```html
-<mock-url pushstate:raw="true"></mock-url>
+<mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import { route, RoutePushstate } from "can";
-import "//unpkg.com/mock-url@next";
+import "//unpkg.com/mock-url@^5.1";
 
 route.urlData = new RoutePushstate();
 route.register("{page}");
@@ -139,10 +138,10 @@ setTimeout(() => {
 The behavior can be configured to occur only once for a specific property using [can-route-pushstate.prototype.replaceStateOnce] like:
 
 ```html
-<mock-url pushstate:raw="true"></mock-url>
+<mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import { route, RoutePushstate } from "can";
-import "//unpkg.com/mock-url@next";
+import "//unpkg.com/mock-url@^5.1";
 
 route.urlData = new RoutePushstate();
 route.register("{page}");

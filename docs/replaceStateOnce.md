@@ -8,10 +8,10 @@
   `replaceStateOnce` changes the behavior of [can-route-pushstate] from using [pushState](https://developer.mozilla.org/en-US/docs/Web/API/History_API#The_pushState()_method) to [replaceState](https://developer.mozilla.org/en-US/docs/Web/API/History_API#The_replaceState()_method) for the _next_ route change. This allows for one change to the specified routes without creating new history entries.
 
   ```html
-  <mock-url pushstate:raw="true"></mock-url>
+  <mock-url pushstate:from="true"></mock-url>
   <script type="module">
   import { route, RoutePushstate } from "can";
-  import "//unpkg.com/mock-url@next";
+  import "//unpkg.com/mock-url@^5.1";
 
   route.urlData = new RoutePushstate();
   route.register("{page}");
