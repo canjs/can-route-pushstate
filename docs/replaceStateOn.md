@@ -13,7 +13,7 @@
   <mock-url pushstate:from="true"></mock-url>
   <script type="module">
   import { route, RoutePushstate } from "can";
-  import "//unpkg.com/mock-url@^5.1";
+  import "//unpkg.com/mock-url@^5.1.1-rc1";
 
   route.urlData = new RoutePushstate();
   route.register("{page}");
