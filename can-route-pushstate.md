@@ -4,12 +4,15 @@
 @package ./package.json
 @group can-route-pushstate.prototype prototype
 
-@description An observable that can be used as [can-route]'s [can-route.urlData].
+@description Make [can-route] update the
+url's [https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/pathname pathname] with
+[https://developer.mozilla.org/en-US/docs/Web/API/History pushState].
 
 @type {RoutePushstate}
 
-  __can-route-pushstate__ exports a `RoutePushstate` constructor function. That constructor function can be used to create an observable that can be used with [can-route]. It configures [can-route] to use [pushState](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
-  to change the window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
+  __can-route-pushstate__ exports a `RoutePushstate` constructor function. That constructor function creates observables that are
+  two-way bound to the browser's url. When the [can-route.urlData route.urlData] is set to one of those observabes, [can-route]
+  will window's [pathname](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.pathname) instead
   of the [hash](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils.hash).
 
   To start using can-route-pushstate set the [can-route.urlData route.urlData] property:
@@ -31,8 +34,6 @@
   </script>
   ```
   @codepen
-
-  @type {Object} The pushstate object comprises several properties that configure the behavior of [can-route] to work with `history.pushstate`.
 
 @body
 
@@ -148,7 +149,7 @@ route.register("{page}");
 route.start();
 
 // New history record is created
-route.data.set( "page", "home" ); 
+route.data.set( "page", "home" );
 
 // Dashboard will not show up when you click back
 setTimeout(() => {
