@@ -18,7 +18,7 @@
   <mock-url pushstate:from="true"></mock-url>
   <script type="module">
   import {route, RoutePushstate} from "can";
-  import "https://unpkg.com/mock-url@^5.1";
+  import "//unpkg.com/mock-url@^5.1.1-rc1";
 
   route.urlData = new RoutePushstate();
 
@@ -46,7 +46,7 @@ To create routes use [can-route.register `route.register()`] like:
 <mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import {route, RoutePushstate} from "can";
-import "https://unpkg.com/mock-url@^5.1";
+import "//unpkg.com/mock-url@^5.1.1-rc1";
 
 route.urlData = new RoutePushstate();
 
@@ -104,7 +104,7 @@ In this next example clicking the back button in our mock-url shows the path as 
 <mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import { route, RoutePushstate } from "can";
-import "//unpkg.com/mock-url@^5.1";
+import "//unpkg.com/mock-url@^5.1.1-rc1";
 
 route.urlData = new RoutePushstate();
 route.register("{page}");
@@ -141,7 +141,7 @@ The behavior can be configured to occur only once for a specific property using 
 <mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import { route, RoutePushstate } from "can";
-import "//unpkg.com/mock-url@^5.1";
+import "//unpkg.com/mock-url@^5.1.1-rc1";
 
 route.urlData = new RoutePushstate();
 route.register("{page}");

@@ -10,7 +10,7 @@ routes.  `root` defaults to: `"/"`. The example below shows setting a custom roo
   <mock-url pushstate:from="true"></mock-url>
   <script type="module">
   import {route, RoutePushstate} from "can";
-  import "https://unpkg.com/mock-url@^5.1";
+  import "//unpkg.com/mock-url@^5.1.1-rc1";
 
   route.urlData = new RoutePushstate();
   route.urlData.root = "/movies/";
@@ -33,7 +33,7 @@ By default, a route like:
 <mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import {route, RoutePushstate} from "can";
-import "https://unpkg.com/mock-url@^5.1";
+import "//unpkg.com/mock-url@^5.1.1-rc1";
 
 route.urlData = new RoutePushstate();
 route.register( "{type}/{id}" );
@@ -59,7 +59,7 @@ specify root and routes like:
 <mock-url pushstate:from="true"></mock-url>
 <script type="module">
 import {route, RoutePushstate} from "can";
-import "https://unpkg.com/mock-url@^5.1";
+import "//unpkg.com/mock-url@^5.1.1-rc1";
 
 route.urlData = new RoutePushstate();
 route.urlData.root = "/filemanager/";
