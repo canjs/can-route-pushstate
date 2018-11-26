@@ -269,7 +269,26 @@ setTimeout(() => {
 @codepen
 @hightlight 21
 
+## Making reload work
 
+The reload button typically will __not__ work by default in a website that uses `pushState`.  Developers typically
+need to:
+
+- Make sure the server respond with HTML for all URLs that a user might navigate to.  For example: `/about` and `tournaments/2018/games/4`.
+- The HTML and JavaScript loaded by those pages references all resources correctly.  For example:
+  - An image at `/about` might be referenced like `<img src="./static/img/logo.png"/>`.
+  - But the same image at `tournaments/2018/games/4` would need to be referenced like `<img src="../../../static/img/logo.png"/>`
+
+One option is to use only absolute paths.  For example:
+
+- An image at `/about` would be referenced like `<img src="/static/img/logo.png"/>`.
+- The same image at `tournaments/2018/games/4` would need be referenced like `<img src="/static/img/logo.png"/>`
+
+The problem with this approach is that your app is not as easily transportable.  For example, it couldn't easily be moved from
+`http://yourdomain.com` to
+`http://yourdomain.com/app/your-app`.
+
+For supporting relative paths, you can use [can-join-uris] and [can-stache.helpers.joinBase].
 
 ## Planning route structure
 
