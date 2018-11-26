@@ -202,7 +202,7 @@ The urls returned by `getLocation` will work for both hash and pushState based r
 
 ## Using a different pathname root
 
-`can-route-pushstate` has one additional property, [can-route-pushstate.prototype.root], which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
+`RoutePushstate` has an additional property, [can-route-pushstate.prototype.root], which specifies the part of that pathname that should not change. For example, if we only want to have pathnames within `http://example.com/contacts/`, we can specify a root like:
 
 ```js
 import { route, RoutePushstate } from "can";
