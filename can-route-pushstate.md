@@ -88,6 +88,7 @@ used.
 
 ## Differences between pushState and hashchange based routing
 
+
 The biggest difference between using `RoutePushstate` and the default [can-route-hash hashchange routing] is
 that:
 
@@ -143,35 +144,61 @@ console.log( route.data ) //-> {page: "page-value", keyA: "valueA", keyB: "value
 ```
 @codepen
 
+## Changing routes
+
+In general, you should not call `history.pushState` and `history.replaceState`
+directly (even though it is supported).  Instead of this:
+
+```js
+history.pushState({},"Cats","/cats");
+```
+
+You should either:
+
+- Change the state of `route.data` like:
+  ```js
+  route.data.page = "cats";
+  ```
+- Create links with [can-stache-route-helpers.routeUrl]:
+  ```js
+  <a href="{{ routeUrl( page='cats' ) }}">cats</a>
+  ```
+
+These techniques will make sure you can switch between pushState and hashchange
+routing. You will also be able to change the routing rules without having to update
+the entire application.
 
 
+If you do need to get a URL to call `.pushState` or to set `window.location`,
+you can get it as follows:
 
-### Creating and changing routes
+```js
+import {route, globals, RoutePushstate} from "can";
 
-To create routes use [can-route.register `route.register()`] like:
+function getLocation(data) {
+    // get the location from globals in case SSR might be changing it
+    var location = globals.getKeyValue("location");
+    // Get what URL we are currently at
+    var url = (location.pathname + location.search+ location.hash);
+    // Figure out what part of the url isn't being modified by can-route
+		var index = url.indexOf(route.urlData.root);
+    var baseUrl = url.substr(0, index);
+    // Translate the state in data to a url
+    return baseUrl+route.url(data);
+}
 
-```html
-<mock-url pushstate:from="true"></mock-url>
-<script type="module">
-import {route, RoutePushstate} from "can";
-import "//unpkg.com/mock-url@^5.1.1-rc1";
+history.pushState({},"","/contacts/user?id=2")
 
+route.register("{page}");
 route.urlData = new RoutePushstate();
+route.urlData.root = "/contacts/";
+route.start();
 
-route.register( "{page}" );
-route.register( "contacts/{username}" );
-route.register( "books/{genre}/{author}" );
-
-route.start(); // Initializes can-route
-
-route.data.username = "JustinMeyer";
-</script>
+console.log( getLocation({page: "login"}) ) //-> /contacts/login
 ```
 @codepen
-@highlight 8-10
 
-Do not forget to [can-route.start initialize] can-route after creating all routes, do it by calling [can-route.start `route.start()`].
-
+The urls returned by `getLocation` will work for both hash and pushState based routing.
 
 ## Using a different pathname root
 
@@ -189,7 +216,6 @@ console.log( listContacts ); //-> "/contacts/list"
 
 const params = route.url( { foo: "bar" } );
 console.log( params ); //-> "/contacts/?foo=bar"
-
 ```
 @codepen
 
