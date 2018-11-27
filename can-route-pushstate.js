@@ -1,11 +1,12 @@
 // # can-route-pushstate.js
-//
+
 // Plugin for `route` which uses browser `history.pushState` support
 // to update window's pathname instead of the `hash`.
-//
+
 // It registers itself as binding on `route`, intercepts `click` events
 // on `<a>` elements across document and accordingly updates `route` state
 // and window's pathname.
+
 /*jshint maxdepth:6, scripturl:true*/
 "use strict";
 var route = require('can-route');
@@ -26,10 +27,15 @@ var domEvents = require('can-dom-events');
 
 var diffObject = require('can-diff/map/map');
 
+// ## methodsToOverwrite
 // Original methods on `history` that will be overwritten
 var methodsToOverwrite = ['pushState', 'replaceState'];
 
-// Always returns clean root, without domain.
+// ## Helpers
+// The following are helper functions useful to `can-route-pushstate`'s main methods.
+
+// ### cleanRoot
+// Returns the clean root, without the main domain.
 var cleanRoot = function() {
 	var location = LOCATION();
 	var domain = location.protocol + "//" + location.host,
@@ -41,9 +47,7 @@ var cleanRoot = function() {
 	return root;
 };
 
-// Handler function for `click` events.
-// Checks if a route is matched, if one is, calls `.pushState`
-
+// ### getCurrentUrl
 // gets the current url after the root
 function getCurrentUrl() {
 	var root = cleanRoot(),
@@ -54,12 +58,9 @@ function getCurrentUrl() {
 	return loc.substr(index + root.length);
 }
 
-
+// ## PushstateObservable
+// creates an instance of the PushstateObservable
 function PushstateObservable() {
-	/*
-	 * - replaceStateKeys
-	 * - replaceStateOnceKeys
-	 */
 	this.options = {
 		replaceStateOnceKeys: [],
 		replaceStateKeys: []
@@ -123,9 +124,12 @@ canReflect.assign(PushstateObservable.prototype, {
 	 *
 	 */
 
+	// ### root
 	// Start of `location.pathname` is the root.
 	// (Can be configured via `route.urlData.root`)
 	root: "/",
+
+	// ### matchSlashes
 	// don't greedily match slashes in routing rules
 	matchSlashes: false,
 	paramsMatcher: /^\?(?:[^=]+=[^&]*&)*[^=]+=[^&]*/,
@@ -149,19 +153,23 @@ canReflect.assign(PushstateObservable.prototype, {
 			queues.enqueueByQueue.apply(queues, queuesArgs);
 		}
 	},
+
+	// ### anchorClickHandler
+	// Handler function for `click` events.
+	// Checks if a route is matched, if one is, calls `.pushState`
 	anchorClickHandler: function(node, e) {
 
 		if (!(e.isDefaultPrevented ? e.isDefaultPrevented() : e.defaultPrevented === true)) {
-			// Fix for IE showing blank host, but blank host means current host.
+			// linksHost is a Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
 
-			// href has some JS in it, let it run
+			// if href has some JavaScript in it, let it run
 			if (node.href === "javascript://") {
 				return;
 			}
 
 			// Do not push state if target is for blank window
-			if (node.target === '_blank') {
+			if (node.target === "_blank") {
 				return;
 			}
 
@@ -203,14 +211,14 @@ canReflect.assign(PushstateObservable.prototype, {
 							e.preventDefault();
 						}
 
-						// Now update window.location
+						// Update window.location
 						window.history.pushState(null, null, node.href);
-
 					}
 				}
 			}
 		}
 	},
+
 	setup: function() {
 		if (isNode()) {
 			return;
@@ -240,6 +248,7 @@ canReflect.assign(PushstateObservable.prototype, {
 		// Bind to `popstate` event, fires on back/forward.
 		domEvents.addEventListener(window, 'popstate', this.dispatchHandlers);
 	},
+
 	teardown: function() {
 		if(isNode()) {
 			return;
@@ -256,10 +265,12 @@ canReflect.assign(PushstateObservable.prototype, {
 
 		domEvents.removeEventListener(window, 'popstate', this.dispatchHandlers);
 	},
+	
 	get: function get() {
 		ObservationRecorder.add(this);
 		return getCurrentUrl();
 	},
+
 	set: function(path) {
 		var newProps = route.deparam(path);
 		var oldProps = route.deparam(getCurrentUrl());
@@ -285,19 +296,17 @@ canReflect.assign(PushstateObservable.prototype, {
 			});
 		}
 		if (this.options.replaceStateOnceKeys.length) {
-			for (var i = this.options.replaceStateOnceKeys.length - 1; i >= 0; i--) {
-				var replaceOnceKey = this.options.replaceStateOnceKeys[i];
-
-				if (changed[replaceOnceKey]) {
-					method = "replaceState";
-					// remove so we don't do this again
-					this.options.replaceStateOnceKeys.splice(i, 1);
-				}
-			}
+			this.options.replaceStateOnceKeys
+				.forEach(function(replaceOnceKey, index, thisArray) {
+					if (changed[replaceOnceKey]) {
+						method = "replaceState";
+						// remove so we don't attempt to replace state again
+						thisArray.splice(index, 1);
+					}
+				});
 		}
 		window.history[method](null, null, bindingProxy.call("root") + path);
 	},
-
 
 	replaceStateOn: function() {
 		canReflect.addValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
