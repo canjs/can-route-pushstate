@@ -9,7 +9,7 @@
 
 /*jshint maxdepth:6, scripturl:true*/
 "use strict";
-var route = require('can-route');
+var route = require("can-route");
 var bindingProxy = require("can-route/src/binding-proxy");
 var canReflect = require("can-reflect");
 var KeyTree = require("can-key-tree");
@@ -18,19 +18,19 @@ var queues = require("can-queues");
 var SimpleObservable = require("can-simple-observable");
 var ObservationRecorder = require("can-observation-recorder");
 
-var isNode = require('can-globals/is-node/is-node');
-var LOCATION = require('can-globals/location/location');
-var getDocument = require('can-globals/document/document');
-var getGlobal = require('can-globals/global/global');
+var isNode = require("can-globals/is-node/is-node");
+var LOCATION = require("can-globals/location/location");
+var getDocument = require("can-globals/document/document");
+var getGlobal = require("can-globals/global/global");
 
-var domEvents = require('can-dom-events');
+var domEvents = require("can-dom-events");
 
-var diffObject = require('can-diff/map/map');
+var diffObject = require("can-diff/map/map");
 
 // ## methodsToOverwrite
 // Original methods on `history` that will be overwritten
 // during teardown these are reset to their original function.
-var methodsToOverwrite = ['pushState', 'replaceState'];
+var methodsToOverwrite = ["pushState", "replaceState"];
 
 // ## Helpers
 // The following are helper functions useful to `can-route-pushstate`'s main methods.
@@ -72,8 +72,6 @@ function PushstateObservable() {
 	this.anchorClickHandler = function(event) {
 		PushstateObservable.prototype.anchorClickHandler.call(self, this, event);
 	};
-	// ### this.handlers
-	// 
 	this.handlers = new KeyTree([Object, Array], {
 		onFirst: this.setup.bind(this),
 		onEmpty: this.teardown.bind(this)
@@ -92,7 +90,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	// don't greedily match slashes in routing rules
 	matchSlashes: false,
 	paramsMatcher: /^\?(?:[^=]+=[^&]*&)*[^=]+=[^&]*/,
-	querySeparator: '?',
+	querySeparator: "?",
 
 	// ### dispatchHandlers
 	dispatchHandlers: function() {
@@ -105,7 +103,7 @@ canReflect.assign(PushstateObservable.prototype, {
 			queuesArgs = [this.handlers.getNode([]), this, [this._value, old]];
 			/* !steal-remove-start */
 			// if not in production, provide a reason log
-			if (process.env.NODE_ENV !== 'production') {
+			if (process.env.NODE_ENV !== "production") {
 				queuesArgs = [
 					this.handlers.getNode([]), this, [this._value, old]
 					/* jshint laxcomma: true */
@@ -196,7 +194,7 @@ canReflect.assign(PushstateObservable.prototype, {
 		this._value = getCurrentUrl();
 
 		// Intercept routable links.
-		domEvents.addDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
+		domEvents.addDelegateListener(document.documentElement, "click", "a", this.anchorClickHandler);
 		var originalMethods = this.originalMethods = {};
 		var dispatchHandlers = this.dispatchHandlers;
 
@@ -218,7 +216,7 @@ canReflect.assign(PushstateObservable.prototype, {
 		}, this);
 
 		// Bind to `popstate` event, fires on back/forward.
-		domEvents.addEventListener(window, 'popstate', this.dispatchHandlers);
+		domEvents.addEventListener(window, "popstate", this.dispatchHandlers);
 	},
 
 	teardown: function() {
@@ -230,13 +228,13 @@ canReflect.assign(PushstateObservable.prototype, {
 		var document = getDocument();
 		var window = getGlobal();
 
-		domEvents.removeDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
+		domEvents.removeDelegateListener(document.documentElement, "click", "a", this.anchorClickHandler);
 
 		canReflect.eachKey(methodsToOverwrite, function(method) {
 			window.history[method] = this.originalMethods[method];
 		}, this);
 
-		domEvents.removeEventListener(window, 'popstate', this.dispatchHandlers);
+		domEvents.removeEventListener(window, "popstate", this.dispatchHandlers);
 	},
 
 	get: function get() {
@@ -305,7 +303,7 @@ var pushstateObservableProto = {
 };
 
 /* !steal-remove-start */
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
 	pushstateObservableProto["can.getName"] = function() {
 		return "PushstateObservable<" + this._value + ">";
 	};
