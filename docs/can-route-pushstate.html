@@ -57,7 +57,7 @@ and window’s pathname.</p>
             <div class="content"><div class='highlight'><pre>
 <span class="hljs-comment">/*jshint maxdepth:6, scripturl:true*/</span>
 <span class="hljs-meta">"use strict"</span>;
-<span class="hljs-keyword">var</span> route = <span class="hljs-built_in">require</span>(<span class="hljs-string">'can-route'</span>);
+<span class="hljs-keyword">var</span> route = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-route"</span>);
 <span class="hljs-keyword">var</span> bindingProxy = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-route/src/binding-proxy"</span>);
 <span class="hljs-keyword">var</span> canReflect = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-reflect"</span>);
 <span class="hljs-keyword">var</span> KeyTree = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-key-tree"</span>);
@@ -66,14 +66,14 @@ and window’s pathname.</p>
 <span class="hljs-keyword">var</span> SimpleObservable = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-simple-observable"</span>);
 <span class="hljs-keyword">var</span> ObservationRecorder = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-observation-recorder"</span>);
 
-<span class="hljs-keyword">var</span> isNode = <span class="hljs-built_in">require</span>(<span class="hljs-string">'can-globals/is-node/is-node'</span>);
-<span class="hljs-keyword">var</span> LOCATION = <span class="hljs-built_in">require</span>(<span class="hljs-string">'can-globals/location/location'</span>);
-<span class="hljs-keyword">var</span> getDocument = <span class="hljs-built_in">require</span>(<span class="hljs-string">'can-globals/document/document'</span>);
-<span class="hljs-keyword">var</span> getGlobal = <span class="hljs-built_in">require</span>(<span class="hljs-string">'can-globals/global/global'</span>);
+<span class="hljs-keyword">var</span> isNode = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-globals/is-node/is-node"</span>);
+<span class="hljs-keyword">var</span> LOCATION = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-globals/location/location"</span>);
+<span class="hljs-keyword">var</span> getDocument = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-globals/document/document"</span>);
+<span class="hljs-keyword">var</span> getGlobal = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-globals/global/global"</span>);
 
-<span class="hljs-keyword">var</span> domEvents = <span class="hljs-built_in">require</span>(<span class="hljs-string">'can-dom-events'</span>);
+<span class="hljs-keyword">var</span> domEvents = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-dom-events"</span>);
 
-<span class="hljs-keyword">var</span> diffObject = <span class="hljs-built_in">require</span>(<span class="hljs-string">'can-diff/map/map'</span>);</pre></div></div>
+<span class="hljs-keyword">var</span> diffObject = <span class="hljs-built_in">require</span>(<span class="hljs-string">"can-diff/map/map"</span>);</pre></div></div>
             
         </li>
         
@@ -85,11 +85,12 @@ and window’s pathname.</p>
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <h2 id="methodstooverwrite">methodsToOverwrite</h2>
-<p>Original methods on <code>history</code> that will be overwritten</p>
+<p>Original methods on <code>history</code> that will be overwritten
+during teardown these are reset to their original function.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> methodsToOverwrite = [<span class="hljs-string">'pushState'</span>, <span class="hljs-string">'replaceState'</span>];</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> methodsToOverwrite = [<span class="hljs-string">"pushState"</span>, <span class="hljs-string">"replaceState"</span>];</pre></div></div>
             
         </li>
         
@@ -121,8 +122,22 @@ and window’s pathname.</p>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cleanRoot = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 	<span class="hljs-keyword">var</span> location = LOCATION();
-	<span class="hljs-keyword">var</span> domain = location.protocol + <span class="hljs-string">"//"</span> + location.host,
-		root = bindingProxy.call(<span class="hljs-string">"root"</span>),
+	<span class="hljs-keyword">var</span> domain = location.protocol + <span class="hljs-string">"//"</span> + location.host,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>pulls root from route.urlData</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		root = bindingProxy.call(<span class="hljs-string">"root"</span>),
 		index = root.indexOf(domain);
 	<span class="hljs-keyword">if</span> (index === <span class="hljs-number">0</span>) {
 		<span class="hljs-keyword">return</span> root.substr(domain.length);
@@ -133,11 +148,11 @@ and window’s pathname.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <h3 id="getcurrenturl">getCurrentUrl</h3>
 <p>gets the current url after the root</p>
@@ -156,11 +171,11 @@ and window’s pathname.</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <h2 id="pushstateobservable">PushstateObservable</h2>
 <p>creates an instance of the PushstateObservable</p>
@@ -168,10 +183,6 @@ and window’s pathname.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">PushstateObservable</span>(<span class="hljs-params"></span>) </span>{
-	<span class="hljs-comment">/*
-	 * - replaceStateKeys
-	 * - replaceStateOnceKeys
-	 */</span>
 	<span class="hljs-keyword">this</span>.options = {
 		<span class="hljs-attr">replaceStateOnceKeys</span>: [],
 		<span class="hljs-attr">replaceStateKeys</span>: []
@@ -189,67 +200,7 @@ and window’s pathname.</p>
 }
 PushstateObservable.prototype = <span class="hljs-built_in">Object</span>.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
-canReflect.assign(PushstateObservable.prototype, {
-	<span class="hljs-comment">/**
-	 * @property {String} can-route-pushstate.prototype.root root
-	 * @parent can-route-pushstate.prototype
-	 *
-	 * @description Configure the base url that will not be modified.
-	 *
-	 * @option {String} Represents the base url that pushstate will prepend to all
-	 * routes.  `root` defaults to: `"/"`.
-	 *
-	 * @body
-	 *
-	 * ## Use
-	 *
-	 * By default, a route like:
-	 *
-	 * ```js
-	 * route.urlData = new RoutePushstate();
-	 * route.register( "{type}/{id}" );
-	 * ```
-	 *
-	 * Matches URLs like:
-	 *
-	 * ```
-	 * http://domain.com/contact/5
-	 * ```
-	 *
-	 * But sometimes, you only want to match pages within a certain directory.  For
-	 * example, an application that is a filemanager.  You might want to
-	 * specify root and routes like:
-	 *
-	 * ```js
-	 * route.urlData = new RoutePushstate();
-	 * route.urlData.root = "/filemanager/";
-	 * route.register( "file-{fileId}" );
-	 * route.register( "folder-{fileId}" );
-	 * ```
-	 *
-	 * Which matches URLs like:
-	 *
-	 * ```
-	 * http://domain.com/filemanager/file-34234
-	 * ```
-	 *
-	 */</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
-              </div>
-              <p>Start of <code>location.pathname</code> is the root.
-(Can be configured via <code>route.urlData.root</code>)</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>	root: <span class="hljs-string">"/"</span>,</pre></div></div>
+canReflect.assign(PushstateObservable.prototype, {</pre></div></div>
             
         </li>
         
@@ -260,19 +211,13 @@ canReflect.assign(PushstateObservable.prototype, {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <p>don’t greedily match slashes in routing rules</p>
+              <h3 id="root">root</h3>
+<p>Start of <code>location.pathname</code> is the root.
+(Can be configured via <code>route.urlData.root</code>)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>	matchSlashes: <span class="hljs-literal">false</span>,
-	<span class="hljs-attr">paramsMatcher</span>: <span class="hljs-regexp">/^\?(?:[^=]+=[^&amp;]*&amp;)*[^=]+=[^&amp;]*/</span>,
-	<span class="hljs-attr">querySeparator</span>: <span class="hljs-string">'?'</span>,
-	<span class="hljs-attr">dispatchHandlers</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-		<span class="hljs-keyword">var</span> old = <span class="hljs-keyword">this</span>._value;
-		<span class="hljs-keyword">var</span> queuesArgs = [];
-		<span class="hljs-keyword">this</span>._value = getCurrentUrl();
-		<span class="hljs-keyword">if</span> (old !== <span class="hljs-keyword">this</span>._value) {
-			queuesArgs = [<span class="hljs-keyword">this</span>.handlers.getNode([]), <span class="hljs-keyword">this</span>, [<span class="hljs-keyword">this</span>._value, old]];</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	root: <span class="hljs-string">"/"</span>,</pre></div></div>
             
         </li>
         
@@ -283,18 +228,13 @@ canReflect.assign(PushstateObservable.prototype, {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
-              <p>!steal-remove-start</p>
+              <p>don’t greedily match slashes in routing rules</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (process.env.NODE_ENV !== <span class="hljs-string">'production'</span>) {
-				queuesArgs = [
-					<span class="hljs-keyword">this</span>.handlers.getNode([]), <span class="hljs-keyword">this</span>, [<span class="hljs-keyword">this</span>._value, old]
-					<span class="hljs-comment">/* jshint laxcomma: true */</span>
-					, <span class="hljs-literal">null</span>, [canReflect.getName(<span class="hljs-keyword">this</span>), <span class="hljs-string">"changed to"</span>, <span class="hljs-keyword">this</span>._value, <span class="hljs-string">"from"</span>, old]
-					<span class="hljs-comment">/* jshint laxcomma: false */</span>
-				];
-			}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	matchSlashes: <span class="hljs-literal">false</span>,
+	<span class="hljs-attr">paramsMatcher</span>: <span class="hljs-regexp">/^\?(?:[^=]+=[^&amp;]*&amp;)*[^=]+=[^&amp;]*/</span>,
+	<span class="hljs-attr">querySeparator</span>: <span class="hljs-string">"?"</span>,</pre></div></div>
             
         </li>
         
@@ -305,13 +245,14 @@ canReflect.assign(PushstateObservable.prototype, {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <p>!steal-remove-end</p>
+              <h3 id="dispatchhandlers">dispatchHandlers</h3>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>			queues.enqueueByQueue.apply(queues, queuesArgs);
-		}
-	},</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	dispatchHandlers: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+		<span class="hljs-keyword">var</span> old = <span class="hljs-keyword">this</span>._value;
+		<span class="hljs-keyword">var</span> queuesArgs = [];
+		<span class="hljs-keyword">this</span>._value = getCurrentUrl();</pre></div></div>
             
         </li>
         
@@ -322,14 +263,13 @@ canReflect.assign(PushstateObservable.prototype, {
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <p>Handler function for <code>click</code> events.
-Checks if a route is matched, if one is, calls <code>.pushState</code></p>
+              <p>if the url changed call <code>setup</code> or <code>teardown</code></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>	anchorClickHandler: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">node, e</span>) </span>{
-
-		<span class="hljs-keyword">if</span> (!(e.isDefaultPrevented ? e.isDefaultPrevented() : e.defaultPrevented === <span class="hljs-literal">true</span>)) {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (old !== <span class="hljs-keyword">this</span>._value) {
+			queuesArgs = [<span class="hljs-keyword">this</span>.handlers.getNode([]), <span class="hljs-keyword">this</span>, [<span class="hljs-keyword">this</span>._value, old]];
+			<span class="hljs-comment">/* !steal-remove-start */</span></pre></div></div>
             
         </li>
         
@@ -340,11 +280,22 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <p>Fix for IE showing blank host, but blank host means current host.</p>
+              <p>if not in production, provide a reason log</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> linksHost = node.host || <span class="hljs-built_in">window</span>.location.host;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (process.env.NODE_ENV !== <span class="hljs-string">"production"</span>) {
+				queuesArgs = [
+					<span class="hljs-keyword">this</span>.handlers.getNode([]), <span class="hljs-keyword">this</span>, [<span class="hljs-keyword">this</span>._value, old]
+					<span class="hljs-comment">/* jshint laxcomma: true */</span>
+					, <span class="hljs-literal">null</span>, [canReflect.getName(<span class="hljs-keyword">this</span>), <span class="hljs-string">"changed to"</span>, <span class="hljs-keyword">this</span>._value, <span class="hljs-string">"from"</span>, old]
+					<span class="hljs-comment">/* jshint laxcomma: false */</span>
+				];
+			}
+			<span class="hljs-comment">/* !steal-remove-end */</span>
+			queues.enqueueByQueue.apply(queues, queuesArgs);
+		}
+	},</pre></div></div>
             
         </li>
         
@@ -355,13 +306,15 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
-              <p>href has some JS in it, let it run</p>
+              <h3 id="anchorclickhandler">anchorClickHandler</h3>
+<p>Handler function for <code>click</code> events.
+Checks if a route is matched, if one is, calls <code>.pushState</code></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (node.href === <span class="hljs-string">"javascript://"</span>) {
-				<span class="hljs-keyword">return</span>;
-			}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>	anchorClickHandler: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">node, event</span>) </span>{
+
+		<span class="hljs-keyword">if</span> (!(event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented === <span class="hljs-literal">true</span>)) {</pre></div></div>
             
         </li>
         
@@ -372,13 +325,11 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
-              <p>Do not push state if target is for blank window</p>
+              <p>linksHost is a Fix for IE showing blank host, but blank host means current host.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (node.target === <span class="hljs-string">'_blank'</span>) {
-				<span class="hljs-keyword">return</span>;
-			}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">var</span> linksHost = node.host || <span class="hljs-built_in">window</span>.location.host;</pre></div></div>
             
         </li>
         
@@ -389,11 +340,11 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <p>Do not push state if meta key was pressed, mimicking standard browser behavior</p>
+              <p>if href has some JavaScript in it, let it run</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (node.href === <span class="hljs-string">"javascript://"</span>) {
 				<span class="hljs-keyword">return</span>;
 			}</pre></div></div>
             
@@ -406,12 +357,13 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
-              <p>If link is within the same domain and descendant of <code>root</code></p>
+              <p>Do not push state if target is for blank window</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (<span class="hljs-built_in">window</span>.location.host === linksHost) {
-				<span class="hljs-keyword">var</span> root = cleanRoot();</pre></div></div>
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (node.target === <span class="hljs-string">"_blank"</span>) {
+				<span class="hljs-keyword">return</span>;
+			}</pre></div></div>
             
         </li>
         
@@ -422,11 +374,13 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
-              <p>And the link is within the <code>root</code></p>
+              <p>Do not push state if meta key was pressed, mimicking standard browser behavior</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">if</span> (node.pathname.indexOf(root) === <span class="hljs-number">0</span>) {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+				<span class="hljs-keyword">return</span>;
+			}</pre></div></div>
             
         </li>
         
@@ -436,6 +390,37 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>If link is within the same domain and descendant of <code>root</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (<span class="hljs-built_in">window</span>.location.host === linksHost) {
+				<span class="hljs-keyword">var</span> root = cleanRoot();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>If the link is within the <code>root</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>				<span class="hljs-keyword">if</span> (node.pathname.indexOf(root) === <span class="hljs-number">0</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p>Removes root from url.</p>
 
@@ -447,13 +432,13 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
-              <p>If we’ve matched a route</p>
+              <p>If a matching route exists</p>
 
             </div>
             
@@ -462,11 +447,11 @@ Checks if a route is matched, if one is, calls <code>.pushState</code></p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <p>Makes it possible to have a link with a hash.
 Calling .pushState will dispatch events, causing
@@ -482,11 +467,11 @@ the url without the hash.  We need to retain that.</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <p>We do not want to call preventDefault() if the link is to the
 same page and just a different hash; see can-route-pushstate#75</p>
@@ -499,64 +484,19 @@ same page and just a different hash; see can-route-pushstate#75</p>
         </li>
         
         
-        <li id="section-24">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
-              </div>
-              <p>Test if you can preventDefault
-our tests can’t call .click() b/c this
-freezes phantom.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>						<span class="hljs-keyword">if</span> (shouldCallPreventDefault &amp;&amp; e.preventDefault) {
-							e.preventDefault();
-						}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-25">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-25">&#182;</a>
-              </div>
-              <p>Now update window.location</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>						<span class="hljs-built_in">window</span>.history.pushState(<span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, node.href);
-
-					}
-				}
-			}
-		}
-	},
-	<span class="hljs-attr">setup</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-		<span class="hljs-keyword">if</span> (isNode()) {
-			<span class="hljs-keyword">return</span>;
-		}
-		<span class="hljs-keyword">this</span>._value = getCurrentUrl();</pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
-              <p>Intercept routable links.</p>
+              <p>Test if you can preventDefault</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>		domEvents.addDelegateListener(<span class="hljs-built_in">document</span>.documentElement, <span class="hljs-string">'click'</span>, <span class="hljs-string">'a'</span>, <span class="hljs-keyword">this</span>.anchorClickHandler);
-		<span class="hljs-keyword">var</span> originalMethods = <span class="hljs-keyword">this</span>.originalMethods = {};
-		<span class="hljs-keyword">var</span> dispatchHandlers = <span class="hljs-keyword">this</span>.dispatchHandlers;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>						<span class="hljs-keyword">if</span> (shouldCallPreventDefault &amp;&amp; event.preventDefault) {
+							event.preventDefault();
+						}</pre></div></div>
             
         </li>
         
@@ -566,6 +506,80 @@ freezes phantom.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>Update window.location</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>						<span class="hljs-built_in">window</span>.history.pushState(<span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, node.href);
+					}
+				}
+			}
+		}
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <h3 id="setup">setup</h3>
+<p>Initalizes this._value
+Sets up event listerns to capture routable links.
+Overwrites the history api methods <code>.pushState</code> and <code>.replaceState</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	setup: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>if running in Node.js, don’t setup.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span> (isNode()) {
+			<span class="hljs-keyword">return</span>;
+		}
+
+		<span class="hljs-keyword">this</span>._value = getCurrentUrl();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Intercept routable links.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		domEvents.addDelegateListener(<span class="hljs-built_in">document</span>.documentElement, <span class="hljs-string">"click"</span>, <span class="hljs-string">"a"</span>, <span class="hljs-keyword">this</span>.anchorClickHandler);
+		<span class="hljs-keyword">var</span> originalMethods = <span class="hljs-keyword">this</span>.originalMethods = {};
+		<span class="hljs-keyword">var</span> dispatchHandlers = <span class="hljs-keyword">this</span>.dispatchHandlers;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <p>Rewrites original <code>pushState</code>/<code>replaceState</code> methods on <code>history</code> and keeps pointer to original methods</p>
 
@@ -578,11 +592,11 @@ freezes phantom.</p>
         </li>
         
         
-        <li id="section-28">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <p>Avoid doubled history states (with pushState).</p>
 
@@ -595,11 +609,11 @@ freezes phantom.</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <p>If url differs from current call original histoy method and update <code>route</code> state.</p>
 
@@ -616,39 +630,103 @@ freezes phantom.</p>
         </li>
         
         
-        <li id="section-30">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <p>Bind to <code>popstate</code> event, fires on back/forward.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>		domEvents.addEventListener(<span class="hljs-built_in">window</span>, <span class="hljs-string">'popstate'</span>, <span class="hljs-keyword">this</span>.dispatchHandlers);
-	},
-	<span class="hljs-attr">teardown</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-		<span class="hljs-keyword">if</span>(isNode()) {
+            <div class="content"><div class='highlight'><pre>		domEvents.addEventListener(<span class="hljs-built_in">window</span>, <span class="hljs-string">"popstate"</span>, <span class="hljs-keyword">this</span>.dispatchHandlers);
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <h3 id="teardown">teardown</h3>
+<p>removes the event listerns for capturing routable links.
+sets <code>.pushState</code> and <code>.replacState</code> to their original methods.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	teardown: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>if running in Node.js, don’t teardown.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span>(isNode()) {
 			<span class="hljs-keyword">return</span>;
 		}
 
 		<span class="hljs-keyword">var</span> <span class="hljs-built_in">document</span> = getDocument();
 		<span class="hljs-keyword">var</span> <span class="hljs-built_in">window</span> = getGlobal();
 
-		domEvents.removeDelegateListener(<span class="hljs-built_in">document</span>.documentElement, <span class="hljs-string">'click'</span>, <span class="hljs-string">'a'</span>, <span class="hljs-keyword">this</span>.anchorClickHandler);
+		domEvents.removeDelegateListener(<span class="hljs-built_in">document</span>.documentElement, <span class="hljs-string">"click"</span>, <span class="hljs-string">"a"</span>, <span class="hljs-keyword">this</span>.anchorClickHandler);
 
 		canReflect.eachKey(methodsToOverwrite, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">method</span>) </span>{
 			<span class="hljs-built_in">window</span>.history[method] = <span class="hljs-keyword">this</span>.originalMethods[method];
 		}, <span class="hljs-keyword">this</span>);
 
-		domEvents.removeEventListener(<span class="hljs-built_in">window</span>, <span class="hljs-string">'popstate'</span>, <span class="hljs-keyword">this</span>.dispatchHandlers);
-	},
-	<span class="hljs-attr">get</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span>(<span class="hljs-params"></span>) </span>{
+		domEvents.removeEventListener(<span class="hljs-built_in">window</span>, <span class="hljs-string">"popstate"</span>, <span class="hljs-keyword">this</span>.dispatchHandlers);
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <h3 id="get">get</h3>
+<p>Adds PushstateObservable to the top of the stack and returns the current url.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	get: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span>(<span class="hljs-params"></span>) </span>{
 		ObservationRecorder.add(<span class="hljs-keyword">this</span>);
 		<span class="hljs-keyword">return</span> getCurrentUrl();
-	},
-	<span class="hljs-attr">set</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">path</span>) </span>{
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <h3 id="set">set</h3>
+<p>calls either pushState or replaceState on the 
+differences between path and the current url.
+If the key is in this.options.replaceStateKeys or
+this.options.replaceStateOnceKeys replaceState is 
+called, otherwise pushState is called.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	set: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">path</span>) </span>{
 		<span class="hljs-keyword">var</span> newProps = route.deparam(path);
 		<span class="hljs-keyword">var</span> oldProps = route.deparam(getCurrentUrl());
 		<span class="hljs-keyword">var</span> method = <span class="hljs-string">"pushState"</span>;
@@ -657,11 +735,11 @@ freezes phantom.</p>
         </li>
         
         
-        <li id="section-31">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>Keeps hash if not in path.</p>
 
@@ -680,11 +758,11 @@ freezes phantom.</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <p>check if we should call replaceState or pushState</p>
 
@@ -698,40 +776,85 @@ freezes phantom.</p>
 			});
 		}
 		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.options.replaceStateOnceKeys.length) {
-			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-keyword">this</span>.options.replaceStateOnceKeys.length - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
-				<span class="hljs-keyword">var</span> replaceOnceKey = <span class="hljs-keyword">this</span>.options.replaceStateOnceKeys[i];
-
-				<span class="hljs-keyword">if</span> (changed[replaceOnceKey]) {
-					method = <span class="hljs-string">"replaceState"</span>;</pre></div></div>
+			<span class="hljs-keyword">this</span>.options.replaceStateOnceKeys
+				.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">replaceOnceKey, index, thisArray</span>) </span>{
+					<span class="hljs-keyword">if</span> (changed[replaceOnceKey]) {
+						method = <span class="hljs-string">"replaceState"</span>;</pre></div></div>
             
         </li>
         
         
-        <li id="section-33">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
-              <p>remove so we don’t do this again</p>
+              <p>remove so we don’t attempt to replace state again</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>					<span class="hljs-keyword">this</span>.options.replaceStateOnceKeys.splice(i, <span class="hljs-number">1</span>);
-				}
-			}
+            <div class="content"><div class='highlight'><pre>						thisArray.splice(index, <span class="hljs-number">1</span>);
+					}
+				});
 		}
 		<span class="hljs-built_in">window</span>.history[method](<span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, bindingProxy.call(<span class="hljs-string">"root"</span>) + path);
-	},
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <h3 id="replacestateon">replaceStateOn</h3>
+<p>adds given arguments to this.options.replaceStateKeys</p>
 
-
-	<span class="hljs-attr">replaceStateOn</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	replaceStateOn: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 		canReflect.addValues(<span class="hljs-keyword">this</span>.options.replaceStateKeys, canReflect.toArray(<span class="hljs-built_in">arguments</span>));
-	},
-	<span class="hljs-attr">replaceStateOnce</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <h3 id="replacestateonce">replaceStateOnce</h3>
+<p>Adds given arguments to this.options.replaceStateOnceKeys.
+Keys in this.options.replaceStateOnceKeys will be removed
+the first time state is replaced for that key.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	replaceStateOnce: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 		canReflect.addValues(<span class="hljs-keyword">this</span>.options.replaceStateOnceKeys, canReflect.toArray(<span class="hljs-built_in">arguments</span>));
-	},
-	<span class="hljs-attr">replaceStateOff</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <h3 id="replacestateoff">replaceStateOff</h3>
+<p>removes given arguments from both this.options.replaceStateKeys and
+this.options.replaceOnceKeys</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	replaceStateOff: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 		canReflect.removeValues(<span class="hljs-keyword">this</span>.options.replaceStateKeys, canReflect.toArray(<span class="hljs-built_in">arguments</span>));
 		canReflect.removeValues(<span class="hljs-keyword">this</span>.options.replaceStateOnceKeys, canReflect.toArray(<span class="hljs-built_in">arguments</span>));
 	}
@@ -746,41 +869,16 @@ freezes phantom.</p>
 	<span class="hljs-string">"can.valueHasDependencies"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 		<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
 	},
-};</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-34">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
-              </div>
-              <p>!steal-remove-start</p>
+};
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span> (process.env.NODE_ENV !== <span class="hljs-string">'production'</span>) {
+<span class="hljs-comment">/* !steal-remove-start */</span>
+<span class="hljs-keyword">if</span> (process.env.NODE_ENV !== <span class="hljs-string">"production"</span>) {
 	pushstateObservableProto[<span class="hljs-string">"can.getName"</span>] = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-			<span class="hljs-keyword">return</span> <span class="hljs-string">"PushstateObservable&lt;"</span> + <span class="hljs-keyword">this</span>._value + <span class="hljs-string">"&gt;"</span>;
+		<span class="hljs-keyword">return</span> <span class="hljs-string">"PushstateObservable&lt;"</span> + <span class="hljs-keyword">this</span>._value + <span class="hljs-string">"&gt;"</span>;
 	};
-}</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-35">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
-              </div>
-              <p>!steal-remove-end</p>
+}
+<span class="hljs-comment">/* !steal-remove-end */</span>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
 

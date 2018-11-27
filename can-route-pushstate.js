@@ -169,8 +169,6 @@ canReflect.assign(PushstateObservable.prototype, {
 
 
 						// Test if you can preventDefault
-						// our tests can't call .click() b/c this
-						// freezes phantom.
 						if (shouldCallPreventDefault && event.preventDefault) {
 							event.preventDefault();
 						}
@@ -183,14 +181,16 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 
-	// ## setup
+	// ### setup
+	// Initalizes this._value
+	// Sets up event listerns to capture routable links.
+	// Overwrites the history api methods `.pushState` and `.replaceState`.
 	setup: function() {
 		// if running in Node.js, don't setup.
 		if (isNode()) {
 			return;
 		}
 
-		// initalize this._value
 		this._value = getCurrentUrl();
 
 		// Intercept routable links.
@@ -219,6 +219,9 @@ canReflect.assign(PushstateObservable.prototype, {
 		domEvents.addEventListener(window, "popstate", this.dispatchHandlers);
 	},
 
+	// ### teardown
+	// removes the event listerns for capturing routable links.
+	// sets `.pushState` and `.replacState` to their original methods.
 	teardown: function() {
 		// if running in Node.js, don't teardown.
 		if(isNode()) {
@@ -237,11 +240,19 @@ canReflect.assign(PushstateObservable.prototype, {
 		domEvents.removeEventListener(window, "popstate", this.dispatchHandlers);
 	},
 
+	// ### get
+	// Adds PushstateObservable to the top of the stack and returns the current url.
 	get: function get() {
 		ObservationRecorder.add(this);
 		return getCurrentUrl();
 	},
 
+	// ### set
+	// calls either pushState or replaceState on the 
+	// differences between path and the current url.
+	// If the key is in this.options.replaceStateKeys or
+	// this.options.replaceStateOnceKeys replaceState is 
+	// called, otherwise pushState is called.
 	set: function(path) {
 		var newProps = route.deparam(path);
 		var oldProps = route.deparam(getCurrentUrl());
@@ -279,12 +290,23 @@ canReflect.assign(PushstateObservable.prototype, {
 		window.history[method](null, null, bindingProxy.call("root") + path);
 	},
 
+	// ### replaceStateOn
+	// adds given arguments to this.options.replaceStateKeys
 	replaceStateOn: function() {
 		canReflect.addValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
 	},
+
+	// ### replaceStateOnce
+	// Adds given arguments to this.options.replaceStateOnceKeys.
+	// Keys in this.options.replaceStateOnceKeys will be removed
+	// the first time state is replaced for that key.
 	replaceStateOnce: function() {
 		canReflect.addValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
 	},
+
+	// ### replaceStateOff
+	// removes given arguments from both this.options.replaceStateKeys and
+	// this.options.replaceOnceKeys
 	replaceStateOff: function() {
 		canReflect.removeValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
 		canReflect.removeValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
