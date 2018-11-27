@@ -79,50 +79,6 @@ function PushstateObservable() {
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
 canReflect.assign(PushstateObservable.prototype, {
-	/**
-	 * @property {String} can-route-pushstate.prototype.root root
-	 * @parent can-route-pushstate.prototype
-	 *
-	 * @description Configure the base url that will not be modified.
-	 *
-	 * @option {String} Represents the base url that pushstate will prepend to all
-	 * routes.  `root` defaults to: `"/"`.
-	 *
-	 * @body
-	 *
-	 * ## Use
-	 *
-	 * By default, a route like:
-	 *
-	 * ```js
-	 * route.urlData = new RoutePushstate();
-	 * route.register( "{type}/{id}" );
-	 * ```
-	 *
-	 * Matches URLs like:
-	 *
-	 * ```
-	 * http://domain.com/contact/5
-	 * ```
-	 *
-	 * But sometimes, you only want to match pages within a certain directory.  For
-	 * example, an application that is a filemanager.  You might want to
-	 * specify root and routes like:
-	 *
-	 * ```js
-	 * route.urlData = new RoutePushstate();
-	 * route.urlData.root = "/filemanager/";
-	 * route.register( "file-{fileId}" );
-	 * route.register( "folder-{fileId}" );
-	 * ```
-	 *
-	 * Which matches URLs like:
-	 *
-	 * ```
-	 * http://domain.com/filemanager/file-34234
-	 * ```
-	 *
-	 */
 
 	// ### root
 	// Start of `location.pathname` is the root.
@@ -157,9 +113,9 @@ canReflect.assign(PushstateObservable.prototype, {
 	// ### anchorClickHandler
 	// Handler function for `click` events.
 	// Checks if a route is matched, if one is, calls `.pushState`
-	anchorClickHandler: function(node, e) {
+	anchorClickHandler: function(node, event) {
 
-		if (!(e.isDefaultPrevented ? e.isDefaultPrevented() : e.defaultPrevented === true)) {
+		if (!(event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented === true)) {
 			// linksHost is a Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
 
@@ -174,7 +130,7 @@ canReflect.assign(PushstateObservable.prototype, {
 			}
 
 			// Do not push state if meta key was pressed, mimicking standard browser behavior
-			if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+			if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
 				return;
 			}
 
@@ -207,8 +163,8 @@ canReflect.assign(PushstateObservable.prototype, {
 						// Test if you can preventDefault
 						// our tests can't call .click() b/c this
 						// freezes phantom.
-						if (shouldCallPreventDefault && e.preventDefault) {
-							e.preventDefault();
+						if (shouldCallPreventDefault && event.preventDefault) {
+							event.preventDefault();
 						}
 
 						// Update window.location
@@ -265,7 +221,7 @@ canReflect.assign(PushstateObservable.prototype, {
 
 		domEvents.removeEventListener(window, 'popstate', this.dispatchHandlers);
 	},
-	
+
 	get: function get() {
 		ObservationRecorder.add(this);
 		return getCurrentUrl();
