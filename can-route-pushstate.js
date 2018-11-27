@@ -29,6 +29,7 @@ var diffObject = require('can-diff/map/map');
 
 // ## methodsToOverwrite
 // Original methods on `history` that will be overwritten
+// during teardown these are reset to their original function.
 var methodsToOverwrite = ['pushState', 'replaceState'];
 
 // ## Helpers
@@ -39,6 +40,7 @@ var methodsToOverwrite = ['pushState', 'replaceState'];
 var cleanRoot = function() {
 	var location = LOCATION();
 	var domain = location.protocol + "//" + location.host,
+		// pulls root from route.urlData
 		root = bindingProxy.call("root"),
 		index = root.indexOf(domain);
 	if (index === 0) {
@@ -70,6 +72,8 @@ function PushstateObservable() {
 	this.anchorClickHandler = function(event) {
 		PushstateObservable.prototype.anchorClickHandler.call(self, this, event);
 	};
+	// ### this.handlers
+	// 
 	this.handlers = new KeyTree([Object, Array], {
 		onFirst: this.setup.bind(this),
 		onEmpty: this.teardown.bind(this)
@@ -85,18 +89,22 @@ canReflect.assign(PushstateObservable.prototype, {
 	// (Can be configured via `route.urlData.root`)
 	root: "/",
 
-	// ### matchSlashes
 	// don't greedily match slashes in routing rules
 	matchSlashes: false,
 	paramsMatcher: /^\?(?:[^=]+=[^&]*&)*[^=]+=[^&]*/,
 	querySeparator: '?',
+
+	// ### dispatchHandlers
 	dispatchHandlers: function() {
 		var old = this._value;
 		var queuesArgs = [];
 		this._value = getCurrentUrl();
+
+		// if the url changed call `setup` or `teardown`
 		if (old !== this._value) {
 			queuesArgs = [this.handlers.getNode([]), this, [this._value, old]];
-			//!steal-remove-start
+			/* !steal-remove-start */
+			// if not in production, provide a reason log
 			if (process.env.NODE_ENV !== 'production') {
 				queuesArgs = [
 					this.handlers.getNode([]), this, [this._value, old]
@@ -105,7 +113,7 @@ canReflect.assign(PushstateObservable.prototype, {
 					/* jshint laxcomma: false */
 				];
 			}
-			//!steal-remove-end
+			/* !steal-remove-end */
 			queues.enqueueByQueue.apply(queues, queuesArgs);
 		}
 	},
@@ -137,15 +145,17 @@ canReflect.assign(PushstateObservable.prototype, {
 			// If link is within the same domain and descendant of `root`
 			if (window.location.host === linksHost) {
 				var root = cleanRoot();
-				// And the link is within the `root`
+
+				// If the link is within the `root`
 				if (node.pathname.indexOf(root) === 0) {
 
 					// Removes root from url.
 					var nodePathWithSearch = node.pathname + node.search;
 					var url = nodePathWithSearch.substr(root.length);
 
-					// If we've matched a route
+					// If a matching route exists
 					if (route.rule(url) !== undefined) {
+
 						// Makes it possible to have a link with a hash.
 						// Calling .pushState will dispatch events, causing
 						// `can-route` to update its data, and then try to set back
@@ -175,15 +185,21 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 
+	// ## setup
 	setup: function() {
+		// if running in Node.js, don't setup.
 		if (isNode()) {
 			return;
 		}
+
+		// initalize this._value
 		this._value = getCurrentUrl();
+
 		// Intercept routable links.
 		domEvents.addDelegateListener(document.documentElement, 'click', 'a', this.anchorClickHandler);
 		var originalMethods = this.originalMethods = {};
 		var dispatchHandlers = this.dispatchHandlers;
+
 		// Rewrites original `pushState`/`replaceState` methods on `history` and keeps pointer to original methods
 		canReflect.eachKey(methodsToOverwrite, function(method) {
 			this.originalMethods[method] = window.history[method];
@@ -206,6 +222,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	teardown: function() {
+		// if running in Node.js, don't teardown.
 		if(isNode()) {
 			return;
 		}
@@ -287,13 +304,13 @@ var pushstateObservableProto = {
 	},
 };
 
-//!steal-remove-start
+/* !steal-remove-start */
 if (process.env.NODE_ENV !== 'production') {
 	pushstateObservableProto["can.getName"] = function() {
-			return "PushstateObservable<" + this._value + ">";
+		return "PushstateObservable<" + this._value + ">";
 	};
 }
-//!steal-remove-end
+/* !steal-remove-end */
 
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
