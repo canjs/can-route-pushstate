@@ -385,9 +385,9 @@ function makeTest(mapModuleName){
 				window.document.body.appendChild(link);
 				try {
 					domEvents.dispatch(link, {type: 'click', metaKey: true});
-					ok(true, "Clicking anchor with blank target did not cause a security exception");
+					ok(true, "Clicking anchor with while holding a meta key did not cause a security exception");
 				} catch(err) {
-					ok(false, "Clicking anchor with blank target caused a security exception");
+					ok(false, "Clicking anchor with while holding a meta key caused a security exception");
 				}
 
 				start();
