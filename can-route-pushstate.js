@@ -28,7 +28,7 @@ var domEvents = require("can-dom-events");
 var diffObject = require("can-diff/map/map");
 
 // ## methodsToOverwrite
-// Original methods on `history` that will be overwritten
+// Method names on `history` that will be overwritten
 // during teardown these are reset to their original function.
 var methodsToOverwrite = ["pushState", "replaceState"];
 
@@ -36,21 +36,22 @@ var methodsToOverwrite = ["pushState", "replaceState"];
 // The following are helper functions useful to `can-route-pushstate`'s main methods.
 
 // ### cleanRoot
-// Returns the clean root, without the main domain.
-var cleanRoot = function() {
-	var location = LOCATION();
-	var domain = location.protocol + "//" + location.host,
+// Returns the root, without the main domain.
+function cleanRoot() {
+	var location = LOCATION(),
+		domain = location.protocol + "//" + location.host,
 		// pulls root from route.urlData
 		root = bindingProxy.call("root"),
 		index = root.indexOf(domain);
+
 	if (index === 0) {
 		return root.substr(domain.length);
 	}
 	return root;
-};
+}
 
 // ### getCurrentUrl
-// gets the current url after the root
+// Gets the current url after the root.
 function getCurrentUrl() {
 	var root = cleanRoot(),
 		location = LOCATION(),
@@ -61,16 +62,16 @@ function getCurrentUrl() {
 }
 
 // ## PushstateObservable
-// creates an instance of the PushstateObservable
 function PushstateObservable() {
 	this.options = {
+		// Keys passed into `replaceStateOnce` will bee stored in `replaceStateOnceKeys`.
 		replaceStateOnceKeys: [],
+		// Keys passed into `replaceStateOn` will be stored in `replaceStateKeys`.
 		replaceStateKeys: []
 	};
 	this.dispatchHandlers = this.dispatchHandlers.bind(this);
-	var self = this;
 	this.anchorClickHandler = function(event) {
-		PushstateObservable.prototype.anchorClickHandler.call(self, this, event);
+		PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
 	};
 	this.handlers = new KeyTree([Object, Array], {
 		onFirst: this.setup.bind(this),
@@ -85,20 +86,33 @@ canReflect.assign(PushstateObservable.prototype, {
 	// ### root
 	// Start of `location.pathname` is the root.
 	// (Can be configured via `route.urlData.root`)
+	// The default is `"#!"` set in can-route-hash.
 	root: "/",
 
+	// ### matchesSlashes
+	// The default is `false` set in can-route-hash.
 	// don't greedily match slashes in routing rules
 	matchSlashes: false,
+
+	// ### paramsMatcher
+	// Matches things like:
+	//  - ?foo=bar
+	//  - ?foo=bar&framework=canjs
+	//  - ?foo=&bar=
 	paramsMatcher: /^\?(?:[^=]+=[^&]*&)*[^=]+=[^&]*/,
+
+	// ### querySeparator
+	// Used in `can-route` for building regular expressions to match routes.
 	querySeparator: "?",
 
 	// ### dispatchHandlers
+	// Updates `this._value` to the current url. If the url has changed `setup`
+	// or `teardown` is called.
 	dispatchHandlers: function() {
-		var old = this._value;
-		var queuesArgs = [];
+		var old = this._value,
+			queuesArgs = [];
 		this._value = getCurrentUrl();
 
-		// if the url changed call `setup` or `teardown`
 		if (old !== this._value) {
 			queuesArgs = [this.handlers.getNode([]), this, [this._value, old]];
 			/* !steal-remove-start */
@@ -120,7 +134,6 @@ canReflect.assign(PushstateObservable.prototype, {
 	// Handler function for `click` events.
 	// Checks if a route is matched, if one is, calls `.pushState`
 	anchorClickHandler: function(node, event) {
-
 		if (!(event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented === true)) {
 			// linksHost is a Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
@@ -148,8 +161,8 @@ canReflect.assign(PushstateObservable.prototype, {
 				if (node.pathname.indexOf(root) === 0) {
 
 					// Removes root from url.
-					var nodePathWithSearch = node.pathname + node.search;
-					var url = nodePathWithSearch.substr(root.length);
+					var nodePathWithSearch = node.pathname + node.search,
+						url = nodePathWithSearch.substr(root.length);
 
 					// If a matching route exists
 					if (route.rule(url) !== undefined) {
@@ -204,35 +217,37 @@ canReflect.assign(PushstateObservable.prototype, {
 			window.history[method] = function(state, title, url) {
 				// Avoid doubled history states (with pushState).
 				var absolute = url.indexOf("http") === 0;
-				var loc = LOCATION();
-				var searchHash = loc.search + loc.hash;
+				var location = LOCATION();
+				var searchHash = location.search + location.hash;
 				// If url differs from current call original histoy method and update `route` state.
-				if ((!absolute && url !== loc.pathname + searchHash) ||
-					(absolute && url !== loc.href + searchHash)) {
+				if ((!absolute && url !== location.pathname + searchHash) ||
+					(absolute && url !== location.href + searchHash)) {
 					originalMethods[method].apply(window.history, arguments);
 					dispatchHandlers();
 				}
 			};
 		}, this);
 
-		// Bind to `popstate` event, fires on back/forward.
+		// Bind dispatchHandlers to the `popstate` event. so that it will fire on
+		// when `history.back()` or `history.forward()` methods are called.
 		domEvents.addEventListener(window, "popstate", this.dispatchHandlers);
 	},
 
 	// ### teardown
 	// removes the event listerns for capturing routable links.
-	// sets `.pushState` and `.replacState` to their original methods.
+	// Sets `.pushState` and `.replacState` to their original methods.
 	teardown: function() {
 		// if running in Node.js, don't teardown.
 		if(isNode()) {
 			return;
 		}
 
-		var document = getDocument();
-		var window = getGlobal();
+		var document = getDocument(),
+			window = getGlobal();
 
 		domEvents.removeDelegateListener(document.documentElement, "click", "a", this.anchorClickHandler);
 
+		// Reset the changed `window.history` methods to their original values.
 		canReflect.eachKey(methodsToOverwrite, function(method) {
 			window.history[method] = this.originalMethods[method];
 		}, this);
@@ -254,22 +269,23 @@ canReflect.assign(PushstateObservable.prototype, {
 	// this.options.replaceStateOnceKeys replaceState is 
 	// called, otherwise pushState is called.
 	set: function(path) {
-		var newProps = route.deparam(path);
-		var oldProps = route.deparam(getCurrentUrl());
-		var method = "pushState";
-		var changed;
+		var newProps = route.deparam(path),
+			oldProps = route.deparam(getCurrentUrl()),
+			method = "pushState",
+			changed = {};
+
 		// Keeps hash if not in path.
 		if (this.keepHash && path.indexOf("#") === -1 && window.location.hash) {
 			path += window.location.hash;
 		}
 
-		changed = {};
 		diffObject(oldProps, newProps)
 			.forEach(function(patch) {
 				return changed[patch.key] = true;
 			});
 
-		// check if we should call replaceState or pushState
+		// If any of the changed properties are in `replaceStateKeys` or 
+		// `replaceStateOnceKeys` change the method to `'replaceState'`.
 		if (this.options.replaceStateKeys.length) {
 			this.options.replaceStateKeys.forEach(function(replaceKey) {
 				if (changed[replaceKey]) {
@@ -277,12 +293,13 @@ canReflect.assign(PushstateObservable.prototype, {
 				}
 			});
 		}
+		
 		if (this.options.replaceStateOnceKeys.length) {
 			this.options.replaceStateOnceKeys
 				.forEach(function(replaceOnceKey, index, thisArray) {
 					if (changed[replaceOnceKey]) {
 						method = "replaceState";
-						// remove so we don't attempt to replace state again
+						// Remove so we don't attempt to replace state again.
 						thisArray.splice(index, 1);
 					}
 				});
@@ -291,22 +308,22 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### replaceStateOn
-	// adds given arguments to this.options.replaceStateKeys
+	// Adds given arguments to `this.options.replaceStateKeys`.
 	replaceStateOn: function() {
 		canReflect.addValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
 	},
 
 	// ### replaceStateOnce
-	// Adds given arguments to this.options.replaceStateOnceKeys.
-	// Keys in this.options.replaceStateOnceKeys will be removed
-	// the first time state is replaced for that key.
+	// Adds given arguments to `this.options.replaceStateOnceKeys`.
+	// Keys in `this.options.replaceStateOnceKeys` will be removed
+	// from the array the first time a route contains that key.
 	replaceStateOnce: function() {
 		canReflect.addValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
 	},
 
 	// ### replaceStateOff
-	// removes given arguments from both this.options.replaceStateKeys and
-	// this.options.replaceOnceKeys
+	// Removes given arguments from both `this.options.replaceStateKeys` and
+	// `this.options.replaceOnceKeys`.
 	replaceStateOff: function() {
 		canReflect.removeValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
 		canReflect.removeValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
