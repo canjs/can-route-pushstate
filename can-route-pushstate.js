@@ -330,4 +330,4 @@ var pushstateObservableProto = {
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
 
-module.exports = window.PushstateObservable = PushstateObservable;
+module.exports = PushstateObservable;
