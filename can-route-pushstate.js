@@ -132,12 +132,12 @@ canReflect.assign(PushstateObservable.prototype, {
 				return;
 			}
 
-			// Do not push state if target is for blank window
+			// Do not pushstate if target is for blank window
 			if (node.target === "_blank") {
 				return;
 			}
 
-			// Do not push state if meta key was pressed, mimicking standard browser behavior
+			// Do not pushstate if meta key was pressed, mimicking standard browser behavior
 			if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
 				return;
 			}
@@ -185,7 +185,7 @@ canReflect.assign(PushstateObservable.prototype, {
 
 	// ### onBound
 	// Initalizes this._value
-	// Sets up event listerns to capture routable links.
+	// Sets up event listeners to capture routable links.
 	// Overwrites the history api methods `.pushState` and `.replaceState`.
 	onBound: function() {
 		// if running in Node.js, don't setup.
@@ -254,11 +254,8 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### set
-	// calls either `pushState` or `replaceState` on the 
-	// differences between path and the current url.
-	// If the key is in this.replaceStateKeys or
-	// this.replaceStateOnceKeys replaceState is 
-	// called, otherwise pushState is called.
+	// calls either pushState or replaceState on the difference
+	// in properties between `oldProps` and `newProps`.
 	set: function(path) {
 		var newProps = route.deparam(path),
 			oldProps = route.deparam(getCurrentUrl()),
