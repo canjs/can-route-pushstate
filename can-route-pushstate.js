@@ -1,7 +1,7 @@
 // # can-route-pushstate.js
 
 // Plugin for `route` which uses browser `history.pushState` support
-// to update window's pathname instead of the `hash`.
+// to update window's pathname in addition to `hash`.
 
 // It registers itself as binding on `route`, intercepts `click` events
 // on `<a>` elements across document and accordingly updates `route` state
@@ -28,14 +28,15 @@ var diffObject = require("can-diff/map/map");
 
 // ## methodsToOverwrite
 // Method names on `history` that will be overwritten
-// during teardown these are reset to their original function.
+// during teardown these are reset to their original functions.
 var methodsToOverwrite = ["pushState", "replaceState"];
 
 // ## Helpers
 // The following are helper functions useful to `can-route-pushstate`'s main methods.
 
 // ### cleanRoot
-// Returns the root, without the main domain.
+// Start of `location.pathname` is the root. 
+// Returns the root minus the domain.
 function cleanRoot() {
 	var location = LOCATION(),
 		domain = location.protocol + "//" + location.host,
@@ -78,6 +79,7 @@ function PushstateObservable() {
 	// is the discourse on it's removal.
 	this.keepHash = true;
 }
+
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
 canReflect.assign(PushstateObservable.prototype, {
@@ -202,11 +204,13 @@ canReflect.assign(PushstateObservable.prototype, {
 		canReflect.eachKey(methodsToOverwrite, function(method) {
 			this.originalMethods[method] = window.history[method];
 			window.history[method] = function(state, title, url) {
+
 				// Avoid doubled history states (with pushState).
 				var absolute = url.indexOf("http") === 0;
 				var location = LOCATION();
 				var searchHash = location.search + location.hash;
-				// If url differs from current call original histoy method and update `route` state.
+
+				// If url differs from current call original history method and update `route` state.
 				if ((!absolute && url !== location.pathname + searchHash) ||
 					(absolute && url !== location.href + searchHash)) {
 					originalMethods[method].apply(window.history, arguments);
@@ -250,7 +254,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### set
-	// calls either pushState or replaceState on the 
+	// calls either `pushState` or `replaceState` on the 
 	// differences between path and the current url.
 	// If the key is in this.replaceStateKeys or
 	// this.replaceStateOnceKeys replaceState is 
@@ -261,13 +265,14 @@ canReflect.assign(PushstateObservable.prototype, {
 			method = "pushState",
 			changed = {};
 
-		// Keeps hash if not in path.
+		// Adds window.location.hash to path if it's not already in path.
 		if (this.keepHash && path.indexOf("#") === -1 && window.location.hash) {
 			path += window.location.hash;
 		}
 
 		diffObject(oldProps, newProps)
 			.forEach(function(patch) {
+				// `patch.key` refers to the mutated property name on `newProps`.
 				return changed[patch.key] = true;
 			});
 
@@ -286,7 +291,8 @@ canReflect.assign(PushstateObservable.prototype, {
 				.forEach(function(replaceOnceKey, index, thisArray) {
 					if (changed[replaceOnceKey]) {
 						method = "replaceState";
-						// Remove so we don't attempt to replace state again.
+						// Remove so we don't attempt to replace 
+						// the state on this key again.
 						thisArray.splice(index, 1);
 					}
 				});
@@ -303,7 +309,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	// ### replaceStateOnce
 	// Adds given arguments to `this.replaceStateOnceKeys`.
 	// Keys in `this.replaceStateOnceKeys` will be removed
-	// from the array the first time a route contains that key.
+	// from the array the first time a changed route contains that key.
 	replaceStateOnce: function() {
 		canReflect.addValues(this.replaceStateOnceKeys, canReflect.toArray(arguments));
 	},
@@ -324,4 +330,4 @@ var pushstateObservableProto = {
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
 
-module.exports = PushstateObservable;
+module.exports = window.PushstateObservable = PushstateObservable;
