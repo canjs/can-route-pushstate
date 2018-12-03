@@ -63,17 +63,19 @@ function getCurrentUrl() {
 
 // ## PushstateObservable
 function PushstateObservable() {
-	this.options = {
-		// Keys passed into `replaceStateOnce` will bee stored in `replaceStateOnceKeys`.
-		replaceStateOnceKeys: [],
-		// Keys passed into `replaceStateOn` will be stored in `replaceStateKeys`.
-		replaceStateKeys: []
-	};
+	// Keys passed into `replaceStateOnce` will bee stored in `replaceStateOnceKeys`.
+	this.replaceStateOnceKeys = [];
+	// Keys passed into `replaceStateOn` will be stored in `replaceStateKeys`.
+	this.replaceStateKeys = [];
 	this.dispatchHandlers = this.dispatchHandlers.bind(this);
 	this.anchorClickHandler = function(event) {
 		PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
 	};
 
+	// ### `keepHash`
+	// Currently is neither a feature that's documented,
+	// nor is it toggled. [Issue #133](https://github.com/canjs/can-route-pushstate/issues/133)
+	// is the discourse on it's removal.
 	this.keepHash = true;
 }
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
@@ -104,6 +106,8 @@ canReflect.assign(PushstateObservable.prototype, {
 
 	// ### dispatchHandlers
 	// Updates `this._value` to the current url.
+	// PushstateObservable inherits from `SimpleObservable` which
+	// is using the `can-event-queue/value/value` mixin.
 	dispatchHandlers: function() {
 		var old = this._value;
 		this._value = getCurrentUrl();
@@ -248,8 +252,8 @@ canReflect.assign(PushstateObservable.prototype, {
 	// ### set
 	// calls either pushState or replaceState on the 
 	// differences between path and the current url.
-	// If the key is in this.options.replaceStateKeys or
-	// this.options.replaceStateOnceKeys replaceState is 
+	// If the key is in this.replaceStateKeys or
+	// this.replaceStateOnceKeys replaceState is 
 	// called, otherwise pushState is called.
 	set: function(path) {
 		var newProps = route.deparam(path),
@@ -269,16 +273,16 @@ canReflect.assign(PushstateObservable.prototype, {
 
 		// If any of the changed properties are in `replaceStateKeys` or 
 		// `replaceStateOnceKeys` change the method to `'replaceState'`.
-		if (this.options.replaceStateKeys.length) {
-			this.options.replaceStateKeys.forEach(function(replaceKey) {
+		if (this.replaceStateKeys.length) {
+			this.replaceStateKeys.forEach(function(replaceKey) {
 				if (changed[replaceKey]) {
 					method = "replaceState";
 				}
 			});
 		}
 		
-		if (this.options.replaceStateOnceKeys.length) {
-			this.options.replaceStateOnceKeys
+		if (this.replaceStateOnceKeys.length) {
+			this.replaceStateOnceKeys
 				.forEach(function(replaceOnceKey, index, thisArray) {
 					if (changed[replaceOnceKey]) {
 						method = "replaceState";
@@ -291,25 +295,25 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### replaceStateOn
-	// Adds given arguments to `this.options.replaceStateKeys`.
+	// Adds given arguments to `this.replaceStateKeys`.
 	replaceStateOn: function() {
-		canReflect.addValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
+		canReflect.addValues(this.replaceStateKeys, canReflect.toArray(arguments));
 	},
 
 	// ### replaceStateOnce
-	// Adds given arguments to `this.options.replaceStateOnceKeys`.
-	// Keys in `this.options.replaceStateOnceKeys` will be removed
+	// Adds given arguments to `this.replaceStateOnceKeys`.
+	// Keys in `this.replaceStateOnceKeys` will be removed
 	// from the array the first time a route contains that key.
 	replaceStateOnce: function() {
-		canReflect.addValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
+		canReflect.addValues(this.replaceStateOnceKeys, canReflect.toArray(arguments));
 	},
 
 	// ### replaceStateOff
-	// Removes given arguments from both `this.options.replaceStateKeys` and
-	// `this.options.replaceOnceKeys`.
+	// Removes given arguments from both `this.replaceStateKeys` and
+	// `this.replaceOnceKeys`.
 	replaceStateOff: function() {
-		canReflect.removeValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
-		canReflect.removeValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
+		canReflect.removeValues(this.replaceStateKeys, canReflect.toArray(arguments));
+		canReflect.removeValues(this.replaceStateOnceKeys, canReflect.toArray(arguments));
 	}
 });
 
