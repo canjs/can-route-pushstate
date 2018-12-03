@@ -455,7 +455,7 @@ function makeTest(mapModuleName){
 
 		try {
 			globals.setKeyValue('isNode', true);
-			route.urlData.teardown();
+			route.urlData.onUnbound();
 
 			QUnit.ok(true, "Did not attempt to teardown in Node");
 		} catch(e) {

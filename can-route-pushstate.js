@@ -12,9 +12,8 @@
 var route = require("can-route");
 var bindingProxy = require("can-route/src/binding-proxy");
 var canReflect = require("can-reflect");
-var KeyTree = require("can-key-tree");
+var canSymbol = require("can-symbol");
 
-var queues = require("can-queues");
 var SimpleObservable = require("can-simple-observable");
 var ObservationRecorder = require("can-observation-recorder");
 
@@ -52,6 +51,7 @@ function cleanRoot() {
 
 // ### getCurrentUrl
 // Gets the current url after the root.
+// `root` is defined in the PushstateObservable constructor.
 function getCurrentUrl() {
 	var root = cleanRoot(),
 		location = LOCATION(),
@@ -73,10 +73,7 @@ function PushstateObservable() {
 	this.anchorClickHandler = function(event) {
 		PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
 	};
-	this.handlers = new KeyTree([Object, Array], {
-		onFirst: this.setup.bind(this),
-		onEmpty: this.teardown.bind(this)
-	});
+
 	this.keepHash = true;
 }
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
@@ -106,27 +103,13 @@ canReflect.assign(PushstateObservable.prototype, {
 	querySeparator: "?",
 
 	// ### dispatchHandlers
-	// Updates `this._value` to the current url. If the url has changed `setup`
-	// or `teardown` is called.
+	// Updates `this._value` to the current url.
 	dispatchHandlers: function() {
-		var old = this._value,
-			queuesArgs = [];
+		var old = this._value;
 		this._value = getCurrentUrl();
 
 		if (old !== this._value) {
-			queuesArgs = [this.handlers.getNode([]), this, [this._value, old]];
-			/* !steal-remove-start */
-			// if not in production, provide a reason log
-			if (process.env.NODE_ENV !== "production") {
-				queuesArgs = [
-					this.handlers.getNode([]), this, [this._value, old]
-					/* jshint laxcomma: true */
-					, null, [canReflect.getName(this), "changed to", this._value, "from", old]
-					/* jshint laxcomma: false */
-				];
-			}
-			/* !steal-remove-end */
-			queues.enqueueByQueue.apply(queues, queuesArgs);
+			this[canSymbol.for("can.dispatch")](this._value, old);
 		}
 	},
 
@@ -194,11 +177,11 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 
-	// ### setup
+	// ### onBound
 	// Initalizes this._value
 	// Sets up event listerns to capture routable links.
 	// Overwrites the history api methods `.pushState` and `.replaceState`.
-	setup: function() {
+	onBound: function() {
 		// if running in Node.js, don't setup.
 		if (isNode()) {
 			return;
@@ -233,10 +216,10 @@ canReflect.assign(PushstateObservable.prototype, {
 		domEvents.addEventListener(window, "popstate", this.dispatchHandlers);
 	},
 
-	// ### teardown
+	// ### onUnbound
 	// removes the event listerns for capturing routable links.
 	// Sets `.pushState` and `.replacState` to their original methods.
-	teardown: function() {
+	onUnbound: function() {
 		// if running in Node.js, don't teardown.
 		if(isNode()) {
 			return;
@@ -333,22 +316,7 @@ canReflect.assign(PushstateObservable.prototype, {
 var pushstateObservableProto = {
 	"can.getValue": PushstateObservable.prototype.get,
 	"can.setValue": PushstateObservable.prototype.set,
-	"can.onValue": PushstateObservable.prototype.on,
-	"can.offValue": PushstateObservable.prototype.off,
-	"can.isMapLike": false,
-	"can.valueHasDependencies": function() {
-		return true;
-	},
 };
-
-/* !steal-remove-start */
-if (process.env.NODE_ENV !== "production") {
-	pushstateObservableProto["can.getName"] = function() {
-		return "PushstateObservable<" + this._value + ">";
-	};
-}
-/* !steal-remove-end */
-
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
 
