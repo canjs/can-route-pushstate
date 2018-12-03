@@ -185,7 +185,7 @@ canReflect.assign(PushstateObservable.prototype, {
 
 	// ### onBound
 	// Initalizes this._value
-	// Sets up event listeners to capture routable links.
+	// Sets up event listeners to capture `click` events on `<a>` elements.
 	// Overwrites the history api methods `.pushState` and `.replaceState`.
 	onBound: function() {
 		// if running in Node.js, don't setup.
