@@ -1,7 +1,7 @@
 // # can-route-pushstate.js
 
 // Plugin for `route` which uses browser `history.pushState` support
-// to update window's pathname instead of the `hash`.
+// to update window's pathname in addition to `hash`.
 
 // It registers itself as binding on `route`, intercepts `click` events
 // on `<a>` elements across document and accordingly updates `route` state
@@ -12,9 +12,8 @@
 var route = require("can-route");
 var bindingProxy = require("can-route/src/binding-proxy");
 var canReflect = require("can-reflect");
-var KeyTree = require("can-key-tree");
+var canSymbol = require("can-symbol");
 
-var queues = require("can-queues");
 var SimpleObservable = require("can-simple-observable");
 var ObservationRecorder = require("can-observation-recorder");
 
@@ -29,14 +28,15 @@ var diffObject = require("can-diff/map/map");
 
 // ## methodsToOverwrite
 // Method names on `history` that will be overwritten
-// during teardown these are reset to their original function.
+// during teardown these are reset to their original functions.
 var methodsToOverwrite = ["pushState", "replaceState"];
 
 // ## Helpers
 // The following are helper functions useful to `can-route-pushstate`'s main methods.
 
 // ### cleanRoot
-// Returns the root, without the main domain.
+// Start of `location.pathname` is the root. 
+// Returns the root minus the domain.
 function cleanRoot() {
 	var location = LOCATION(),
 		domain = location.protocol + "//" + location.host,
@@ -52,6 +52,7 @@ function cleanRoot() {
 
 // ### getCurrentUrl
 // Gets the current url after the root.
+// `root` is defined in the PushstateObservable constructor.
 function getCurrentUrl() {
 	var root = cleanRoot(),
 		location = LOCATION(),
@@ -63,22 +64,22 @@ function getCurrentUrl() {
 
 // ## PushstateObservable
 function PushstateObservable() {
-	this.options = {
-		// Keys passed into `replaceStateOnce` will bee stored in `replaceStateOnceKeys`.
-		replaceStateOnceKeys: [],
-		// Keys passed into `replaceStateOn` will be stored in `replaceStateKeys`.
-		replaceStateKeys: []
-	};
+	// Keys passed into `replaceStateOnce` will bee stored in `replaceStateOnceKeys`.
+	this.replaceStateOnceKeys = [];
+	// Keys passed into `replaceStateOn` will be stored in `replaceStateKeys`.
+	this.replaceStateKeys = [];
 	this.dispatchHandlers = this.dispatchHandlers.bind(this);
 	this.anchorClickHandler = function(event) {
 		PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
 	};
-	this.handlers = new KeyTree([Object, Array], {
-		onFirst: this.setup.bind(this),
-		onEmpty: this.teardown.bind(this)
-	});
+
+	// ### `keepHash`
+	// Currently is neither a feature that's documented,
+	// nor is it toggled. [Issue #133](https://github.com/canjs/can-route-pushstate/issues/133)
+	// is the discourse on it's removal.
 	this.keepHash = true;
 }
+
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
 PushstateObservable.constructor = PushstateObservable;
 canReflect.assign(PushstateObservable.prototype, {
@@ -106,27 +107,15 @@ canReflect.assign(PushstateObservable.prototype, {
 	querySeparator: "?",
 
 	// ### dispatchHandlers
-	// Updates `this._value` to the current url. If the url has changed `setup`
-	// or `teardown` is called.
+	// Updates `this._value` to the current url.
+	// PushstateObservable inherits from `SimpleObservable` which
+	// is using the `can-event-queue/value/value` mixin.
 	dispatchHandlers: function() {
-		var old = this._value,
-			queuesArgs = [];
+		var old = this._value;
 		this._value = getCurrentUrl();
 
 		if (old !== this._value) {
-			queuesArgs = [this.handlers.getNode([]), this, [this._value, old]];
-			/* !steal-remove-start */
-			// if not in production, provide a reason log
-			if (process.env.NODE_ENV !== "production") {
-				queuesArgs = [
-					this.handlers.getNode([]), this, [this._value, old]
-					/* jshint laxcomma: true */
-					, null, [canReflect.getName(this), "changed to", this._value, "from", old]
-					/* jshint laxcomma: false */
-				];
-			}
-			/* !steal-remove-end */
-			queues.enqueueByQueue.apply(queues, queuesArgs);
+			this[canSymbol.for("can.dispatch")](this._value, old);
 		}
 	},
 
@@ -143,12 +132,12 @@ canReflect.assign(PushstateObservable.prototype, {
 				return;
 			}
 
-			// Do not push state if target is for blank window
+			// Do not pushstate if target is for blank window
 			if (node.target === "_blank") {
 				return;
 			}
 
-			// Do not push state if meta key was pressed, mimicking standard browser behavior
+			// Do not pushstate if meta key was pressed, mimicking standard browser behavior
 			if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
 				return;
 			}
@@ -194,11 +183,11 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 
-	// ### setup
+	// ### onBound
 	// Initalizes this._value
-	// Sets up event listerns to capture routable links.
+	// Sets up event listeners to capture `click` events on `<a>` elements.
 	// Overwrites the history api methods `.pushState` and `.replaceState`.
-	setup: function() {
+	onBound: function() {
 		// if running in Node.js, don't setup.
 		if (isNode()) {
 			return;
@@ -215,11 +204,13 @@ canReflect.assign(PushstateObservable.prototype, {
 		canReflect.eachKey(methodsToOverwrite, function(method) {
 			this.originalMethods[method] = window.history[method];
 			window.history[method] = function(state, title, url) {
+
 				// Avoid doubled history states (with pushState).
 				var absolute = url.indexOf("http") === 0;
 				var location = LOCATION();
 				var searchHash = location.search + location.hash;
-				// If url differs from current call original histoy method and update `route` state.
+
+				// If url differs from current call original history method and update `route` state.
 				if ((!absolute && url !== location.pathname + searchHash) ||
 					(absolute && url !== location.href + searchHash)) {
 					originalMethods[method].apply(window.history, arguments);
@@ -233,10 +224,10 @@ canReflect.assign(PushstateObservable.prototype, {
 		domEvents.addEventListener(window, "popstate", this.dispatchHandlers);
 	},
 
-	// ### teardown
+	// ### onUnbound
 	// removes the event listerns for capturing routable links.
 	// Sets `.pushState` and `.replacState` to their original methods.
-	teardown: function() {
+	onUnbound: function() {
 		// if running in Node.js, don't teardown.
 		if(isNode()) {
 			return;
@@ -263,43 +254,42 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### set
-	// calls either pushState or replaceState on the 
-	// differences between path and the current url.
-	// If the key is in this.options.replaceStateKeys or
-	// this.options.replaceStateOnceKeys replaceState is 
-	// called, otherwise pushState is called.
+	// calls either pushState or replaceState on the difference
+	// in properties between `oldProps` and `newProps`.
 	set: function(path) {
 		var newProps = route.deparam(path),
 			oldProps = route.deparam(getCurrentUrl()),
 			method = "pushState",
 			changed = {};
 
-		// Keeps hash if not in path.
+		// Adds window.location.hash to path if it's not already in path.
 		if (this.keepHash && path.indexOf("#") === -1 && window.location.hash) {
 			path += window.location.hash;
 		}
 
 		diffObject(oldProps, newProps)
 			.forEach(function(patch) {
+				// `patch.key` refers to the mutated property name on `newProps`.
 				return changed[patch.key] = true;
 			});
 
 		// If any of the changed properties are in `replaceStateKeys` or 
 		// `replaceStateOnceKeys` change the method to `'replaceState'`.
-		if (this.options.replaceStateKeys.length) {
-			this.options.replaceStateKeys.forEach(function(replaceKey) {
+		if (this.replaceStateKeys.length) {
+			this.replaceStateKeys.forEach(function(replaceKey) {
 				if (changed[replaceKey]) {
 					method = "replaceState";
 				}
 			});
 		}
 		
-		if (this.options.replaceStateOnceKeys.length) {
-			this.options.replaceStateOnceKeys
+		if (this.replaceStateOnceKeys.length) {
+			this.replaceStateOnceKeys
 				.forEach(function(replaceOnceKey, index, thisArray) {
 					if (changed[replaceOnceKey]) {
 						method = "replaceState";
-						// Remove so we don't attempt to replace state again.
+						// Remove so we don't attempt to replace 
+						// the state on this key again.
 						thisArray.splice(index, 1);
 					}
 				});
@@ -308,47 +298,32 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### replaceStateOn
-	// Adds given arguments to `this.options.replaceStateKeys`.
+	// Adds given arguments to `this.replaceStateKeys`.
 	replaceStateOn: function() {
-		canReflect.addValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
+		canReflect.addValues(this.replaceStateKeys, canReflect.toArray(arguments));
 	},
 
 	// ### replaceStateOnce
-	// Adds given arguments to `this.options.replaceStateOnceKeys`.
-	// Keys in `this.options.replaceStateOnceKeys` will be removed
-	// from the array the first time a route contains that key.
+	// Adds given arguments to `this.replaceStateOnceKeys`.
+	// Keys in `this.replaceStateOnceKeys` will be removed
+	// from the array the first time a changed route contains that key.
 	replaceStateOnce: function() {
-		canReflect.addValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
+		canReflect.addValues(this.replaceStateOnceKeys, canReflect.toArray(arguments));
 	},
 
 	// ### replaceStateOff
-	// Removes given arguments from both `this.options.replaceStateKeys` and
-	// `this.options.replaceOnceKeys`.
+	// Removes given arguments from both `this.replaceStateKeys` and
+	// `this.replaceOnceKeys`.
 	replaceStateOff: function() {
-		canReflect.removeValues(this.options.replaceStateKeys, canReflect.toArray(arguments));
-		canReflect.removeValues(this.options.replaceStateOnceKeys, canReflect.toArray(arguments));
+		canReflect.removeValues(this.replaceStateKeys, canReflect.toArray(arguments));
+		canReflect.removeValues(this.replaceStateOnceKeys, canReflect.toArray(arguments));
 	}
 });
 
 var pushstateObservableProto = {
 	"can.getValue": PushstateObservable.prototype.get,
 	"can.setValue": PushstateObservable.prototype.set,
-	"can.onValue": PushstateObservable.prototype.on,
-	"can.offValue": PushstateObservable.prototype.off,
-	"can.isMapLike": false,
-	"can.valueHasDependencies": function() {
-		return true;
-	},
 };
-
-/* !steal-remove-start */
-if (process.env.NODE_ENV !== "production") {
-	pushstateObservableProto["can.getName"] = function() {
-		return "PushstateObservable<" + this._value + ">";
-	};
-}
-/* !steal-remove-end */
-
 
 canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
 
