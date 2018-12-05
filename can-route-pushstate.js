@@ -37,7 +37,9 @@ var diffObject = require("can-diff/map/map");
 // ## methodsToOverwrite
 // Method names on `history` that will be overwritten
 // during teardown these are reset to their original functions.
-var methodsToOverwrite = ["pushState", "replaceState"];
+var methodsToOverwrite = ["pushState", "replaceState"],
+	// This symbol is used in dispatchHandlers.
+	dispatchSymbol = canSymbol.for("can.dispatch");
 
 // ## Helpers
 // The following are helper functions useful to `can-route-pushstate`'s main methods.
@@ -128,7 +130,7 @@ canReflect.assign(PushstateObservable.prototype, {
 			// PushstateObservable inherits from `SimpleObservable` which
 			// is using the `can-event-queue/value/value` mixin, and is called
 			// using the `can.dispatch` symbol.
-			this[canSymbol.for("can.dispatch")](this._value, old);
+			this[dispatchSymbol](this._value, old);
 		}
 	},
 
@@ -178,7 +180,7 @@ canReflect.assign(PushstateObservable.prototype, {
 						}
 
 						// We do not want to call preventDefault() if the link is to the
-						// same page and just a different hash; see can-route-pushstate#75
+						// same page and just a different hash; see can-route-pushstate#75.
 						var windowPathWithSearch = window.location.pathname + window.location.search;
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
 
@@ -264,7 +266,8 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### get
-	// Adds `PushstateObservable` to the top of the stack and returns the current url.
+	// Allows `PushstateObservable` to be observable by can-observations,
+	// and returns the current url.
 	get: function get() {
 		ObservationRecorder.add(this);
 		return getCurrentUrl();
