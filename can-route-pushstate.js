@@ -3,9 +3,17 @@
 // Plugin for `route` which uses browser `history.pushState` support
 // to update window's pathname in addition to `hash`.
 
-// It registers itself as binding on `route`, intercepts `click` events
-// on `<a>` elements across document and accordingly updates `route` state
-// and window's pathname.
+// On a high-level, `can-route-pushstate` creates an observable type, 
+// `PushstateObservable`, that changes when `history.pushState` is called.
+// It does this by:
+//  - Intercepting `click` events on anchor elements ('<a>') when the
+//    `.href` matches a routing rule.
+//  - Decorating `replaceState` and `pushState` to dispatch observable
+//    event handlers when called.
+//  - Listen to `popstate` events and dispatch obserevable event handlers.
+
+// `PushstateObservable` inherits from `SimpleObservable`, most of
+// `PushstateObservable`'s "observable" logic comes from `SimpleObservable`.
 
 /*jshint maxdepth:6, scripturl:true*/
 "use strict";
@@ -29,7 +37,9 @@ var diffObject = require("can-diff/map/map");
 // ## methodsToOverwrite
 // Method names on `history` that will be overwritten
 // during teardown these are reset to their original functions.
-var methodsToOverwrite = ["pushState", "replaceState"];
+var methodsToOverwrite = ["pushState", "replaceState"],
+	// This symbol is used in dispatchHandlers.
+	dispatchSymbol = canSymbol.for("can.dispatch");
 
 // ## Helpers
 // The following are helper functions useful to `can-route-pushstate`'s main methods.
@@ -64,7 +74,7 @@ function getCurrentUrl() {
 
 // ## PushstateObservable
 function PushstateObservable() {
-	// Keys passed into `replaceStateOnce` will bee stored in `replaceStateOnceKeys`.
+	// Keys passed into `replaceStateOnce` will be stored in `replaceStateOnceKeys`.
 	this.replaceStateOnceKeys = [];
 	// Keys passed into `replaceStateOn` will be stored in `replaceStateKeys`.
 	this.replaceStateKeys = [];
@@ -90,9 +100,9 @@ canReflect.assign(PushstateObservable.prototype, {
 	// The default is `"#!"` set in can-route-hash.
 	root: "/",
 
-	// ### matchesSlashes
+	// ### matchSlashes
 	// The default is `false` set in can-route-hash.
-	// don't greedily match slashes in routing rules
+	// Don't greedily match slashes in routing rules.
 	matchSlashes: false,
 
 	// ### paramsMatcher
@@ -103,19 +113,24 @@ canReflect.assign(PushstateObservable.prototype, {
 	paramsMatcher: /^\?(?:[^=]+=[^&]*&)*[^=]+=[^&]*/,
 
 	// ### querySeparator
-	// Used in `can-route` for building regular expressions to match routes.
+	// Used in `can-route` for building regular expressions to match routes, or
+	// return url substrings of routes.
 	querySeparator: "?",
 
 	// ### dispatchHandlers
-	// Updates `this._value` to the current url.
-	// PushstateObservable inherits from `SimpleObservable` which
-	// is using the `can-event-queue/value/value` mixin.
+	// Updates `this._value` to the current url and 
+	// dispatches event handlers that are on the object.
+	// `dispatchHandlers` is called if `pushState` or `replaceState`
+	// are called, it is also an event handler on `'popstate'`.
 	dispatchHandlers: function() {
 		var old = this._value;
 		this._value = getCurrentUrl();
 
 		if (old !== this._value) {
-			this[canSymbol.for("can.dispatch")](this._value, old);
+			// PushstateObservable inherits from `SimpleObservable` which
+			// is using the `can-event-queue/value/value` mixin, and is called
+			// using the `can.dispatch` symbol.
+			this[dispatchSymbol](this._value, old);
 		}
 	},
 
@@ -124,36 +139,36 @@ canReflect.assign(PushstateObservable.prototype, {
 	// Checks if a route is matched, if one is, calls `.pushState`
 	anchorClickHandler: function(node, event) {
 		if (!(event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented === true)) {
-			// linksHost is a Fix for IE showing blank host, but blank host means current host.
-			var linksHost = node.host || window.location.host;
-
-			// if href has some JavaScript in it, let it run
+			// If href has some JavaScript in it, let it run.
 			if (node.href === "javascript://") {
 				return;
 			}
 
-			// Do not pushstate if target is for blank window
+			// Do not pushstate if target is for blank window.
 			if (node.target === "_blank") {
 				return;
 			}
 
-			// Do not pushstate if meta key was pressed, mimicking standard browser behavior
+			// Do not pushstate if meta key was pressed, mimicking standard browser behavior.
 			if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
 				return;
 			}
 
-			// If link is within the same domain and descendant of `root`
+			// linksHost is a Fix for IE showing blank host, but blank host means current host.
+			var linksHost = node.host || window.location.host;
+
+			// If link is within the same domain and descendant of `root`.
 			if (window.location.host === linksHost) {
 				var root = cleanRoot();
 
-				// If the link is within the `root`
+				// If the link is within the `root`.
 				if (node.pathname.indexOf(root) === 0) {
 
 					// Removes root from url.
 					var nodePathWithSearch = node.pathname + node.search,
 						url = nodePathWithSearch.substr(root.length);
 
-					// If a matching route exists
+					// If a matching route exists.
 					if (route.rule(url) !== undefined) {
 
 						// Makes it possible to have a link with a hash.
@@ -165,17 +180,17 @@ canReflect.assign(PushstateObservable.prototype, {
 						}
 
 						// We do not want to call preventDefault() if the link is to the
-						// same page and just a different hash; see can-route-pushstate#75
+						// same page and just a different hash; see can-route-pushstate#75.
 						var windowPathWithSearch = window.location.pathname + window.location.search;
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
 
 
-						// Test if you can preventDefault
+						// Test if you can preventDefault.
 						if (shouldCallPreventDefault && event.preventDefault) {
 							event.preventDefault();
 						}
 
-						// Update window.location
+						// Update `window.location`.
 						window.history.pushState(null, null, node.href);
 					}
 				}
@@ -184,7 +199,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### onBound
-	// Initalizes this._value
+	// Initalizes this._value.
 	// Sets up event listeners to capture `click` events on `<a>` elements.
 	// Overwrites the history api methods `.pushState` and `.replaceState`.
 	onBound: function() {
@@ -193,6 +208,9 @@ canReflect.assign(PushstateObservable.prototype, {
 			return;
 		}
 
+		var document = getDocument(),
+			window = getGlobal();
+
 		this._value = getCurrentUrl();
 
 		// Intercept routable links.
@@ -200,7 +218,8 @@ canReflect.assign(PushstateObservable.prototype, {
 		var originalMethods = this.originalMethods = {};
 		var dispatchHandlers = this.dispatchHandlers;
 
-		// Rewrites original `pushState`/`replaceState` methods on `history` and keeps pointer to original methods
+		// Rewrites original `pushState`/`replaceState` methods on `history`
+		// and keeps pointer to original methods.
 		canReflect.eachKey(methodsToOverwrite, function(method) {
 			this.originalMethods[method] = window.history[method];
 			window.history[method] = function(state, title, url) {
@@ -219,7 +238,7 @@ canReflect.assign(PushstateObservable.prototype, {
 			};
 		}, this);
 
-		// Bind dispatchHandlers to the `popstate` event. so that it will fire on
+		// Bind dispatchHandlers to the `popstate` event, so they will fire
 		// when `history.back()` or `history.forward()` methods are called.
 		domEvents.addEventListener(window, "popstate", this.dispatchHandlers);
 	},
@@ -228,7 +247,7 @@ canReflect.assign(PushstateObservable.prototype, {
 	// removes the event listerns for capturing routable links.
 	// Sets `.pushState` and `.replacState` to their original methods.
 	onUnbound: function() {
-		// if running in Node.js, don't teardown.
+		// If running in Node.js, don't teardown.
 		if(isNode()) {
 			return;
 		}
@@ -247,14 +266,15 @@ canReflect.assign(PushstateObservable.prototype, {
 	},
 
 	// ### get
-	// Adds PushstateObservable to the top of the stack and returns the current url.
+	// Allows `PushstateObservable` to be observable by can-observations,
+	// and returns the current url.
 	get: function get() {
 		ObservationRecorder.add(this);
 		return getCurrentUrl();
 	},
 
 	// ### set
-	// calls either pushState or replaceState on the difference
+	// Calls either pushState or replaceState on the difference
 	// in properties between `oldProps` and `newProps`.
 	set: function(path) {
 		var newProps = route.deparam(path),
@@ -267,6 +287,8 @@ canReflect.assign(PushstateObservable.prototype, {
 			path += window.location.hash;
 		}
 
+		// The old state and new state are diffed 
+		// to figure out which keys are changing.
 		diffObject(oldProps, newProps)
 			.forEach(function(patch) {
 				// `patch.key` refers to the mutated property name on `newProps`.
@@ -320,11 +342,9 @@ canReflect.assign(PushstateObservable.prototype, {
 	}
 });
 
-var pushstateObservableProto = {
+canReflect.assignSymbols(PushstateObservable.prototype, {
 	"can.getValue": PushstateObservable.prototype.get,
 	"can.setValue": PushstateObservable.prototype.set,
-};
-
-canReflect.assignSymbols(PushstateObservable.prototype, pushstateObservableProto);
+});
 
 module.exports = PushstateObservable;
