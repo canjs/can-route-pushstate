@@ -98,9 +98,9 @@ canReflect.assign(PushstateObservable.prototype, {
 	// The default is `"#!"` set in can-route-hash.
 	root: "/",
 
-	// ### matchesSlashes
+	// ### matchSlashes
 	// The default is `false` set in can-route-hash.
-	// don't greedily match slashes in routing rules
+	// Don't greedily match slashes in routing rules.
 	matchSlashes: false,
 
 	// ### paramsMatcher
@@ -137,17 +137,17 @@ canReflect.assign(PushstateObservable.prototype, {
 	// Checks if a route is matched, if one is, calls `.pushState`
 	anchorClickHandler: function(node, event) {
 		if (!(event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented === true)) {
-			// if href has some JavaScript in it, let it run
+			// If href has some JavaScript in it, let it run.
 			if (node.href === "javascript://") {
 				return;
 			}
 
-			// Do not pushstate if target is for blank window
+			// Do not pushstate if target is for blank window.
 			if (node.target === "_blank") {
 				return;
 			}
 
-			// Do not pushstate if meta key was pressed, mimicking standard browser behavior
+			// Do not pushstate if meta key was pressed, mimicking standard browser behavior.
 			if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
 				return;
 			}
@@ -155,18 +155,18 @@ canReflect.assign(PushstateObservable.prototype, {
 			// linksHost is a Fix for IE showing blank host, but blank host means current host.
 			var linksHost = node.host || window.location.host;
 
-			// If link is within the same domain and descendant of `root`
+			// If link is within the same domain and descendant of `root`.
 			if (window.location.host === linksHost) {
 				var root = cleanRoot();
 
-				// If the link is within the `root`
+				// If the link is within the `root`.
 				if (node.pathname.indexOf(root) === 0) {
 
 					// Removes root from url.
 					var nodePathWithSearch = node.pathname + node.search,
 						url = nodePathWithSearch.substr(root.length);
 
-					// If a matching route exists
+					// If a matching route exists.
 					if (route.rule(url) !== undefined) {
 
 						// Makes it possible to have a link with a hash.
@@ -183,12 +183,12 @@ canReflect.assign(PushstateObservable.prototype, {
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
 
 
-						// Test if you can preventDefault
+						// Test if you can preventDefault.
 						if (shouldCallPreventDefault && event.preventDefault) {
 							event.preventDefault();
 						}
 
-						// Update window.location
+						// Update `window.location`.
 						window.history.pushState(null, null, node.href);
 					}
 				}
@@ -216,7 +216,8 @@ canReflect.assign(PushstateObservable.prototype, {
 		var originalMethods = this.originalMethods = {};
 		var dispatchHandlers = this.dispatchHandlers;
 
-		// Rewrites original `pushState`/`replaceState` methods on `history` and keeps pointer to original methods
+		// Rewrites original `pushState`/`replaceState` methods on `history`
+		// and keeps pointer to original methods.
 		canReflect.eachKey(methodsToOverwrite, function(method) {
 			this.originalMethods[method] = window.history[method];
 			window.history[method] = function(state, title, url) {
