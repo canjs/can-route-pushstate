@@ -49,7 +49,7 @@
     "detect-cyclic-packages": "^1.1.0",
     "docco": "^0.8.0",
     "jshint": "^2.9.1",
-    "steal": "^1.0.0",
+    "steal": "^2.1.4",
     "steal-qunit": "^1.0.0",
     "steal-tools": "^2.0.6",
     "testee": "^0.8.0"
