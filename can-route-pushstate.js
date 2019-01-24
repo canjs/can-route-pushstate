@@ -159,41 +159,59 @@ canReflect.assign(PushstateObservable.prototype, {
 
 			// If link is within the same domain and descendant of `root`.
 			if (window.location.host === linksHost) {
-				var root = cleanRoot();
+				var root = cleanRoot(),
+					pathname,
+					search,
+					nodePathWithSearch,
+					href;
 
+				if (node.pathname) {
+					pathname = node.pathname;
+					search = node.search;
+					nodePathWithSearch = pathname + search;
+					href = node.href;
+				} 
+				// Handle SVG anchors with xlink:href attribute or href
+				// namespaced nodes don't have pathname property,
+				// we need to have it from href attribute
+				// xlink prefix is not recommended anymore but it may be still used
+				// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/xlink:href
+				else if (node.namespaceURI === 'http://www.w3.org/2000/svg') {
+					if (node.hasAttribute("xlink:href") || node.hasAttribute("href")) {
+						pathname = href = node.getAttributeNS('http://www.w3.org/2000/svg', 'href');
+						nodePathWithSearch = href;
+					}
+				}
+				
 				// If the link is within the `root`.
-				if (node.pathname.indexOf(root) === 0) {
-
-					// Removes root from url.
-					var nodePathWithSearch = node.pathname + node.search,
-						url = nodePathWithSearch.substr(root.length);
-
+				if (pathname.indexOf(root) === 0) {
+					var url = nodePathWithSearch.substr(root.length);
+		
 					// If a matching route exists.
 					if (route.rule(url) !== undefined) {
-
 						// Makes it possible to have a link with a hash.
 						// Calling .pushState will dispatch events, causing
 						// `can-route` to update its data, and then try to set back
 						// the url without the hash.  We need to retain that.
-						if (node.href.indexOf("#") >= 0) {
+						if (href.indexOf("#") >= 0) {
 							this.keepHash = true;
 						}
-
+		
 						// We do not want to call preventDefault() if the link is to the
 						// same page and just a different hash; see can-route-pushstate#75.
 						var windowPathWithSearch = window.location.pathname + window.location.search;
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
-
-
+		
+		
 						// Test if you can preventDefault.
 						if (shouldCallPreventDefault && event.preventDefault) {
 							event.preventDefault();
 						}
-
+		
 						// Update `window.location`.
-						window.history.pushState(null, null, node.href);
+						window.history.pushState(null, null, href);
 					}
-				}
+				} 
 			}
 		}
 	},
