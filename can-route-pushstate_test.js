@@ -468,4 +468,48 @@ function makeTest(mapModuleName){
 		}
 	});
 
+	test('shouldCallPushState', function(){
+		var global = globals.getKeyValue('global');
+		var document = globals.getKeyValue('document');
+		var isNode = globals.getKeyValue('isNode');
+
+		route.register("{type}/{id}");
+
+		var a = document.createElement("a");
+		a.setAttribute("href", "/books/40");
+		var event = document.createEvent('HTMLEvents');
+		event.initEvent('click', true, true);
+		
+		globals.setKeyValue('isNode', true);
+
+		QUnit.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
+
+		globals.setKeyValue('global', global);
+		globals.setKeyValue('document', document);
+		globals.setKeyValue('isNode', isNode);
+		
+	});
+
+	test('shouldCallPushState on SVG', function(){
+		var global = globals.getKeyValue('global');
+		var document = globals.getKeyValue('document');
+		var isNode = globals.getKeyValue('isNode');
+
+		route.register("{type}/{id}");
+	
+		var a = document.createElementNS("http://www.w3.org/1999/xlink", "a");
+		var event = document.createEvent('HTMLEvents');
+		a.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "/books/40");
+		event.initEvent('click', true, true);
+		
+		globals.setKeyValue('isNode', true);
+
+		QUnit.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
+
+		globals.setKeyValue('global', global);
+		globals.setKeyValue('document', document);
+		globals.setKeyValue('isNode', isNode);
+		
+	});
+
 }

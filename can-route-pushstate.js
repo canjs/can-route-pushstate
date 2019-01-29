@@ -80,7 +80,10 @@ function PushstateObservable() {
 	this.replaceStateKeys = [];
 	this.dispatchHandlers = this.dispatchHandlers.bind(this);
 	this.anchorClickHandler = function(event) {
-		PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
+		var shouldCallPushState = PushstateObservable.prototype.shouldCallPushState.call(this, this, event);
+		if (shouldCallPushState) {
+			PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
+		}
 	};
 
 	// ### `keepHash`
@@ -134,10 +137,9 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 
-	// ### anchorClickHandler
-	// Handler function for `click` events.
-	// Checks if a route is matched, if one is, calls `.pushState`
-	anchorClickHandler: function(node, event) {
+	// ### shouldCallPushState
+	// Checks if a route is matched, if one is, returns true
+	shouldCallPushState: function(node, event) {
 		if (!(event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented === true)) {
 			// If href has some JavaScript in it, let it run.
 			if (node.href === "javascript://") {
@@ -161,32 +163,22 @@ canReflect.assign(PushstateObservable.prototype, {
 			if (window.location.host === linksHost) {
 				var root = cleanRoot(),
 					pathname,
-					search,
-					nodePathWithSearch,
-					href;
+					href,
+					nodePathWithSearch;
 
-				if (node.pathname) {
+				if (node instanceof HTMLAnchorElement) {
 					pathname = node.pathname;
-					search = node.search;
-					nodePathWithSearch = pathname + search;
 					href = node.href;
-				} 
-				// Handle SVG anchors with xlink:href attribute or href
-				// namespaced nodes don't have pathname property,
-				// we need to have it from href attribute
-				// xlink prefix is not recommended anymore but it may be still used
-				// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/xlink:href
-				else if (node.namespaceURI === 'http://www.w3.org/2000/svg') {
-					if (node.hasAttribute("xlink:href") || node.hasAttribute("href")) {
-						pathname = href = node.getAttributeNS('http://www.w3.org/2000/svg', 'href');
-						nodePathWithSearch = href;
-					}
+					nodePathWithSearch = pathname + node.search;
+				} else if (node.namespaceURI === "http://www.w3.org/1999/xlink") {
+					pathname = href = node.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+					nodePathWithSearch = href;
 				}
-				
+
 				// If the link is within the `root`.
 				if (pathname.indexOf(root) === 0) {
 					var url = nodePathWithSearch.substr(root.length);
-		
+
 					// If a matching route exists.
 					if (route.rule(url) !== undefined) {
 						// Makes it possible to have a link with a hash.
@@ -196,24 +188,30 @@ canReflect.assign(PushstateObservable.prototype, {
 						if (href.indexOf("#") >= 0) {
 							this.keepHash = true;
 						}
-		
+
 						// We do not want to call preventDefault() if the link is to the
 						// same page and just a different hash; see can-route-pushstate#75.
 						var windowPathWithSearch = window.location.pathname + window.location.search;
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
-		
-		
+
 						// Test if you can preventDefault.
 						if (shouldCallPreventDefault && event.preventDefault) {
 							event.preventDefault();
 						}
-		
-						// Update `window.location`.
-						window.history.pushState(null, null, href);
+						return true;
 					}
-				} 
+					return false;
+				}
 			}
 		}
+	},
+
+	// ### anchorClickHandler
+	// Handler function for `click` events.
+	anchorClickHandler: function(node, event) {
+		var href = node.href ? node.href : node.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+		// Update `window.location`.
+		window.history.pushState(null, null, href);
 	},
 
 	// ### onBound
