@@ -176,7 +176,7 @@ canReflect.assign(PushstateObservable.prototype, {
 				}
 
 				// If the link is within the `root`.
-				if (pathname.indexOf(root) === 0) {
+				if (pathname !== undefined && pathname.indexOf(root) === 0) {
 					var url = nodePathWithSearch.substr(root.length);
 
 					// If a matching route exists.
