@@ -80,7 +80,10 @@ function PushstateObservable() {
 	this.replaceStateKeys = [];
 	this.dispatchHandlers = this.dispatchHandlers.bind(this);
 	this.anchorClickHandler = function(event) {
-		PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
+		var shouldCallPushState = PushstateObservable.prototype.shouldCallPushState.call(this, this, event);
+		if (shouldCallPushState) {
+			PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
+		}
 	};
 
 	// ### `keepHash`
@@ -134,10 +137,9 @@ canReflect.assign(PushstateObservable.prototype, {
 		}
 	},
 
-	// ### anchorClickHandler
-	// Handler function for `click` events.
-	// Checks if a route is matched, if one is, calls `.pushState`
-	anchorClickHandler: function(node, event) {
+	// ### shouldCallPushState
+	// Checks if a route is matched, if one is, returns true
+	shouldCallPushState: function(node, event) {
 		if (!(event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented === true)) {
 			// If href has some JavaScript in it, let it run.
 			if (node.href === "javascript://") {
@@ -159,23 +161,31 @@ canReflect.assign(PushstateObservable.prototype, {
 
 			// If link is within the same domain and descendant of `root`.
 			if (window.location.host === linksHost) {
-				var root = cleanRoot();
+				var root = cleanRoot(),
+					pathname,
+					href,
+					nodePathWithSearch;
+
+				if (node instanceof HTMLAnchorElement) {
+					pathname = node.pathname;
+					href = node.href;
+					nodePathWithSearch = pathname + node.search;
+				} else if (node.namespaceURI === "http://www.w3.org/1999/xlink") {
+					pathname = href = node.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+					nodePathWithSearch = href;
+				}
 
 				// If the link is within the `root`.
-				if (node.pathname.indexOf(root) === 0) {
-
-					// Removes root from url.
-					var nodePathWithSearch = node.pathname + node.search,
-						url = nodePathWithSearch.substr(root.length);
+				if (pathname !== undefined && pathname.indexOf(root) === 0) {
+					var url = nodePathWithSearch.substr(root.length);
 
 					// If a matching route exists.
 					if (route.rule(url) !== undefined) {
-
 						// Makes it possible to have a link with a hash.
 						// Calling .pushState will dispatch events, causing
 						// `can-route` to update its data, and then try to set back
 						// the url without the hash.  We need to retain that.
-						if (node.href.indexOf("#") >= 0) {
+						if (href.indexOf("#") >= 0) {
 							this.keepHash = true;
 						}
 
@@ -184,18 +194,24 @@ canReflect.assign(PushstateObservable.prototype, {
 						var windowPathWithSearch = window.location.pathname + window.location.search;
 						var shouldCallPreventDefault = nodePathWithSearch !== windowPathWithSearch || node.hash === window.location.hash;
 
-
 						// Test if you can preventDefault.
 						if (shouldCallPreventDefault && event.preventDefault) {
 							event.preventDefault();
 						}
-
-						// Update `window.location`.
-						window.history.pushState(null, null, node.href);
+						return true;
 					}
+					return false;
 				}
 			}
 		}
+	},
+
+	// ### anchorClickHandler
+	// Handler function for `click` events.
+	anchorClickHandler: function(node, event) {
+		var href = node.href ? node.href : node.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+		// Update `window.location`.
+		window.history.pushState(null, null, href);
 	},
 
 	// ### onBound
