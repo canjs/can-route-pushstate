@@ -477,9 +477,11 @@ function makeTest(mapModuleName){
 
 		var a = document.createElement("a");
 		a.setAttribute("href", "/books/40");
+		document.getElementById("qunit-fixture").appendChild(a);
+
 		var event = document.createEvent('HTMLEvents');
 		event.initEvent('click', true, true);
-		
+
 		globals.setKeyValue('isNode', true);
 
 		QUnit.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
@@ -487,7 +489,7 @@ function makeTest(mapModuleName){
 		globals.setKeyValue('global', global);
 		globals.setKeyValue('document', document);
 		globals.setKeyValue('isNode', isNode);
-		
+
 	});
 
 	test('shouldCallPushState on SVG', function(){
@@ -496,12 +498,12 @@ function makeTest(mapModuleName){
 		var isNode = globals.getKeyValue('isNode');
 
 		route.register("{type}/{id}");
-	
+
 		var a = document.createElementNS("http://www.w3.org/1999/xlink", "a");
 		var event = document.createEvent('HTMLEvents');
 		a.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "/books/40");
 		event.initEvent('click', true, true);
-		
+
 		globals.setKeyValue('isNode', true);
 
 		QUnit.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
@@ -509,7 +511,7 @@ function makeTest(mapModuleName){
 		globals.setKeyValue('global', global);
 		globals.setKeyValue('document', document);
 		globals.setKeyValue('isNode', isNode);
-		
+
 	});
 
 }
