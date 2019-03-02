@@ -5,8 +5,6 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/canjs/can-route-pushstate/blob/master/LICENSE.md)
 [![npm version](https://badge.fury.io/js/can-route-pushstate.svg)](https://www.npmjs.com/package/can-route-pushstate)
 [![Travis build status](https://travis-ci.org/canjs/can-route-pushstate.svg?branch=master)](https://travis-ci.org/canjs/can-route-pushstate)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/canjs/can-route-pushstate?branch=master&svg=true)](https://ci.appveyor.com/project/matthewp/can-route-pushstate)
-[![Coverage status](https://coveralls.io/repos/github/canjs/can-route-pushstate/badge.svg?branch=master)](https://coveralls.io/github/canjs/can-route-pushstate?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/canjs/can-route-pushstate.svg)](https://greenkeeper.io/)
 
 Changes [can-route](https://github.com/canjs/can-route) to use [pushstate](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history)
