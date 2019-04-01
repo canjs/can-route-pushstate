@@ -925,8 +925,10 @@ function makeTest(mapModuleName){
 					ok(false, "Clicking javascript: void(0) anchor caused a security exception");
 				}
 
-				start();
-				done();
+				setTimeout(function(){
+					start();
+					done();
+				}, 30);
 			});
 		});
 
@@ -951,8 +953,10 @@ function makeTest(mapModuleName){
 					ok(false, "Clicking anchor with blank target caused a security exception");
 				}
 
-				start();
-				done();
+				setTimeout(function(){
+					start();
+					done();
+				}, 30);
 			});
 		});
 
@@ -976,8 +980,10 @@ function makeTest(mapModuleName){
 					ok(false, "Clicking anchor with blank target caused a security exception");
 				}
 
-				start();
-				done();
+				setTimeout(function(){
+					start();
+					done();
+				}, 30);
 			});
 		});
 
