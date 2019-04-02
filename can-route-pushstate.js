@@ -183,7 +183,7 @@ if (usePushStateRouting) {
 			}
 
 			// Do not pushstate if meta key was pressed, mimicking standard browser behavior.
-			if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+			if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
 				return;
 			}
 
