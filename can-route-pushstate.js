@@ -177,6 +177,16 @@ if (usePushStateRouting) {
 				return;
 			}
 
+			// Do not pushstate if target is for blank window.
+			if (node.target === "_blank") {
+				return;
+			}
+
+			// Do not pushstate if meta key was pressed, mimicking standard browser behavior.
+			if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+				return;
+			}
+
 			// If link is within the same domain and descendant of `root`
 			if (window.location.host === linksHost) {
 				var root = cleanRoot();
