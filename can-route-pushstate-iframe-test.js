@@ -11,7 +11,7 @@ if (window.history && history.pushState) {
 
 function makeTest(mapModuleName){
 	QUnit.module("can/route/pushstate with " + mapModuleName, {
-		beforeEach: function(assert) {
+		beforeEach: function() {
 			route.urlData = new RoutePushstate();
 			window.MAP_MODULE_NAME = mapModuleName;
 		}
@@ -45,7 +45,7 @@ function makeTest(mapModuleName){
 
 		QUnit.test("updating the url", function(assert) {
 			var done = assert.async();
-			makeTestingIframe(function (info, done) {
+			makeTestingIframe(function (info, cleanup) {
 				info.route.start();
 				info.route("/{type}/{id}");
 				info.route.attr({
@@ -56,7 +56,7 @@ function makeTest(mapModuleName){
 				setTimeout(function () {
 					var after = info.location.pathname;
 					assert.equal(after, "/bar/5", "path is " + after);
-					done();
+					cleanup();
 
 					done();
 
@@ -87,7 +87,7 @@ function makeTest(mapModuleName){
 
 		QUnit.test("sticky enough routes", function(assert) {
 			var done = assert.async();
-			makeTestingIframe(function (info, done) {
+			makeTestingIframe(function (info, cleanup) {
 				info.route("/active");
 				info.route("");
 				info.history.pushState(null, null, "/active");
@@ -95,7 +95,7 @@ function makeTest(mapModuleName){
 				setTimeout(function () {
 					var after = info.location.pathname;
 					assert.equal(after, "/active");
-					done();
+					cleanup();
 
 					done();
 				}, 30);
@@ -296,7 +296,7 @@ function makeTest(mapModuleName){
 
 		QUnit.test("javascript:// links do not get pushstated", function(assert) {
 			var done = assert.async();
-			makeTestingIframe(function (info, done) {
+			makeTestingIframe(function (info, cleanup) {
 				info.route("{type}", { type: "yay" });
 				info.route.start();
 
@@ -314,14 +314,14 @@ function makeTest(mapModuleName){
 					assert.ok(false, "Clicking javascript:// anchor caused a security exception");
 				}
 
-				done();
+				cleanup();
 				done();
 			});
 		});
 
 		QUnit.test("javascript: void(0) links get pushstated", function(assert) {
 			var done = assert.async();
-			makeTestingIframe(function (info, done) {
+			makeTestingIframe(function (info, cleanup) {
 				info.route(":type", { type: "yay" });
 				info.route.start();
 
@@ -339,14 +339,14 @@ function makeTest(mapModuleName){
 					assert.ok(false, "Clicking javascript: void(0) anchor caused a security exception");
 				}
 
-				done();
+				cleanup();
 				done();
 			});
 		});
 
 		QUnit.test("links with target=_blank do not get pushstated", function(assert) {
 			var done = assert.async();
-			makeTestingIframe(function (info, done) {
+			makeTestingIframe(function (info, cleanup) {
 				info.route(":type", { type: "yay" });
 				info.route.start();
 
@@ -365,14 +365,14 @@ function makeTest(mapModuleName){
 					assert.ok(false, "Clicking anchor with blank target caused a security exception");
 				}
 
-				done();
+				cleanup();
 				done();
 			});
 		});
 
 		QUnit.test("clicking on links while holding meta key do not get pushstated", function(assert) {
 			var done = assert.async();
-			makeTestingIframe(function (info, done) {
+			makeTestingIframe(function (info, cleanup) {
 				info.route(":type", { type: "yay" });
 				info.route.start();
 
@@ -390,7 +390,7 @@ function makeTest(mapModuleName){
 					assert.ok(false, "Clicking anchor with while holding a meta key caused a security exception");
 				}
 
-				done();
+				cleanup();
 				done();
 			});
 		});
@@ -483,13 +483,13 @@ function makeTest(mapModuleName){
 
 			QUnit.test("URL's don't greedily match", function(assert) {
 				var done = assert.async();
-				makeTestingIframe(function(info, done){
+				makeTestingIframe(function(info, cleanup){
 					info.route.urlData.root = "testing.html";
 					info.route("{module}\\.html");
 
 					info.route._onStartComplete = function(){
 						assert.ok(!info.route.attr('module'), 'there is no route match');
-						done();
+						cleanup();
 
 						done();
 					};
@@ -501,7 +501,8 @@ function makeTest(mapModuleName){
 
 		}
 
-		QUnit.test("routed links must descend from pushstate root (#652)", 2, function(assert) {
+		QUnit.test("routed links must descend from pushstate root (#652)", function(assert) {
+			assert.expect(2);
 			var done = assert.async();
 
 			var setupRoutesAndRoot = function (iCanRoute, root) {
@@ -521,7 +522,7 @@ function makeTest(mapModuleName){
 
 			// The following makes sure a link that is not "rooted" will
 			// behave normally and not call pushState
-			makeTestingIframe(function (info, done) {
+			makeTestingIframe(function (info, cleanup) {
 				setupRoutesAndRoot(info.route, "/app/");
 				var link = createLink(info.window, "/route/pushstate/empty.html"); // a link to somewhere outside app
 
@@ -540,13 +541,13 @@ function makeTest(mapModuleName){
 
 				// click a link and make sure the iframe url changes
 				domEvents.dispatch(link, "click");
-
-				done();
+				cleanup();
+				//done();
 				setTimeout(next, 10);
 			});
 
 			var next = function () {
-				makeTestingIframe(function (info, done) {
+				makeTestingIframe(function (info, cleanup) {
 					info.route.serializedCompute.bind("change", function () {
 						// deepEqual doesn't like to compare objects from different contexts
 						// so we copy it
@@ -560,7 +561,7 @@ function makeTest(mapModuleName){
 						assert.equal(info.route.matched(), "{section}/{sub}/",
 							"route's matched property is correct");
 
-						done();
+						cleanup();
 						done();
 					});
 
@@ -577,7 +578,7 @@ function makeTest(mapModuleName){
 		QUnit.test("replaceStateOn makes changes to an attribute use replaceState (#1137)", function(assert) {
 			var done = assert.async();
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 				info.history.pushState = function () {
 					assert.ok(false, "pushState should not have been called");
 				};
@@ -592,7 +593,7 @@ function makeTest(mapModuleName){
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
-					done();
+					cleanup();
 					done();
 				}, 30);
 			});
@@ -601,7 +602,7 @@ function makeTest(mapModuleName){
 		QUnit.test("replaceStateOn makes changes to multiple attributes use replaceState (#1137)", function(assert) {
 			var done = assert.async();
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 				info.history.pushState = function () {
 					assert.ok(false, "pushState should not have been called");
 				};
@@ -619,7 +620,7 @@ function makeTest(mapModuleName){
 					info.route.attr('metoo', 'yes');
 
 					setTimeout(function(){
-						done();
+						cleanup();
 						done();
 					}, 30);
 
@@ -632,7 +633,7 @@ function makeTest(mapModuleName){
 			var replaceCalls = 0,
 				pushCalls = 0;
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 				info.history.pushState = function () {
 					pushCalls++;
 				};
@@ -652,7 +653,7 @@ function makeTest(mapModuleName){
 					setTimeout(function() {
 						assert.equal(replaceCalls, 1);
 						assert.equal(pushCalls, 1);
-						done();
+						cleanup();
 						done();
 					}, 30);
 
@@ -663,7 +664,7 @@ function makeTest(mapModuleName){
 		QUnit.test("replaceStateOff makes changes to an attribute use pushState again (#1137)", function(assert) {
 			var done = assert.async();
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 				info.history.pushState = function () {
 					assert.ok(true, "pushState called");
 				};
@@ -679,7 +680,7 @@ function makeTest(mapModuleName){
 				info.route.attr('ignoreme', 'yes');
 
 				setTimeout(function(){
-					done();
+					cleanup();
 					done();
 				}, 30);
 			});
@@ -688,9 +689,9 @@ function makeTest(mapModuleName){
 		QUnit.test("Binding not added if not using the http/s protocols", function(assert) {
 			var done = assert.async();
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 				assert.equal(info.route.defaultBinding, "hashchange", "using hashchange routing");
-				done();
+				cleanup();
 				done();
 			}, __dirname + "/test/testing-nw.html");
 		});
@@ -698,9 +699,9 @@ function makeTest(mapModuleName){
 		QUnit.test("Binding is added if there is no protocol (can-simple-dom uses an empty string as the protocol)", function(assert) {
 			var done = assert.async();
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 				assert.ok(true, "We got this far which means things did not blow up");
-				done();
+				cleanup();
 				done();
 			}, __dirname + "/test/testing-ssr.html");
 		});
@@ -708,7 +709,7 @@ function makeTest(mapModuleName){
 		QUnit.test("Calling route.stop() works", function(assert) {
 			var done = assert.async();
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 				info.route.start();
 				try {
 					info.route.stop();
@@ -717,7 +718,7 @@ function makeTest(mapModuleName){
 					assert.ok(false, err.message);
 				}
 
-				done();
+				cleanup();
 				done();
 			});
 		});
@@ -725,7 +726,7 @@ function makeTest(mapModuleName){
 		QUnit.test("Check if prevent default is called when pushState throws an error (#116)", function(assert) {
 			var done = assert.async();
 
-			makeTestingIframe(function(info, done){
+			makeTestingIframe(function(info, cleanup){
 
 				var win = info.window;
 
@@ -761,7 +762,7 @@ function makeTest(mapModuleName){
 					try {
 						link.dispatchEvent(event);
 					} finally {
-						done();
+						cleanup();
 						done();
 					}
 				};
