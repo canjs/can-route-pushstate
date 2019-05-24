@@ -12,30 +12,30 @@ if (window.history && history.pushState) {
 
 function makeTest(mapModuleName){
 	QUnit.module("can/route/pushstate with " + mapModuleName, {
-		setup: function () {
+		beforeEach: function(assert) {
 			route.urlData = new RoutePushstate();
 			window.MAP_MODULE_NAME = mapModuleName;
 		}
 	});
 
-	test("deparam", function () {
+	QUnit.test("deparam", function(assert) {
 		route.routes = {};
 		route("{page}", {
 			page: "index"
 		});
 
 		var obj = route.deparam("can.Control");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			page: "can.Control"
 		});
 
 		obj = route.deparam("");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			page: "index"
 		});
 
 		obj = route.deparam("can.Control?where=there");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			page: "can.Control",
 			where: "there"
 		});
@@ -47,14 +47,14 @@ function makeTest(mapModuleName){
 		});
 
 		obj = route.deparam("can.Control/?where=there");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			page: "can.Control",
 			index: "foo",
 			where: "there"
 		});
 	});
 
-	test("deparam of invalid url", function () {
+	QUnit.test("deparam of invalid url", function(assert) {
 		var obj;
 
 		route.routes = {};
@@ -67,19 +67,19 @@ function makeTest(mapModuleName){
 		// This path does not match the above route, and since the hash is not
 		// a &key=value list there should not be data.
 		obj = route.deparam("pages//");
-		deepEqual(obj, {});
+		assert.deepEqual(obj, {});
 
 		// A valid path with invalid parameters should return the path data but
 		// ignore the parameters.
 		obj = route.deparam("pages/val1/val2/val3?invalid-parameters");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			var1: 'val1',
 			var2: 'val2',
 			var3: 'val3'
 		});
 	})
 
-	test("deparam of url with non-generated hash (manual override)", function () {
+	QUnit.test("deparam of url with non-generated hash (manual override)", function(assert) {
 		var obj;
 
 		route.routes = {};
@@ -87,14 +87,14 @@ function makeTest(mapModuleName){
 		// This won't be set like this by route, but it could easily happen via a
 		// user manually changing the URL or when porting a prior URL structure.
 		obj = route.deparam("?page=foo&bar=baz&where=there");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			page: 'foo',
 			bar: 'baz',
 			where: 'there'
 		});
 	})
 
-	test("param", function () {
+	QUnit.test("param", function(assert) {
 		route.routes = {};
 		route("pages/{page}", {
 			page: "index"
@@ -103,13 +103,13 @@ function makeTest(mapModuleName){
 		var res = route.param({
 			page: "foo"
 		});
-		equal(res, "pages/foo")
+		assert.equal(res, "pages/foo")
 
 		res = route.param({
 			page: "foo",
 			index: "bar"
 		});
-		equal(res, "pages/foo?index=bar")
+		assert.equal(res, "pages/foo?index=bar")
 
 		route("pages/{page}/{foo}", {
 			page: "index",
@@ -121,11 +121,11 @@ function makeTest(mapModuleName){
 			foo: "bar",
 			where: "there"
 		});
-		equal(res, "pages/foo/?where=there")
+		assert.equal(res, "pages/foo/?where=there")
 
 		// There is no matching route so the hash should be empty.
 		res = route.param({});
-		equal(res, "")
+		assert.equal(res, "")
 
 		route.routes = {};
 
@@ -134,13 +134,13 @@ function makeTest(mapModuleName){
 			bar: "baz",
 			where: "there"
 		});
-		equal(res, "?page=foo&bar=baz&where=there")
+		assert.equal(res, "?page=foo&bar=baz&where=there")
 
 		res = route.param({});
-		equal(res, "")
+		assert.equal(res, "")
 	});
 
-	test("symmetry", function () {
+	QUnit.test("symmetry", function(assert) {
 		route.routes = {};
 
 		var obj = {
@@ -154,10 +154,10 @@ function makeTest(mapModuleName){
 		var res = route.param(obj)
 
 		var o2 = route.deparam(res)
-		deepEqual(o2, obj)
+		assert.deepEqual(o2, obj)
 	})
 
-	test("light param", function () {
+	QUnit.test("light param", function(assert) {
 		route.routes = {};
 		route("{page}", {
 			page: "index"
@@ -166,7 +166,7 @@ function makeTest(mapModuleName){
 		var res = route.param({
 			page: "index"
 		});
-		equal(res, "")
+		assert.equal(res, "")
 
 		route("pages/{p1}/{p2}/{p3}", {
 			p1: "index",
@@ -179,17 +179,17 @@ function makeTest(mapModuleName){
 			p2: "foo",
 			p3: "bar"
 		});
-		equal(res, "pages///")
+		assert.equal(res, "pages///")
 
 		res = route.param({
 			p1: "index",
 			p2: "baz",
 			p3: "bar"
 		});
-		equal(res, "pages//baz/")
+		assert.equal(res, "pages//baz/")
 	});
 
-	test('param doesnt add defaults to params', function () {
+	QUnit.test('param doesnt add defaults to params', function(assert) {
 		route.routes = {};
 
 		route("pages/{p1}", {
@@ -199,10 +199,10 @@ function makeTest(mapModuleName){
 			p1: "index",
 			p2: "foo"
 		});
-		equal(res, "pages/index")
+		assert.equal(res, "pages/index")
 	})
 
-	test("param-deparam", function () {
+	QUnit.test("param-deparam", function(assert) {
 
 		route("{page}/{type}", {
 			page: "index",
@@ -218,7 +218,7 @@ function makeTest(mapModuleName){
 		var res = route.param(data);
 		var obj = route.deparam(res);
 
-		deepEqual(obj, data, "{page}/{type} with query string");
+		assert.deepEqual(obj, data, "{page}/{type} with query string");
 		data = {
 			page: "can.Control",
 			type: "foo",
@@ -228,7 +228,7 @@ function makeTest(mapModuleName){
 		res = route.param(data);
 		obj = route.deparam(res);
 
-		deepEqual(data, obj, "{page}/{type} with query string");
+		assert.deepEqual(data, obj, "{page}/{type} with query string");
 
 		data = {
 			page: " a ",
@@ -237,7 +237,7 @@ function makeTest(mapModuleName){
 		res = route.param(data);
 		obj = route.deparam(res);
 		delete obj.route;
-		deepEqual(obj, data, "slashes and spaces")
+		assert.deepEqual(obj, data, "slashes and spaces")
 
 		data = {
 			page: "index",
@@ -249,7 +249,7 @@ function makeTest(mapModuleName){
 		res = "/" + route.param(data);
 		obj = route.deparam(res);
 		delete obj.route;
-		deepEqual(data, obj, "/{page}/{type} starting slash with removed defaults");
+		assert.deepEqual(data, obj, "/{page}/{type} starting slash with removed defaults");
 
 		route.routes = {};
 
@@ -260,10 +260,10 @@ function makeTest(mapModuleName){
 		};
 		res = route.param(data);
 		obj = route.deparam(res);
-		deepEqual(data, obj)
+		assert.deepEqual(data, obj)
 	})
 
-	test("deparam-param", function () {
+	QUnit.test("deparam-param", function(assert) {
 		route.routes = {};
 		route("{foo}/{bar}", {
 			foo: 1,
@@ -273,17 +273,17 @@ function makeTest(mapModuleName){
 			foo: 1,
 			bar: 2
 		});
-		equal(res, "/", "empty slash")
+		assert.equal(res, "/", "empty slash")
 
 		// you really should deparam with root ..
 		var deparamed = route.deparam("//")
-		deepEqual(deparamed, {
+		assert.deepEqual(deparamed, {
 			foo: 1,
 			bar: 2
 		})
 	})
 
-	test("precedent", function () {
+	QUnit.test("precedent", function(assert) {
 		route.routes = {};
 		route("{who}", {
 			who: "index"
@@ -291,51 +291,51 @@ function makeTest(mapModuleName){
 		route("search/{search}");
 
 		var obj = route.deparam("can.Control");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			who: "can.Control"
 		});
 
 		obj = route.deparam("search/can.Control");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			search: "can.Control"
 		}, "bad deparam");
 
-		equal(route.param({
+		assert.equal(route.param({
 			search: "can.Control"
 		}),
 			"search/can.Control", "bad param");
 
-		equal(route.param({
+		assert.equal(route.param({
 			who: "can.Control"
 		}),
 			"can.Control");
 	})
 
-	test("better matching precedent", function () {
+	QUnit.test("better matching precedent", function(assert) {
 		route.routes = {};
 		route("{type}", {
 			who: "index"
 		});
 		route("{type}/{id}");
 
-		equal(route.param({
+		assert.equal(route.param({
 			type: "foo",
 			id: "bar"
 		}),
 			"foo/bar");
 	})
 
-	test("linkTo", function () {
+	QUnit.test("linkTo", function(assert) {
 		route.routes = {};
 		route("/{foo}");
 		var res = route.link("Hello", {
 			foo: "bar",
 			baz: 'foo'
 		});
-		equal(res, '<a href="/bar?baz=foo">Hello</a>');
+		assert.equal(res, '<a href="/bar?baz=foo">Hello</a>');
 	})
 
-	test("param with route defined", function () {
+	QUnit.test("param with route defined", function(assert) {
 		route.routes = {};
 		route("holler")
 		route("foo");
@@ -344,10 +344,10 @@ function makeTest(mapModuleName){
 			foo: "abc"
 		}, "foo");
 
-		equal(res, "foo?foo=abc")
+		assert.equal(res, "foo?foo=abc")
 	})
 
-	test("route endings", function () {
+	QUnit.test("route endings", function(assert) {
 		route.routes = {};
 		route("foo", {
 			foo: true
@@ -357,24 +357,24 @@ function makeTest(mapModuleName){
 		})
 
 		var res = route.deparam("food")
-		ok(res.food, "we get food back")
+		assert.ok(res.food, "we get food back")
 
 	});
 
-	test("strange characters", function () {
+	QUnit.test("strange characters", function(assert) {
 		route.routes = {};
 		route("{type}/{id}");
 		var res = route.deparam("foo/" + encodeURIComponent("\/"))
-		equal(res.id, "\/")
+		assert.equal(res.id, "\/")
 		res = route.param({
 			type: "bar",
 			id: "\/"
 		});
-		equal(res, "bar/" + encodeURIComponent("\/"))
+		assert.equal(res, "bar/" + encodeURIComponent("\/"))
 	});
 
 
-	test("empty default is matched even if last", function () {
+	QUnit.test("empty default is matched even if last", function(assert) {
 
 		route.routes = {};
 		route("{who}");
@@ -383,23 +383,23 @@ function makeTest(mapModuleName){
 		});
 
 		var obj = route.deparam("");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			foo: "bar"
 		});
 	});
 
-	test("order matched", function () {
+	QUnit.test("order matched", function(assert) {
 		route.routes = {};
 		route("{foo}");
 		route("{bar}")
 
 		var obj = route.deparam("abc");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			foo: "abc"
 		});
 	});
 
-	test("param order matching", function () {
+	QUnit.test("param order matching", function(assert) {
 		route.routes = {};
 		route("", {
 			bar: "foo"
@@ -408,7 +408,7 @@ function makeTest(mapModuleName){
 		var res = route.param({
 			bar: "foo"
 		});
-		equal(res, "", "picks the shortest, best match");
+		assert.equal(res, "", "picks the shortest, best match");
 
 		// picks the first that matches everything ...
 		route.routes = {};
@@ -428,27 +428,27 @@ function makeTest(mapModuleName){
 			task: "task3"
 		});
 
-		equal(res, "", "picks the first match of everything");
+		assert.equal(res, "", "picks the first match of everything");
 
 		res = route.param({
 			recipe: "recipe1",
 			task: "task2"
 		});
-		equal(res, "/task2")
+		assert.equal(res, "/task2")
 	});
 
-	test("dashes in routes", function () {
+	QUnit.test("dashes in routes", function(assert) {
 		route.routes = {};
 		route.register("{foo}-{bar}");
 
 		var obj = route.deparam("abc-def");
-		deepEqual(obj, {
+		assert.deepEqual(obj, {
 			foo: "abc",
 			bar: "def"
 		});
 	});
 
-	test("teardown in Node", function() {
+	QUnit.test("teardown in Node", function(assert) {
 		var global = globals.getKeyValue('global');
 		var document = globals.getKeyValue('document');
 		var isNode = globals.getKeyValue('isNode');
@@ -457,9 +457,9 @@ function makeTest(mapModuleName){
 			globals.setKeyValue('isNode', true);
 			route.urlData.onUnbound();
 
-			QUnit.ok(true, "Did not attempt to teardown in Node");
+			assert.ok(true, "Did not attempt to teardown in Node");
 		} catch(e) {
-			QUnit.ok(false, "Tried to teardown in Node");
+			assert.ok(false, "Tried to teardown in Node");
 		}
 		finally {
 			globals.setKeyValue('global', global);
@@ -468,7 +468,7 @@ function makeTest(mapModuleName){
 		}
 	});
 
-	test('shouldCallPushState', function(){
+	QUnit.test('shouldCallPushState', function(assert) {
 		var global = globals.getKeyValue('global');
 		var document = globals.getKeyValue('document');
 		var isNode = globals.getKeyValue('isNode');
@@ -484,7 +484,7 @@ function makeTest(mapModuleName){
 
 		globals.setKeyValue('isNode', true);
 
-		QUnit.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
+		assert.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
 
 		globals.setKeyValue('global', global);
 		globals.setKeyValue('document', document);
@@ -492,7 +492,7 @@ function makeTest(mapModuleName){
 
 	});
 
-	test('shouldCallPushState on SVG', function(){
+	QUnit.test('shouldCallPushState on SVG', function(assert) {
 		var global = globals.getKeyValue('global');
 		var document = globals.getKeyValue('document');
 		var isNode = globals.getKeyValue('isNode');
@@ -506,7 +506,7 @@ function makeTest(mapModuleName){
 
 		globals.setKeyValue('isNode', true);
 
-		QUnit.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
+		assert.ok(route.urlData.shouldCallPushState(a, event), "Push state should be called");
 
 		globals.setKeyValue('global', global);
 		globals.setKeyValue('document', document);
