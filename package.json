@@ -45,7 +45,7 @@
     "can-assign": "<2.0.0",
     "can-define": "^2.6.0",
     "can-map": "^4.0.0",
-    "can-queues": "^1.2.1",
+    "can-queues": "^1.2.2",
     "detect-cyclic-packages": "^1.1.0",
     "docco": "^0.8.0",
     "highlight.js": "9.12.0",
