@@ -44,7 +44,7 @@
   "devDependencies": {
     "can-assign": "<2.0.0",
     "can-define": "^2.6.0",
-    "can-map": "^4.0.0",
+    "can-map": "^4.3.7",
     "can-queues": "^1.2.1",
     "detect-cyclic-packages": "^1.1.0",
     "docco": "^0.8.0",
