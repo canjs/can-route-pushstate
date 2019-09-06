@@ -13,6 +13,8 @@
     "url": "http://bitovi.com"
   },
   "scripts": {
+    "ci": "npm run test && node test/test-saucelabs.js",
+    "http-server": "http-server -p 3000 --silent",
     "preversion": "npm test",
     "postpublish": "git push --tags && git push",
     "testee": "testee test/test.html --browsers firefox",
@@ -48,10 +50,12 @@
     "can-queues": "^1.2.1",
     "detect-cyclic-packages": "^1.1.0",
     "docco": "^0.8.0",
+    "http-server": "^0.11.0",
     "jshint": "^2.9.1",
     "steal": "^2.1.4",
     "steal-qunit": "^2.0.0",
     "steal-tools": "^2.0.6",
+    "test-saucelabs": "^0.0.6",
     "testee": "^0.9.0"
   }
 }
