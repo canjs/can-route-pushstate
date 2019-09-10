@@ -11,10 +11,14 @@ if (window.history && history.pushState) {
 }
 
 function makeTest(mapModuleName){
+	var mapModuleImport = System.import(mapModuleName);
+
 	QUnit.module("can/route/pushstate with " + mapModuleName, {
 		beforeEach: function(assert) {
-			route.urlData = new RoutePushstate();
-			window.MAP_MODULE_NAME = mapModuleName;
+			return mapModuleImport.then(function(MapModule) {
+				route.data = new MapModule();
+				route.urlData = new RoutePushstate();
+			});
 		}
 	});
 
