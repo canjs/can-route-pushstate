@@ -3,7 +3,7 @@ node_js: 10
 services:
   - xvfb
 addons:
-  firefox: '51.0'
+  firefox: latest
   sauce_connect: true
 before_script:
   - npm run http-server &

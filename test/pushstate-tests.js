@@ -1,16 +1,10 @@
 /* jshint asi:true,scripturl:true */
 var QUnit = require('steal-qunit');
-var RoutePushstate = require('./can-route-pushstate');
+var RoutePushstate = require('../can-route-pushstate');
 var route = require('can-route');
-require("./can-route-pushstate-iframe-test");
 var globals = require('can-globals');
 
-if (window.history && history.pushState) {
-	makeTest("can-map");
-	makeTest("can-define/map/map");
-}
-
-function makeTest(mapModuleName){
+module.exports.makeTest = function(mapModuleName) {
 	var mapModuleImport = System.import(mapModuleName);
 
 	QUnit.module("can/route/pushstate with " + mapModuleName, {

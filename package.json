@@ -34,19 +34,20 @@
     "donejs"
   ],
   "dependencies": {
-    "can-diff": "<2.0.0",
+    "can-diff": "^1.0.0",
     "can-dom-events": "^1.1.0",
-    "can-globals": "<2.0.0",
+    "can-globals": "^1.0.0",
     "can-observation-recorder": "^1.0.2",
     "can-reflect": "^1.8.0",
-    "can-route": "^4.3.12",
+    "can-route": "^5.0.0-pre.0",
     "can-simple-observable": "^2.0.0",
     "can-symbol": "^1.6.3"
   },
   "devDependencies": {
-    "can-assign": "<2.0.0",
+    "can-assign": "^1.0.0",
     "can-define": "^2.6.0",
     "can-map": "^4.0.0",
+    "can-observable-object": "^1.0.0-pre.3",
     "can-queues": "^1.2.1",
     "detect-cyclic-packages": "^1.1.0",
     "docco": "^0.8.0",
