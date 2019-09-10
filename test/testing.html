@@ -27,6 +27,7 @@ steal.done().then(function() {
 		window.queues = modules[3];
 		window.ObservationRecorder = modules[4];
 
+		window.route.data = new window.CanMap();
 		window.route.urlData = new window.RoutePushstate();
 		setTimeout(function() {
 			window.parent.routeTestReady &&
