@@ -5,7 +5,7 @@ var route = require('can-route');
 var RoutePushstate = require('../can-route-pushstate');
 
 module.exports.makeTest = function(mapModuleName) {
-	QUnit.module("can/route/pushstate with " + mapModuleName, {
+	QUnit.module("can-route-pushstate with " + mapModuleName, {
 		beforeEach: function() {
 			route.urlData = new RoutePushstate();
 			window.MAP_MODULE_NAME = mapModuleName;

@@ -7,7 +7,7 @@ var globals = require('can-globals');
 module.exports.makeTest = function(mapModuleName) {
 	var mapModuleImport = System.import(mapModuleName);
 
-	QUnit.module("can/route/pushstate with " + mapModuleName, {
+	QUnit.module("can-route-pushstate with " + mapModuleName, {
 		beforeEach: function(assert) {
 			return mapModuleImport.then(function(MapModule) {
 				route.data = new MapModule();
