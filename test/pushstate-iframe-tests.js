@@ -2,15 +2,10 @@
 var domEvents = require('can-dom-events');
 var extend = require('can-assign');
 var route = require('can-route');
-var RoutePushstate = require('./can-route-pushstate');
+var RoutePushstate = require('../can-route-pushstate');
 
-if (window.history && history.pushState) {
-	makeTest("can-map");
-	makeTest("can-define/map/map");
-}
-
-function makeTest(mapModuleName){
-	QUnit.module("can/route/pushstate with " + mapModuleName, {
+module.exports.makeTest = function(mapModuleName) {
+	QUnit.module("can-route-pushstate with " + mapModuleName, {
 		beforeEach: function() {
 			route.urlData = new RoutePushstate();
 			window.MAP_MODULE_NAME = mapModuleName;
@@ -38,7 +33,7 @@ function makeTest(mapModuleName){
 				});
 			};
 
-			testHTML = testHTML || __dirname + "/test/testing.html";
+			testHTML = testHTML || __dirname + "/testing.html";
 			iframe.src = testHTML + "?" + Math.random();
 			document.getElementById("qunit-fixture").appendChild(iframe);
 		};
@@ -161,7 +156,7 @@ function makeTest(mapModuleName){
 
 			};
 			var iframe = document.createElement('iframe');
-			iframe.src = __dirname + "/test/testing.html?1";
+			iframe.src = __dirname + "/testing.html?1";
 			document.getElementById("qunit-fixture").appendChild(iframe);
 		});
 
@@ -203,7 +198,7 @@ function makeTest(mapModuleName){
 				}, 100);
 			};
 			var iframe = document.createElement('iframe');
-			iframe.src = __dirname + "/test/testing.html";
+			iframe.src = __dirname + "/testing.html";
 			document.getElementById('qunit-fixture').appendChild(iframe);
 		});
 
@@ -249,7 +244,7 @@ function makeTest(mapModuleName){
 
 			};
 			var iframe = document.createElement('iframe');
-			iframe.src = __dirname + "/test/testing.html#thisIsMyHash";
+			iframe.src = __dirname + "/testing.html#thisIsMyHash";
 			document.getElementById('qunit-fixture').appendChild(iframe);
 		});
 
@@ -290,7 +285,7 @@ function makeTest(mapModuleName){
 				iframe.parentNode.removeChild(iframe);
 			};
 			var iframe = document.createElement('iframe');
-			iframe.src = __dirname + "/test/testing.html";
+			iframe.src = __dirname + "/testing.html";
 			document.getElementById('qunit-fixture').appendChild(iframe);
 		});
 
@@ -477,7 +472,7 @@ function makeTest(mapModuleName){
 				};
 
 				var iframe = document.createElement("iframe");
-				iframe.src = __dirname + "/test/testing.html";
+				iframe.src = __dirname + "/testing.html";
 				document.getElementById('qunit-fixture').appendChild(iframe);
 			});
 
@@ -693,7 +688,7 @@ function makeTest(mapModuleName){
 				assert.equal(info.route.defaultBinding, "hashchange", "using hashchange routing");
 				cleanup();
 				done();
-			}, __dirname + "/test/testing-nw.html");
+			}, __dirname + "/testing-nw.html");
 		});
 
 		QUnit.test("Binding is added if there is no protocol (can-simple-dom uses an empty string as the protocol)", function(assert) {
@@ -703,7 +698,7 @@ function makeTest(mapModuleName){
 				assert.ok(true, "We got this far which means things did not blow up");
 				cleanup();
 				done();
-			}, __dirname + "/test/testing-ssr.html");
+			}, __dirname + "/testing-ssr.html");
 		});
 
 		QUnit.test("Calling route.stop() works", function(assert) {

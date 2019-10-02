@@ -1,1 +1,2 @@
-import '../can-route-pushstate_test';
+import './pushstate-tests-modern';
+import './pushstate-iframe-tests-modern';
