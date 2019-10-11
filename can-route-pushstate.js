@@ -85,12 +85,6 @@ function PushstateObservable() {
 			PushstateObservable.prototype.anchorClickHandler.call(this, this, event);
 		}
 	};
-
-	// ### `keepHash`
-	// Currently is neither a feature that's documented,
-	// nor is it toggled. [Issue #133](https://github.com/canjs/can-route-pushstate/issues/133)
-	// is the discourse on it's removal.
-	this.keepHash = true;
 }
 
 PushstateObservable.prototype = Object.create(SimpleObservable.prototype);
@@ -181,13 +175,6 @@ canReflect.assign(PushstateObservable.prototype, {
 
 					// If a matching route exists.
 					if (route.rule(url) !== undefined) {
-						// Makes it possible to have a link with a hash.
-						// Calling .pushState will dispatch events, causing
-						// `can-route` to update its data, and then try to set back
-						// the url without the hash.  We need to retain that.
-						if (href.indexOf("#") >= 0) {
-							this.keepHash = true;
-						}
 
 						// We do not want to call preventDefault() if the link is to the
 						// same page and just a different hash; see can-route-pushstate#75.
@@ -299,7 +286,7 @@ canReflect.assign(PushstateObservable.prototype, {
 			changed = {};
 
 		// Adds window.location.hash to path if it's not already in path.
-		if (this.keepHash && path.indexOf("#") === -1 && window.location.hash) {
+		if (path.indexOf("#") === -1 && window.location.hash) {
 			path += window.location.hash;
 		}
 
